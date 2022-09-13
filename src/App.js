@@ -1,23 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+
+import Dashboard from "./components/Dashboard";
+import "./App.css";
+
+const venueId = 14829;
 
 function App() {
+  const [venName, setVenName] = useState("");
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      {venName ? (
+        <h2 className="my-4">{venName} Dashboard</h2>
+      ) : (
+        <h2>Loading Venue data...</h2>
+      )}
+      <Dashboard venueId={venueId} onVenLoad={setVenName} />
     </div>
   );
 }
