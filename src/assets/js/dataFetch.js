@@ -4,7 +4,7 @@
  * code.  It will use try/catch for error handling.
  */
 
-const API_QUERY = "?test=rontest";
+// const API_QUERY = "";
 
 export default async function dataFetch(
   endpoint,
@@ -13,11 +13,11 @@ export default async function dataFetch(
   body = null,
   formData = false,
   // urlBase = tasteVenuePortal.apiUrl,
-  urlBase = "http://localhost/taste2/wp-json/thetaste/v1/",
+  urlBase = "http://localhost/taste2/wp-json/",
   wpFlag = false, // the resume api's return a data object when successful.  wp does not
   wpNonce = ""
 ) {
-  const apiQuery = API_QUERY + (queryStr ? "&" : "");
+  const apiQuery = queryStr ? "?" : "";
   let basicUrl = `${urlBase}${endpoint}${apiQuery}${queryStr}`;
 
   console.log("url: ", basicUrl);
@@ -70,6 +70,20 @@ export default async function dataFetch(
     console.log("Fetch error: ", error);
     return { error: error };
   }
+}
+
+export async function fetchVenue(venueId) {
+  const endpoint = "thetaste/v1/venue";
+  const venueObj = await dataFetch(
+    endpoint,
+    `venue-id=${venueId}&test=rontest`
+  );
+  return venueObj;
+}
+
+export function fetchPost(postId) {
+  const url = `http://localhost/taste2/wp-json/wp/v2/posts/${postId}`;
+  return fetch(url);
 }
 
 export function convertNullsToEmpty(obj) {

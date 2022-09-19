@@ -4,21 +4,20 @@ import Payments from "./Payments";
 import RelatedPosts from "./RelatedPosts";
 import Jobs from "./Jobs";
 import Sidebar from "./Sidebar";
-import dataFetch from "../assets/js/dataFetch";
+import { fetchVenue } from "../assets/js/dataFetch";
 
 function Dashboard({ venueId, onVenLoad }) {
   const [section, setSection] = useState(-1);
   const [venueObj, setVenueObj] = useState({});
 
   useEffect(() => {
-    const fetchVenue = async () => {
-      const venApiObj = await dataFetch("venue", `venue-id=${venueId}`);
-      console.log(venApiObj.net_payable);
+    const getVenueObj = async () => {
+      const venApiObj = await fetchVenue(venueId);
       setVenueObj(venApiObj);
       setSection(0);
       onVenLoad(venApiObj.name);
     };
-    fetchVenue();
+    getVenueObj();
   }, [venueId, onVenLoad]);
 
   const onSelectSection = (menuChoice) => {
@@ -26,8 +25,6 @@ function Dashboard({ venueId, onVenLoad }) {
   };
 
   const getMainDisplay = (sectionId, venueObj) => {
-    console.log("ehre is venue obj: ", venueObj);
-    console.log("section id : ", sectionId);
     switch (sectionId) {
       case 0:
         return <p>Main Content Home</p>;
