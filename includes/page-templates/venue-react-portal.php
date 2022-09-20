@@ -82,6 +82,12 @@ if (!$venue_id) {
 	die();
 }
 
+wp_localize_script( 'taste-react-venue-portal-main', 'tasteVenuePortal', array(
+	'apiUrl' => 'https://tt-dev.thetaste.ie//wp-json/',
+	'nonce' => wp_create_nonce('wp_rest'),
+	'venueId' => $venue_id,
+) );
+
 
 ?>
 

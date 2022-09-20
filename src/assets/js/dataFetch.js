@@ -6,6 +6,10 @@
 
 // const API_QUERY = "";
 
+const wpUrlBase = window?.tasteVenuePortal?.apiUrl
+  ? window.tasteVenuePortal.apiUrl
+  : "https://tt-dev.thetaste.ie//wp-json/";
+
 export default async function dataFetch(
   endpoint,
   queryStr = "",
@@ -13,7 +17,7 @@ export default async function dataFetch(
   body = null,
   formData = false,
   // urlBase = tasteVenuePortal.apiUrl,
-  urlBase = "https://tt-dev.thetaste.ie//wp-json/",
+  urlBase = wpUrlBase,
   wpFlag = false, // the resume api's return a data object when successful.  wp does not
   wpNonce = ""
 ) {

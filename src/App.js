@@ -2,7 +2,10 @@ import React, { useState } from "react";
 
 import Dashboard from "./components/Dashboard";
 
-const venueId = 14829;
+const venueId = window?.tasteVenuePortal?.venueId
+  ? window.tasteVenuePortal.venueId
+  : 14829;
+// console.log(window?.tasteVenuePortal);
 
 function App() {
   const [venName, setVenName] = useState("");
