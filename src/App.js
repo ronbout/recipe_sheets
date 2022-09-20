@@ -9,11 +9,7 @@ function App() {
 
   return (
     <div className="container">
-      {venName ? (
-        <h2 className="my-4">{venName} Dashboard</h2>
-      ) : (
-        <h2>Loading Venue data...</h2>
-      )}
+      {venName ? "" : <h2>Loading Venue data...</h2>}
       <Dashboard venueId={venueId} onVenLoad={setVenName} />
     </div>
   );

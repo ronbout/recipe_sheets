@@ -34,7 +34,7 @@ if ( !is_user_logged_in()) {
 }
 
 require_once TASTE_REACT_PORTAL_PLUGIN_INCLUDES.'page-templates/partials/venue-head.php';
-require_once  TASTE_REACT_PORTAL_PLUGIN_INCLUDES.'page-templates/partials/venue-navbar.php';
+require_once TASTE_REACT_PORTAL_PLUGIN_INCLUDES.'page-templates/partials/venue-navbar.php';
 
 $venue_id = '';
 if ($admin) {

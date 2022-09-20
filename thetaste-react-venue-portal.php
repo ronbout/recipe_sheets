@@ -17,7 +17,9 @@ define('TASTE_REACT_PORTAL_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('TASTE_REACT_PORTAL_PLUGIN_INCLUDES', TASTE_REACT_PORTAL_PLUGIN_PATH.'includes/');
 define('TASTE_REACT_PORTAL_PLUGIN_INCLUDES_URL', TASTE_REACT_PORTAL_PLUGIN_URL.'includes/');
 define('TASTE_REACT_PORTAL_PLUGIN_BUILD', TASTE_REACT_PORTAL_PLUGIN_PATH.'build/');
-define('TASTE_REACT_PORTAL_PLUGIN_BUILD_URL', TASTE_REACT_PORTAL_PLUGIN_URL.'build/');
+define('TASTE_REACT_PORTAL_PLUGIN_BUILD_URL', TASTE_REACT_PORTAL_PLUGIN_URL.'build');
+
+require_once TASTE_REACT_PORTAL_PLUGIN_INCLUDES . 'react-setup.php';
 
 // we use GROUP_CONCAT in a number of instances.  To ensure that the
 // size of that field is always large enough, change it at the session level.
@@ -46,13 +48,13 @@ add_filter ('page_template', 'taste_react_redirect_page_template');
 
 function taste_react_enqueues() {
 
-	wp_enqueue_script('taste-react-portal-indexjs', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL . 'index.js', array('wp-element'), '1.0', true);
+	// wp_enqueue_script('taste-react-portal-indexjs', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL . 'index.js', array('wp-element'), '1.0', true);
   wp_enqueue_style('taste-venue-css', TASTE_PLUGIN_INCLUDES_URL . '/style/css/thetaste-venue.css');
-  wp_enqueue_style('taste-react-portal-css', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL . 'index.css');
-  wp_localize_script( 'taste-react-portal-indexjs', 'tasteVenuePortal', array(
-    'apiUrl' => home_url('/wp-json/thetaste/v1/'),
-    'nonce' => wp_create_nonce('wp_rest'),
-  ) );
+  // wp_enqueue_style('taste-react-portal-css', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL . 'index.css');
+  // wp_localize_script( 'taste-react-portal-indexjs', 'tasteVenuePortal', array(
+  //   'apiUrl' => home_url('/wp-json/thetaste/v1/'),
+  //   'nonce' => wp_create_nonce('wp_rest'),
+  // ) );
 }
 
 add_action('wp_enqueue_scripts', 'taste_react_enqueues');
