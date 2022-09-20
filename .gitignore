@@ -9,7 +9,8 @@
 /coverage
 
 # production
-/build
+# build has to be included as it is now part of the wordpress enqueues
+#/build
 
 # misc
 .DS_Store
