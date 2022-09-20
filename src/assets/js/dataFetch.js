@@ -13,7 +13,7 @@ export default async function dataFetch(
   body = null,
   formData = false,
   // urlBase = tasteVenuePortal.apiUrl,
-  urlBase = "http://localhost/taste2/wp-json/",
+  urlBase = "https://tt-dev.thetaste.ie//wp-json/",
   wpFlag = false, // the resume api's return a data object when successful.  wp does not
   wpNonce = ""
 ) {
@@ -79,11 +79,6 @@ export async function fetchVenue(venueId) {
     `venue-id=${venueId}&test=rontest`
   );
   return venueObj;
-}
-
-export function fetchPost(postId) {
-  const url = `http://localhost/taste2/wp-json/wp/v2/posts/${postId}`;
-  return fetch(url);
 }
 
 export function convertNullsToEmpty(obj) {

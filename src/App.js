@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 import Dashboard from "./components/Dashboard";
-import "./App.css";
 
 const venueId = 14829;
 
