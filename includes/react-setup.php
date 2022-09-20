@@ -25,26 +25,26 @@ add_action('init', function () {
 // var_dump($asset_manifest);
 // echo '<h1>', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL . $asset_manifest['main.css'], "</h1>"; 
                 if (isset($asset_manifest['main.css'])) {
-                    wp_enqueue_style('taste-react-venue-portal-css', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$asset_manifest['main.css'], null);
+                    wp_enqueue_style('taste-react-venue-portal', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$asset_manifest['main.css'], null);
                 }
 
-                wp_enqueue_script('taste-react-venue-portal-main-js', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$asset_manifest['main.js'], ['taste-react-venue-portal-runtime'], null, true);
+                wp_enqueue_script('taste-react-venue-portal-main', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$asset_manifest['main.js'], [], null, true);
 
                 foreach ($asset_manifest as $key => $value) {
-                    if ('main.js' === $key) {
-                        wp_enqueue_script('taste-react-venue-portal-runtime', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$value, [], null, true);
-                    }
+                    // if ('main.js' === $key) {
+                    //     wp_enqueue_script('taste-react-venue-portal-runtime', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$value, [], null, true);
+                    // }
                     if (preg_match('@static/js/(.*)\.chunk\.js@', $key, $matches)) {
                         if ($matches && is_array($matches) && 2 === count($matches)) {
                             $name = 'taste-react-'.preg_replace('/[^A-Za-z0-9_]/', '-', $matches[1]);
-                            wp_enqueue_script($name, TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$value, ['taste-react-venue-portal-main-js'], null, true);
+                            wp_enqueue_script($name, TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$value, ['taste-react-venue-portal-main'], null, true);
                         }
                     }
 
                     if (preg_match('@static/css/(.*)\.chunk\.css@', $key, $matches)) {
                         if ($matches && is_array($matches) && 2 == count($matches)) {
                             $name = 'taste-react-'.preg_replace('/[^A-Za-z0-9_]/', '-', $matches[1]);
-                            wp_enqueue_style($name, TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$value, ['taste-react-venue-portal-css'], null);
+                            wp_enqueue_style($name, TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$value, ['taste-react-venue-portal'], null);
                         }
                     }
                 }
