@@ -18,3 +18,7 @@ code {
 .col-sortable-hover:hover .hover-sort-indicator {
   visibility: visible;
 }
+
+.navbar {
+  padding: 0.5rem 1rem;
+}
