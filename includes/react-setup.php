@@ -51,5 +51,10 @@ add_action('init', function () {
             }
         }
         // die;
+        wp_localize_script( 'taste-react-venue-portal-main', 'tasteVenuePortal', array(
+            'apiUrl' => '/thetaste/v1/',
+            'nonce' => wp_create_nonce('wp_rest'),
+            'venueId' => $_GET['venue-id'],
+          ) );
     });
 });

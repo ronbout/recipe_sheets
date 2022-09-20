@@ -55,6 +55,8 @@ function taste_react_enqueues() {
   //   'apiUrl' => home_url('/wp-json/thetaste/v1/'),
   //   'nonce' => wp_create_nonce('wp_rest'),
   // ) );
+
+
 }
 
 add_action('wp_enqueue_scripts', 'taste_react_enqueues');
