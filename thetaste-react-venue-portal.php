@@ -19,6 +19,8 @@ define('TASTE_REACT_PORTAL_PLUGIN_INCLUDES_URL', TASTE_REACT_PORTAL_PLUGIN_URL.'
 define('TASTE_REACT_PORTAL_PLUGIN_BUILD', TASTE_REACT_PORTAL_PLUGIN_PATH.'build/');
 define('TASTE_REACT_PORTAL_PLUGIN_BUILD_URL', TASTE_REACT_PORTAL_PLUGIN_URL.'build');
 
+!defined('TASTE_PLUGIN_PATH') && define('TASTE_PLUGIN_PATH', WP_PLUGIN_DIR . '/thetaste-venue/');
+
 require_once TASTE_REACT_PORTAL_PLUGIN_INCLUDES . 'react-setup.php';
 
 // we use GROUP_CONCAT in a number of instances.  To ensure that the
