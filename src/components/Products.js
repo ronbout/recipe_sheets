@@ -19,12 +19,16 @@ function Products({ venueObj }) {
 
   return (
     <div className="container text-center p-4">
-      <h2>Products</h2>
       {loadedFlg ? (
-        <React.Fragment>
-          <BarChart labels={labels} datasets={datasets} />
-          <ProductTable productData={productData} />
-        </React.Fragment>
+        productData.length ? (
+          <React.Fragment>
+            <h2>Products</h2>
+            <BarChart labels={labels} datasets={datasets} />
+            <ProductTable productData={productData} />
+          </React.Fragment>
+        ) : (
+          <h2>No Products Available</h2>
+        )
       ) : (
         ""
       )}

@@ -30,12 +30,16 @@ function Payments({ venueObj }) {
 
   return (
     <div className="container text-center p-4">
-      <h2>Payments</h2>
       {loadedFlg ? (
-        <React.Fragment>
-          <LineChart labels={labels} datasets={datasets} />
-          <PaymentTable paymentData={paymentData} productData={productData} />
-        </React.Fragment>
+        paymentData.length ? (
+          <React.Fragment>
+            <h2>Payments</h2>
+            <LineChart labels={labels} datasets={datasets} />
+            <PaymentTable paymentData={paymentData} productData={productData} />
+          </React.Fragment>
+        ) : (
+          <h2>No Payments Available</h2>
+        )
       ) : (
         ""
       )}
