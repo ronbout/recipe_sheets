@@ -48,7 +48,11 @@ function Dashboard({ venueId, onVenLoad }) {
         <Sidebar selectedItem={section} onSelect={onSelectSection} />
       </div>
       <div className="main-content col-sm-10">
-        {-1 !== section && getMainDisplay(section, venueObj)}
+        {-1 !== section ? (
+          getMainDisplay(section, venueObj)
+        ) : (
+          <h2>Loading Venue data...</h2>
+        )}
       </div>
     </div>
   );
