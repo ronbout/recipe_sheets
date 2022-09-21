@@ -4,7 +4,7 @@ import Dashboard from "./components/Dashboard";
 
 const venueId = window?.tasteVenuePortal?.venueId
   ? window.tasteVenuePortal.venueId
-  : 15590;
+  : 14876;
 // console.log(window?.tasteVenuePortal);
 
 window.euroLocale = Intl.NumberFormat("en-IE", { minimumFractionDigits: 2 });

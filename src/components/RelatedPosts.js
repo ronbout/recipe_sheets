@@ -31,7 +31,7 @@ function RelatedPosts({ venueObj }) {
     );
   });
   return (
-    <div className="container p-4">
+    <div className="container text-center p-4">
       <h2>Related Posts</h2>
       <div className="posts-container d-flex justify-content-between flex-wrap">
         {postCards}
