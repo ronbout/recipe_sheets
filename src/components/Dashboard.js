@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import HomeDisplay from "./HomeDisplay";
 import Products from "./Products";
 import Payments from "./Payments";
 import RelatedPosts from "./RelatedPosts";
@@ -27,7 +28,7 @@ function Dashboard({ venueId, onVenLoad }) {
   const getMainDisplay = (sectionId, venueObj) => {
     switch (sectionId) {
       case 0:
-        return <p>Main Content Home</p>;
+        return <HomeDisplay venueObj={venueObj} />;
       case 1:
         return <Products venueObj={venueObj} />;
       case 2:

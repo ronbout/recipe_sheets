@@ -22,3 +22,61 @@ code {
 .navbar {
   padding: 0.5rem 1rem;
 }
+
+.venue-card {
+  background-color: #cecece;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: all 0.5s ease;
+  min-width: 278px;
+  margin: 0.5rem;
+}
+
+.venue-card:hover {
+  background-color: #aaa;
+  transition: all 0.5s ease;
+}
+
+.venue-card .eclipse_icon_bg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  font-size: 22px;
+}
+
+.venue-card p.titles {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  color: #444;
+}
+
+.venue-card h3.numbers {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-size: 30px;
+  margin-bottom: 2.5rem;
+}
+
+/* icon circle background */
+.ticket_icon {
+  background-color: #ffd600;
+}
+.users_icon {
+  background-color: #00e0ff;
+}
+.money_bill_icon {
+  background-color: #52ff00;
+}
+.cash_register_icon {
+  background-color: #d8a7ff;
+}
+.coins_icon {
+  background-color: #ff7878;
+}
+.balance_scale_icon {
+  background-color: #ffaf82;
+}
