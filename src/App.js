@@ -4,8 +4,10 @@ import Dashboard from "./components/Dashboard";
 
 const venueId = window?.tasteVenuePortal?.venueId
   ? window.tasteVenuePortal.venueId
-  : 14829;
+  : 14876;
 // console.log(window?.tasteVenuePortal);
+
+window.euroLocale = Intl.NumberFormat("en-IE", { minimumFractionDigits: 2 });
 
 function App() {
   const [venName, setVenName] = useState("");

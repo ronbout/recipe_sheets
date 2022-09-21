@@ -6,6 +6,8 @@ function HomeDisplay({ venueObj }) {
     <div className="container text-center p-4">
       <h2>Venue Summary</h2>
       <VenueSummary venueObj={venueObj} />
+      <h2>Recent Campaigns</h2>
+      <h2>TheTaste Readership</h2>
     </div>
   );
 }
