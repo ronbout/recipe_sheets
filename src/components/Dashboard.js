@@ -7,7 +7,7 @@ import Jobs from "./Jobs";
 import Sidebar from "./Sidebar";
 import { fetchVenue } from "../assets/js/dataFetch";
 
-function Dashboard({ venueId, onVenLoad }) {
+function Dashboard({ venueId }) {
   const [section, setSection] = useState(-1);
   const [venueObj, setVenueObj] = useState({});
 
@@ -16,10 +16,9 @@ function Dashboard({ venueId, onVenLoad }) {
       const venApiObj = await fetchVenue(venueId);
       setVenueObj(venApiObj);
       setSection(0);
-      onVenLoad(venApiObj.name);
     };
     getVenueObj();
-  }, [venueId, onVenLoad]);
+  }, [venueId]);
 
   const onSelectSection = (menuChoice) => {
     setSection(menuChoice);
