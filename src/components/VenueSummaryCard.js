@@ -10,7 +10,7 @@ function VenueSummaryCard({ numberDisplay, title, icon, iconClass }) {
         <div className={`eclipse_icon_bg ${iconClass}`}>{icon}</div>
       </div>
       <div className="row">
-        <div className="col-10 text-start">
+        <div className="col-11 text-start">
           <p className="titles">{title}</p>
         </div>
       </div>
