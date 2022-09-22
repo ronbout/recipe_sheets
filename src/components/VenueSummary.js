@@ -18,22 +18,29 @@ function VenueSummary({ venueObj }) {
   switch (venueObj.venue_type) {
     case "Restaurant":
     case "Bar":
-      soldHeading = "Total Covers";
+      soldHeading = "Total Covers (redeemed / sold)";
       soldMultiplier = 2;
       break;
     case "Hotel":
-      soldHeading = "Total People";
+      soldHeading = "Total People (redeemed / sold)";
       soldMultiplier = 2;
       break;
     case "Product":
     default:
-      soldHeading = "Total Products";
+      soldHeading = "Total Products (redeemed / sold)";
       soldMultiplier = 1;
   }
 
   const redeemedSoldQty = (
     <span>
       <strong>{venueObj.redeemed_qty}</strong> / {venueObj.order_qty}
+    </span>
+  );
+
+  const redeemedSoldQtyWMultiplier = (
+    <span>
+      <strong>{venueObj.redeemed_qty * soldMultiplier}</strong> /{" "}
+      {venueObj.order_qty * soldMultiplier}
     </span>
   );
 
@@ -55,7 +62,7 @@ function VenueSummary({ venueObj }) {
           iconClass="ticket_icon"
         />
         <VenueSummaryCard
-          numberDisplay={venueObj.redeemed_qty * soldMultiplier}
+          numberDisplay={redeemedSoldQtyWMultiplier}
           title={soldHeading}
           icon={<FontAwesomeIcon icon={faUsers} />}
           iconClass="users_icon"
