@@ -5,6 +5,9 @@
 /.pnp
 .pnp.js
 
+/includes/google-apis/vendor
+/includes/google-apis/credentials.json
+
 # testing
 /coverage
 
