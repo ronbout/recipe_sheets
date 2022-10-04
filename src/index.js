@@ -6,7 +6,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
 const root = ReactDOM.createRoot(
-  document.getElementById("react-portal-container")
+  document.getElementById("react-recipe-status-container")
 );
 root.render(
   <React.StrictMode>

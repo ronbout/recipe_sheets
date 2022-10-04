@@ -34,19 +34,20 @@ function initializeSheets()
 function getReport($sheets) {
 	try{
 
-    $spreadsheetId = '1XNONqFyWBN5qX-1fSt8zMZ7TMVkEsgPDb_H1OL6fc5Q';
-    $range = 'Recipe List!B2:O40';
-    $renderOption = array('valueRenderOption' => 'FORMULA');
-//     $response = $sheets->spreadsheets_values->get($spreadsheetId, $range);
-//     $values = $response->getValues();
-//     echo "<pre>";
-// print_r($values);
-// echo "</pre>";
-    $response = $sheets->spreadsheets_values->get($spreadsheetId, 'Recipe Entry!E4766:E4767', $renderOption);
+    // $spreadsheetId = '1XNONqFyWBN5qX-1fSt8zMZ7TMVkEsgPDb_H1OL6fc5Q';
+    $spreadsheetId = '1UOZnbKQ6dq3H1cbMoyJgFVOjvfQFkwNgXUZtVRLicpU';
+    $range = 'Wholly Owned  May 2022!B4:I';
+    // $renderOption = array('valueRenderOption' => 'FORMULA');
+    $response = $sheets->spreadsheets_values->get($spreadsheetId, $range);
     $values = $response->getValues();
     echo "<pre>";
 print_r($values);
 echo "</pre>";
+//     $response = $sheets->spreadsheets_values->get($spreadsheetId, 'Recipe Entry!E4766:E4767', $renderOption);
+//     $values = $response->getValues();
+//     echo "<pre>";
+// print_r($values);
+// echo "</pre>";
 die;
     if (empty($values)) {
         echo  "No data found.\n";

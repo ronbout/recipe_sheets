@@ -3,7 +3,7 @@
 // code for loading react resources on react-page
 add_action('init', function () {
     add_filter('script_loader_tag', function ($tag, $handle) {
-        if (!preg_match('/^taste-react-/', $handle)) {
+        if (!preg_match('/^recipe-sheets-/', $handle)) {
             return $tag;
         }
 
@@ -18,33 +18,33 @@ add_action('init', function () {
         }
         $page_name = $post->post_name;
 
-        if ('venue-react-portal.php' === basename(get_page_template())) {
-            $manifest_file =TASTE_REACT_PORTAL_PLUGIN_BUILD.'asset-manifest.json';
+        if ('recipe-status.php' === basename(get_page_template())) {
+            $manifest_file =RECIPE_SHEETS_PLUGIN_BUILD.'asset-manifest.json';
             if (file_exists($manifest_file)) {
                 $asset_manifest = json_decode(file_get_contents($manifest_file), true)['files'];
 // var_dump($asset_manifest);
-// echo '<h1>', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL . $asset_manifest['main.css'], "</h1>"; 
+// echo '<h1>', RECIPE_SHEETS_PLUGIN_BUILD_URL . $asset_manifest['main.css'], "</h1>"; 
                 if (isset($asset_manifest['main.css'])) {
-                    wp_enqueue_style('taste-react-venue-portal', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$asset_manifest['main.css'], null);
+                    wp_enqueue_style('recipe-sheets', RECIPE_SHEETS_PLUGIN_BUILD_URL.$asset_manifest['main.css'], null);
                 }
 
-                wp_enqueue_script('taste-react-venue-portal-main', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$asset_manifest['main.js'], [], null, true);
+                wp_enqueue_script('recipe-sheets-main', RECIPE_SHEETS_PLUGIN_BUILD_URL.$asset_manifest['main.js'], [], null, true);
 
                 foreach ($asset_manifest as $key => $value) {
                     // if ('main.js' === $key) {
-                    //     wp_enqueue_script('taste-react-venue-portal-runtime', TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$value, [], null, true);
+                    //     wp_enqueue_script('recipe-sheets-runtime', RECIPE_SHEETS_PLUGIN_BUILD_URL.$value, [], null, true);
                     // }
                     if (preg_match('@static/js/(.*)\.chunk\.js@', $key, $matches)) {
                         if ($matches && is_array($matches) && 2 === count($matches)) {
-                            $name = 'taste-react-'.preg_replace('/[^A-Za-z0-9_]/', '-', $matches[1]);
-                            wp_enqueue_script($name, TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$value, ['taste-react-venue-portal-main'], null, true);
+                            $name = 'recipe-sheets-'.preg_replace('/[^A-Za-z0-9_]/', '-', $matches[1]);
+                            wp_enqueue_script($name, RECIPE_SHEETS_PLUGIN_BUILD_URL.$value, ['recipe-sheets-main'], null, true);
                         }
                     }
 
                     if (preg_match('@static/css/(.*)\.chunk\.css@', $key, $matches)) {
                         if ($matches && is_array($matches) && 2 == count($matches)) {
-                            $name = 'taste-react-'.preg_replace('/[^A-Za-z0-9_]/', '-', $matches[1]);
-                            wp_enqueue_style($name, TASTE_REACT_PORTAL_PLUGIN_BUILD_URL.$value, ['taste-react-venue-portal'], null);
+                            $name = 'recipe-sheets-'.preg_replace('/[^A-Za-z0-9_]/', '-', $matches[1]);
+                            wp_enqueue_style($name, RECIPE_SHEETS_PLUGIN_BUILD_URL.$value, ['recipe-sheets'], null);
                         }
                     }
                 }

@@ -27,15 +27,15 @@ global $wpdb;
 $wpdb->query("SET SESSION group_concat_max_len = 30000;");
 
 // set up page templates
-function recipes_add_react_portal_template ($templates) {
-	$templates['venue-react-portal.php'] = 'Venue React Portal';
+function recipes_add_react_recipe_template ($templates) {
+	$templates['recipe-status.php'] = 'Recipe Status';
 	return $templates;
 	}
-add_filter ('theme_page_templates', 'recipes_add_react_portal_template');
+add_filter ('theme_page_templates', 'recipes_add_react_recipe_template');
 
 function recipes_react_redirect_page_template ($template) {
-	if (is_page_template('venue-react-portal.php')) {
-		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/venue-react-portal.php';
+	if (is_page_template('recipe-status.php')) {
+		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-status.php';
 	}
 	return $template;
 }
