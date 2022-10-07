@@ -32,6 +32,7 @@ function recipes_add_react_recipe_template ($templates) {
 	$templates['recipe-load-requests.php'] = 'Recipe Load Requests';
 	$templates['recipe-load-recipe-names.php'] = 'Recipe Load Names';
 	$templates['recipe-load-recipe-entry.php'] = 'Recipe Load Entry Info';
+	$templates['recipe-load-recipe-status.php'] = 'Recipe Load Status';
 	return $templates;
 	}
 add_filter ('theme_page_templates', 'recipes_add_react_recipe_template');
@@ -48,6 +49,9 @@ function recipes_redirect_page_template ($template) {
 	}
 	if (is_page_template('recipe-load-recipe-entry.php')) {
 		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-load-recipe-entry.php';
+	}
+	if (is_page_template('recipe-load-recipe-status.php')) {
+		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-load-recipe-status.php';
 	}
 	return $template;
 }
