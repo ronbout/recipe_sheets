@@ -29,17 +29,29 @@ $wpdb->query("SET SESSION group_concat_max_len = 30000;");
 // set up page templates
 function recipes_add_react_recipe_template ($templates) {
 	$templates['recipe-status.php'] = 'Recipe Status';
+	$templates['recipe-load-requests.php'] = 'Recipe Load Requests';
+	$templates['recipe-load-recipe-names.php'] = 'Recipe Load Names';
+	$templates['recipe-load-recipe-entry.php'] = 'Recipe Load Entry Info';
 	return $templates;
 	}
 add_filter ('theme_page_templates', 'recipes_add_react_recipe_template');
 
-function recipes_react_redirect_page_template ($template) {
+function recipes_redirect_page_template ($template) {
 	if (is_page_template('recipe-status.php')) {
 		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-status.php';
 	}
+	if (is_page_template('recipe-load-requests.php')) {
+		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-load-requests.php';
+	}
+	if (is_page_template('recipe-load-recipe-names.php')) {
+		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-load-recipe-names.php';
+	}
+	if (is_page_template('recipe-load-recipe-entry.php')) {
+		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-load-recipe-entry.php';
+	}
 	return $template;
 }
-add_filter ('page_template', 'recipes_react_redirect_page_template');
+add_filter ('page_template', 'recipes_redirect_page_template');
 
 function recipes_react_enqueues() {
 

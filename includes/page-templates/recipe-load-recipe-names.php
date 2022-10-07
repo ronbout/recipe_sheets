@@ -1,10 +1,10 @@
 <?php
 /*
-Template Name: Taste Creative Recipe Status
+Template Name: Taste Creative Load Recipe Names
 */
 
 /**
- * 	Test page for display the status of the recipes *** REACT VERSION
+ * 	Test page for loading the recipe names per request from the Working Doc
  *  Date:  9/28/2022
  * 	Author: Ron Boutilier
  */
@@ -15,8 +15,12 @@ require_once RECIPE_SHEETS_PLUGIN_INCLUDES.'page-templates/partials/recipe-head.
 ?>
 <body>
 	<div class="container">
-		<header>Recipe Status Page</header>
-		<div id="react-recipe-status-container"></div>
+		<header>Recipe Requests:</header>
+		<div>
+			<?php
+				include RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-names-per-request.php';
+			?>
+		</div>
 	</div>
 	<?php wp_footer() ?>
 </body>
