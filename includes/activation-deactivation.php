@@ -6,15 +6,13 @@ defined('ABSPATH') or die('Direct script access disallowed.');
  *  ACTIVATION CODE 
  *  Add recipe distributor role and chef role, as well as recipe tables
  */
-function taste_add_recipe_roles() {
+function recipe_add_recipe_roles() {
 	add_role( 'chef', __('Chef'), get_role( 'author' )->capabilities );
 	add_role( 'recipe_distributor', __('Recipe Distributor'), get_role( 'author' )->capabilities );
 }
 
-function taste_add_recipes_table() {
+function recipe_add_recipes_table() {
 	global $wpdb;
-	$venue_table = $wpdb->prefix.'taste_venue';
-	$user_table = $wpdb->prefix.'users';
 
 	$sql = "
 	CREATE TABLE IF NOT EXISTS `rg_recipes` (
@@ -42,7 +40,7 @@ function taste_add_recipes_table() {
 	dbDelta($sql);
 }
 
-function taste_add_recipe_requests_table() {
+function recipe_add_recipe_requests_table() {
 	global $wpdb;
 
 	$sql = "
@@ -70,20 +68,20 @@ function taste_add_recipe_requests_table() {
 }
 
 
-function taste_venue_activation() {
+function recipe_sheets_activation() {
 
-	taste_add_recipe_roles();
+	recipe_add_recipe_roles();
 	
-	taste_add_recipes_table();
+	recipe_add_recipes_table();
 
-	taste_add_recipe_requests_table();
+	recipe_add_recipe_requests_table();
 }
 /**** END OF ACTIVATION CODE ****/
 
 /**
- *  Remove venue role upon plugin de-activation
+ *  Remove recipes roles upon plugin de-activation
  */
-function taste_remove_recipe_roles() {
+function recipe_remove_recipe_roles() {
 	remove_role( 'chef' );
 	remove_role( 'recipe_distributor' );
 }
@@ -91,8 +89,8 @@ function taste_remove_recipe_roles() {
 /**
  * DEACTIVATION CODE
  */
-function taste_venue_deactivation() {
-	taste_remove_recipe_roles();
+function recipe_sheets_deactivation() {
+	recipe_remove_recipe_roles();
 
 }
 

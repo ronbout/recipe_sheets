@@ -4,7 +4,7 @@
   * Can be used to test for other employer capabilities
   */
 
-function taste_jobs_add_capability() {
+function recipe_sheets_add_capability() {
 	$role = get_role( 'administrator' );
 	// Add a new capability.
 	$role->add_cap( 'view_recipe_requests', true );
@@ -15,4 +15,4 @@ function taste_jobs_add_capability() {
 }
  
 // Add simple_role capabilities, priority must be after the initial role definition.
-add_action( 'init', 'taste_jobs_add_capability', 11 );
+add_action( 'init', 'recipe_sheets_add_capability', 11 );
