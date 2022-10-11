@@ -17,10 +17,10 @@ function create_recipe_sheets_api () {
   $api_array = array( 
     'methods' => 'GET',
     'callback' => 'recipe_sheets_dist_requests_api',
-		// 'permission_callback' => '__return_true',
-		'permission_callback' => function($request) {
-			return current_user_can('view_recipe_requests');
-		},
+		'permission_callback' => '__return_true',
+		// 'permission_callback' => function($request) {
+		// 	return current_user_can('view_recipe_requests');
+		// },
   );
 
   register_rest_route( 'recipes/v1', '/dist/requests/guru/', $api_array );
