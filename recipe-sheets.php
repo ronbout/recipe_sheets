@@ -28,6 +28,11 @@ global $wpdb;
 
 $wpdb->query("SET SESSION group_concat_max_len = 30000;");
 
+require_once RECIPE_SHEETS_PLUGIN_INCLUDES.'/activation-deactivation.php';
+
+register_activation_hook( __FILE__, 'taste_venue_activation' );
+register_deactivation_hook( __FILE__, 'taste_venue_deactivation' );
+
 // set up page templates
 function recipes_add_react_recipe_template ($templates) {
 	$templates['recipe-status.php'] = 'Recipe Status';
