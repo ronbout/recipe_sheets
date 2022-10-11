@@ -5,7 +5,7 @@ function Sidebar({ selectedItem, onSelect }) {
     onSelect(menuItem);
   };
 
-  const menuItems = ["Home", "Products", "Payments", "Related Posts", "Jobs"];
+  const menuItems = ["Home", "Status by Month", "Recipes"];
 
   const menuItemLinks = menuItems.map((item, ndx) => {
     const classNames =
@@ -20,7 +20,7 @@ function Sidebar({ selectedItem, onSelect }) {
   });
   return (
     <section className="sidebar d-flex flex-column flex-shrink-0 p-3 text-white bg-dark">
-      <ul className="nav nav-pills flex-column mb-auto">{menuItemLinks}</ul>
+      <ul className="nav nav-pills flex-column m-0">{menuItemLinks}</ul>
     </section>
   );
 }

@@ -1,11 +1,11 @@
 import React from "react";
 
-function Jobs(props) {
+function Recipes(props) {
   return (
     <div className="container text-center p-4">
-      <h2>Jobs</h2>
+      <h2>Recipes</h2>
     </div>
   );
 }
 
-export default Jobs;
+export default Recipes;

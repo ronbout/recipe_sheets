@@ -6,9 +6,7 @@
 
 // const API_QUERY = "";
 
-const wpUrlBase = window?.tasteVenuePortal?.apiUrl
-  ? window.tasteVenuePortal.apiUrl
-  : "https://tt-dev.thetaste.ie//wp-json/";
+const wpUrlBase = "http://localhost/wptest1/wp-json/";
 
 export default async function dataFetch(
   endpoint,
@@ -76,13 +74,10 @@ export default async function dataFetch(
   }
 }
 
-export async function fetchVenue(venueId) {
-  const endpoint = "thetaste/v1/venue";
-  const venueObj = await dataFetch(
-    endpoint,
-    `venue-id=${venueId}&test=rontest`
-  );
-  return venueObj;
+export async function fetchDistRequests() {
+  const endpoint = "recipes/v1/dist/requests/guru";
+  const requestsObj = await dataFetch(endpoint);
+  return requestsObj;
 }
 
 export function convertNullsToEmpty(obj) {

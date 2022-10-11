@@ -1,41 +1,35 @@
 import React, { useState, useEffect } from "react";
 import HomeDisplay from "./HomeDisplay";
-import Products from "./Products";
-import Payments from "./Payments";
-import RelatedPosts from "./RelatedPosts";
-import Jobs from "./Jobs";
+import Status from "./Status";
+import Recipes from "./Recipes";
 import Sidebar from "./Sidebar";
-import { fetchVenue } from "../assets/js/dataFetch";
+import { fetchDistRequests } from "../assets/js/dataFetch";
 
-function Dashboard({ venueId }) {
+function Dashboard(props) {
   const [section, setSection] = useState(-1);
-  const [venueObj, setVenueObj] = useState({});
+  const [requestsObj, setRequestsObj] = useState({});
 
   useEffect(() => {
-    const getVenueObj = async () => {
-      const venApiObj = await fetchVenue(venueId);
-      setVenueObj(venApiObj);
+    const getRequestsObj = async () => {
+      const reqObj = await fetchDistRequests();
+      setRequestsObj(reqObj);
       setSection(0);
     };
-    getVenueObj();
-  }, [venueId]);
+    getRequestsObj();
+  }, []);
 
   const onSelectSection = (menuChoice) => {
     setSection(menuChoice);
   };
 
-  const getMainDisplay = (sectionId, venueObj) => {
+  const getMainDisplay = (sectionId) => {
     switch (sectionId) {
       case 0:
-        return <HomeDisplay venueObj={venueObj} />;
+        return <HomeDisplay distData={requestsObj} />;
       case 1:
-        return <Products venueObj={venueObj} />;
+        return <Status distData={requestsObj} />;
       case 2:
-        return <Payments venueObj={venueObj} />;
-      case 3:
-        return <RelatedPosts venueObj={venueObj} />;
-      case 4:
-        return <Jobs venueObj={venueObj} />;
+        return <Recipes />;
       default:
         return <h2>Under Construction</h2>;
     }
@@ -48,9 +42,9 @@ function Dashboard({ venueId }) {
       </div>
       <div className="main-content col-sm-10">
         {-1 !== section ? (
-          getMainDisplay(section, venueObj)
+          getMainDisplay(section)
         ) : (
-          <h2>Loading Venue data...</h2>
+          <h2>Loading Recipe Distributor data...</h2>
         )}
       </div>
     </div>

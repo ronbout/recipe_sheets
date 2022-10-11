@@ -1,94 +1,41 @@
 import React, { useMemo } from "react";
-import { useTable, useSortBy, useGlobalFilter } from "react-table";
+import { useTable, useSortBy } from "react-table";
 
-function ProductTable({ productData }) {
-  const data = useMemo(() => productData, [productData]);
+function MonthlyRequestsTable({ monthlyData }) {
+  const data = useMemo(() => monthlyData, [monthlyData]);
   const columns = useMemo(
     () => [
       {
-        Header: "Product Id",
-        accessor: "product_id",
+        Header: "Month",
+        accessor: "month",
       },
       {
-        Header: "Title",
-        Cell: ({ value }) => (
-          <span title={value}>{value.substring(0, 40) + "..."}</span>
-        ),
-        accessor: "title",
-        disableSortBy: true,
+        Header: "Recipes Requested",
+        accessor: "cnt",
       },
       {
-        Header: "Price",
-        accessor: "price",
+        Header: "Recipes Accepted",
+        accessor: "accepted",
       },
       {
-        Header: "Redeemed Qty",
-        accessor: "redeemed_qty",
+        Header: "Recipes Created",
+        accessor: "created",
       },
       {
-        Header: "Revenue",
-        accessor: "revenue",
-      },
-      {
-        Header: "Commission",
-        accessor: "commission",
-      },
-      {
-        Header: "VAT",
-        accessor: "vat",
-      },
-      {
-        Header: "Net Payable",
-        accessor: "net_payable",
-      },
-      {
-        Header: "Amount Paid",
-        accessor: "paid_amount",
-      },
-      {
-        Header: "Balance Due",
-        accessor: "balance_due",
+        Header: "Recipes Printed",
+        accessor: "printed",
       },
     ],
     []
   );
 
-  const tableInstance = useTable({ data, columns }, useGlobalFilter, useSortBy);
+  const tableInstance = useTable({ data, columns }, useSortBy);
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    state,
-    setGlobalFilter,
-  } = tableInstance;
-
-  const { globalFilter } = state;
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    tableInstance;
 
   return (
     <div className="container mt-5">
-      <div className="row">
-        <div className="col-sm-6"></div>
-        <div className="col-sm-6 row">
-          <label
-            htmlFor="product-table-search-input"
-            className="col-sm-2 col-form-label"
-          >
-            Search:{" "}
-          </label>
-          <div className="col-sm-8">
-            <input
-              id="product-table-search-input"
-              type="text"
-              className="form-control"
-              value={globalFilter || ""}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
       <table
         className="table table-striped table-success mt-4"
         {...getTableProps()}
@@ -148,4 +95,4 @@ function ProductTable({ productData }) {
   );
 }
 
-export default ProductTable;
+export default MonthlyRequestsTable;

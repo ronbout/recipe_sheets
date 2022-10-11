@@ -18,7 +18,9 @@ define('RECIPE_SHEETS_PLUGIN_INCLUDES_URL', RECIPE_SHEETS_PLUGIN_URL.'includes/'
 define('RECIPE_SHEETS_PLUGIN_BUILD', RECIPE_SHEETS_PLUGIN_PATH.'build/');
 define('RECIPE_SHEETS_PLUGIN_BUILD_URL', RECIPE_SHEETS_PLUGIN_URL.'build');
 
+require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'functions.php';
 require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'react-setup.php';
+require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'recipe-apis/get-apis.php';
 
 // we use GROUP_CONCAT in a number of instances.  To ensure that the
 // size of that field is always large enough, change it at the session level.
