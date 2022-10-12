@@ -6,7 +6,13 @@
 
 // const API_QUERY = "";
 
-const wpUrlBase = "http://localhost/wptest1/wp-json/";
+const envAPIBase =
+  "development" === process.env.NODE_ENV
+    ? process.env.REACT_APP_DEV_API_ROOT_DIR
+    : process.env.REACT_APP_PROD_API_ROOT_DIR;
+
+const wpUrlBase = `${envAPIBase}wp-json/`;
+// console.log("process.env: ", process.env);
 
 export default async function dataFetch(
   endpoint,
