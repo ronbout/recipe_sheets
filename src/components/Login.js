@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { fetchLogin } from "../assets/js/dataFetch";
+import { UserContext } from "./context/UserProvider";
 
 const Login = () => {
+  const { userState, handleLogin } = useContext(UserContext);
   const usernameRef = useRef();
   const errRef = useRef();
 
   const [username, setUsername] = useState("");
   const [user, setUser] = useState({});
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(userState.isLoggedIn);
   const [password, setPassword] = useState("");
   const [errMsg, setErrMsg] = useState("");
 
@@ -28,6 +30,7 @@ const Login = () => {
       setPassword("");
       setLoggedIn(true);
       setUser(loginObj);
+      handleLogin(loginObj);
     } else {
       setErrMsg("Invalid Login Credentials");
     }

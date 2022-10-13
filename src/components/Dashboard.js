@@ -6,7 +6,7 @@ import Sidebar from "./Sidebar";
 import Login from "./Login";
 import { fetchDistRequests } from "../assets/js/dataFetch";
 
-function Dashboard(props) {
+function Dashboard() {
   const [section, setSection] = useState(-1);
   const [requestsObj, setRequestsObj] = useState({});
 
