@@ -86,6 +86,14 @@ export async function fetchDistRequests() {
   return requestsObj;
 }
 
+export async function fetchLogin({ username, password }) {
+  console.log("fetchLogin: ", username, password);
+  const endpoint = "jwt-auth/v1/token";
+  const body = { username, password };
+  const requestsObj = await dataFetch(endpoint, "", "POST", body);
+  return requestsObj;
+}
+
 export function convertNullsToEmpty(obj) {
   // obj could be array, object or as single value
   // use recursion to get to the single value and

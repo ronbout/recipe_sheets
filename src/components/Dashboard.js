@@ -3,6 +3,7 @@ import HomeDisplay from "./HomeDisplay";
 import Status from "./Status";
 import Recipes from "./Recipes";
 import Sidebar from "./Sidebar";
+import Login from "./Login";
 import { fetchDistRequests } from "../assets/js/dataFetch";
 
 function Dashboard(props) {
@@ -31,7 +32,7 @@ function Dashboard(props) {
       case 2:
         return <Recipes />;
       default:
-        return <h2>Under Construction</h2>;
+        return <Login />;
     }
   };
 

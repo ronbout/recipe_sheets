@@ -5,7 +5,7 @@ function Sidebar({ selectedItem, onSelect }) {
     onSelect(menuItem);
   };
 
-  const menuItems = ["Home", "Status by Month", "Recipes"];
+  const menuItems = ["Home", "Status by Month", "Recipes", "Login"];
 
   const menuItemLinks = menuItems.map((item, ndx) => {
     const classNames =
