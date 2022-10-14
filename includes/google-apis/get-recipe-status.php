@@ -4,7 +4,7 @@
 // and access <<MONTH>>  Working Document
 require_once __DIR__ . '/vendor/autoload.php';
 
-define('RECIPE_ID_COL', 0);
+define('RECIPE_WORKSHEET_ID_COL', 0);
 define('RECIPE_STATUS_COL', 2);
 define('RECIPE_SOURCE_COL', 4);
 
@@ -71,18 +71,18 @@ function update_recipe_table($recipe_rows) {
 		return $recipe_status;
 	});
 
-	$recipe_ids = array_column($recipe_status_rows, RECIPE_ID_COL);
-	$recipe_ids = array_map(function($id) {
+	$recipe_worksheet_ids = array_column($recipe_status_rows, RECIPE_WORKSHEET_ID_COL);
+	$recipe_worksheet_ids = array_map(function($id) {
 		return sanitize_text_field($id);
-	}, $recipe_ids);
+	}, $recipe_worksheet_ids);
 
 	echo '<h1>Printed Recipe Count: ', count($recipe_status_rows), "</h1>";
 	echo '<pre>';
-	print_r($recipe_ids);
+	print_r($recipe_worksheet_ids);
 	echo '</pre>';
 	// die;
 
-	update_recipe_status($recipe_ids);
+	update_recipe_status($recipe_worksheet_ids);
 
 	// the same spreadsheet has the source info
 	$recipe_source_rows = array_filter($recipe_rows, function($recipe_row) {
@@ -107,12 +107,12 @@ function update_recipe_table($recipe_rows) {
 }
 
  
-function update_recipe_status($recipe_ids) {
+function update_recipe_status($recipe_worksheet_ids) {
 	global $wpdb;
 
 	$recipes_table = "tc_recipes";
 
-	$placeholders = array_fill(0, count($recipe_ids), '%s');
+	$placeholders = array_fill(0, count($recipe_worksheet_ids), '%s');
 	$placeholders = implode(', ', $placeholders);
 	
 	$insert_values = rtrim($insert_values, ',');
@@ -120,10 +120,10 @@ function update_recipe_status($recipe_ids) {
 	$sql = "
 		UPDATE $recipes_table
 		SET recipe_status = 'printed'
-		WHERE id in ($placeholders)";
+		WHERE worksheet_id in ($placeholders)";
 
 	$rows_affected = $wpdb->get_results(
-		$wpdb->prepare($sql, $recipe_ids)
+		$wpdb->prepare($sql, $recipe_worksheet_ids)
 	);
 	return $rows_affected;
 }
@@ -134,13 +134,13 @@ function update_recipe_source($recipe_source_rows) {
 	$recipes_table = "tc_recipes";
 	
 	foreach($recipe_source_rows as $recipe_source_row) {
-		$recipe_id = $recipe_source_row[RECIPE_ID_COL];
+		$recipe_id = $recipe_source_row[RECIPE_WORKSHEET_ID_COL];
 		$recipe_source = $recipe_source_row[RECIPE_SOURCE_COL];
 
 		$sql = "
 		UPDATE $recipes_table
 		SET source = %s
-		WHERE id = %s";
+		WHERE worksheet_id = %s";
 
 		$rows_affected = $wpdb->get_results(
 			$wpdb->prepare($sql, $recipe_source, $recipe_id)

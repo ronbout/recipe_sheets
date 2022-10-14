@@ -7,7 +7,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 define('MONTH_COL', 0);
 define('RECIPE_TYPE_COL', 1);
 define('VIRGIN_ID_COL', 2);
-define('RECIPE_ID_COL', 3);
+define('RECIPE_WORKSHEET_ID_COL', 3);
 define('RECIPE_FIELD_COL', 4);
 define('RECIPE_FIELD_CNT_COL', 5);
 define('RECIPE_FIELD_STEP_COL', 6);
@@ -80,27 +80,27 @@ function update_recipe_table($recipe_rows) {
 		return ('ingredient' === $fieldname && 1 == $recipe_row[RECIPE_FIELD_STEP_COL] && $fielddesc) ;
 	});
 
-	$recipe_ids = array_column($recipe_rows, RECIPE_ID_COL);
-	$recipe_ids = array_map(function($id) {
+	$recipe_worksheet_ids = array_column($recipe_rows, RECIPE_WORKSHEET_ID_COL);
+	$recipe_worksheet_ids = array_map(function($id) {
 		return sanitize_text_field($id);
-	}, $recipe_ids);
+	}, $recipe_worksheet_ids);
 
-	echo '<h1>Count: ', count($recipe_ids), "</h1>";
+	echo '<h1>Count: ', count($recipe_worksheet_ids), "</h1>";
 	echo '<pre>';
-	print_r($recipe_ids);
+	print_r($recipe_worksheet_ids);
 	echo '</pre>';
 	// die;
 
-	return update_recipe_rows($recipe_ids);
+	return update_recipe_rows($recipe_worksheet_ids);
 }
 
  
-function update_recipe_rows($recipe_ids) {
+function update_recipe_rows($recipe_worksheet_ids) {
 	global $wpdb;
 
 	$recipes_table = "tc_recipes";
 
-	$placeholders = array_fill(0, count($recipe_ids), '%s');
+	$placeholders = array_fill(0, count($recipe_worksheet_ids), '%s');
 	$placeholders = implode(', ', $placeholders);
 	
 	$insert_values = rtrim($insert_values, ',');
@@ -108,10 +108,10 @@ function update_recipe_rows($recipe_ids) {
 	$sql = "
 		UPDATE $recipes_table
 		SET recipe_status = 'entered'
-		WHERE id in ($placeholders)";
+		WHERE worksheet_id in ($placeholders)";
 
 	$rows_affected = $wpdb->get_results(
-		$wpdb->prepare($sql, $recipe_ids)
+		$wpdb->prepare($sql, $recipe_worksheet_ids)
 	);
 	return $rows_affected;
 }

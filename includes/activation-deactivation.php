@@ -78,7 +78,8 @@ function recipe_add_recipes_table() {
 		PRIMARY KEY (`id`) USING BTREE,
 		INDEX `root_id` (`root_id`) USING BTREE,
 		INDEX `recipe_title` (`recipe_title`) USING BTREE,
-		INDEX `recipe_type` (`recipe_type`) USING BTREE
+		INDEX `recipe_type` (`recipe_type`) USING BTREE,
+		INDEX `worksheet_id` (`worksheet_id`) USING BTREE
 	)
 	COLLATE='utf8mb4_0900_ai_ci'
 	ENGINE=MyISAM
