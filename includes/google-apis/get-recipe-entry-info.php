@@ -98,7 +98,7 @@ function update_recipe_table($recipe_rows) {
 function update_recipe_rows($recipe_ids) {
 	global $wpdb;
 
-	$recipes_table = "rg_recipes";
+	$recipes_table = "tc_recipes";
 
 	$placeholders = array_fill(0, count($recipe_ids), '%s');
 	$placeholders = implode(', ', $placeholders);

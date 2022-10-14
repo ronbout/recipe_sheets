@@ -110,7 +110,7 @@ function update_recipe_table($recipe_rows) {
 function update_recipe_status($recipe_ids) {
 	global $wpdb;
 
-	$recipes_table = "rg_recipes";
+	$recipes_table = "tc_recipes";
 
 	$placeholders = array_fill(0, count($recipe_ids), '%s');
 	$placeholders = implode(', ', $placeholders);
@@ -131,7 +131,7 @@ function update_recipe_status($recipe_ids) {
 function update_recipe_source($recipe_source_rows) {
 	global $wpdb;
 
-	$recipes_table = "rg_recipes";
+	$recipes_table = "tc_recipes";
 	
 	foreach($recipe_source_rows as $recipe_source_row) {
 		$recipe_id = $recipe_source_row[RECIPE_ID_COL];

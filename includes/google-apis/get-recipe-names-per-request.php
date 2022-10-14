@@ -73,8 +73,8 @@ function getData($sheets) {
 function load_recipe_request_table($data, $dt) {
 	global $wpdb;
 
-	$recipe_requests_table = "rg_recipe_guru_requests_working";
-	$recipes_table = "rg_recipes";
+	$recipe_requests_table = "tc_recipe_requests";
+	$recipes_table = "tc_recipes";
 
 	// easiest approach for now is just delete any for this month and rebuild
 
@@ -89,7 +89,9 @@ function load_recipe_request_table($data, $dt) {
 
 	$db_result = $wpdb->query($sql);
 
-	$db_result = $wpdb->delete($recipe_requests_table, array('month_year' => $dt));
+	$sql = "DELETE FROM $recipe_requests_table WHERE 1";
+
+	$db_result = $wpdb->query($sql);
 
 	$current_vals = reset_current_vals();
 	$requests_list = array();
@@ -192,8 +194,9 @@ function update_request_and_recipes_tables($requests_list, $dt, $requests_table,
 		$recipe_count = isset($recipe_request['recipe_count']) ? $recipe_request['recipe_count'] : 0;
 		$notes = isset($recipe_request['notes']) ? $recipe_request['notes'] : '';
 
-		$insert_values = '(%s, %s, %s, %s, %s, %s, %d, %s, %s)';
+		$insert_values = '(%d, %s, %s, %s, %s, %s, %s, %d, %s, %s)';
 		$insert_parms = array();
+		$insert_parms[] = 1;
 		$insert_parms[] = $cuisine;
 		$insert_parms[] = $meal_type;
 		$insert_parms[] = $classification;
@@ -205,7 +208,7 @@ function update_request_and_recipes_tables($requests_list, $dt, $requests_table,
 		$insert_parms[] = $dt;
 
 		$sql = "INSERT into $requests_table
-					(cuisine, meal_type, classification, dietary, prep_time, equipment, recipe_count, notes, month_year)
+					(distributor_id, cuisine, meal_type, classification, dietary, prep_time, equipment, recipe_count, notes, month_year)
 				VALUES $insert_values";
 
 		$rows_affected = $wpdb->query(
@@ -243,7 +246,7 @@ function insert_recipe_rows($recipes, $request_id, $recipes_table) {
 	$insert_values = rtrim($insert_values, ',');
 	
 	$sql = "INSERT into $recipes_table
-		(id, root_id, virgin_id, recipe_title, request_id, recipe_type)
+		(worksheet_id, root_id, virgin_id, recipe_title, request_id, recipe_type)
 	VALUES $insert_values";
 
 	$rows_affected = $wpdb->query(
