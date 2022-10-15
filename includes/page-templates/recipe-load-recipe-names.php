@@ -18,7 +18,7 @@ require_once RECIPE_SHEETS_PLUGIN_INCLUDES.'page-templates/partials/recipe-head.
 		<header>Recipe Requests:</header>
 		<div>
 			<?php
-				include RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-names-per-request.php';
+				include RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-names-per-request_may_2022.php';
 			?>
 		</div>
 	</div>
