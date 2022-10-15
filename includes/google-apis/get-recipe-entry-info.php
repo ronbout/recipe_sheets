@@ -16,10 +16,18 @@ define('RECIPE_MEASURE_COL', 8);
 define('RECIPE_UNIT_COL', 9);
 define('RECIPE_NOTES_COL', 10);
 
-$working_month = '2022-06-01';
+define('MAY_WORKING_DOC_ID', '1F3DdkZv7Gq4lu-0MyM68_HBGRg8NK1-sVZbIKBnqP74');
+define('JUNE_WORKING_DOC_ID', '1XNONqFyWBN5qX-1fSt8zMZ7TMVkEsgPDb_H1OL6fc5Q');
+
+$working_month = '2022-05-01';
 
 $sheets = initializeSheets();
 $recipe_data = getData($sheets);
+
+$test_month = strtolower(date("F", strtotime($working_month)));
+$recipe_data = array_filter($recipe_data, function($row) use ($test_month) {
+	return (isset($row[MONTH_COL]) && trim(strtolower($row[MONTH_COL]) === $test_month));
+});
 
 // echo '<h1>Count: ', count($recipe_data), "</h1>";
 // echo '<pre>';
@@ -56,7 +64,7 @@ function initializeSheets()
 function getData($sheets) {
 	try{
 
-		$spreadsheetId = '1XNONqFyWBN5qX-1fSt8zMZ7TMVkEsgPDb_H1OL6fc5Q';
+		$spreadsheetId = MAY_WORKING_DOC_ID;
 		$range = 'Recipe Entry!B2:L';
 		$response = $sheets->spreadsheets_values->get($spreadsheetId, $range);
 		$recipe_rows = $response->getValues();

@@ -59,7 +59,6 @@ const Login = () => {
                 className="form-control"
                 ref={usernameRef}
                 id="username"
-                autoComplete="off"
                 onChange={(e) => setUsername(e.target.value)}
                 value={username}
                 required
