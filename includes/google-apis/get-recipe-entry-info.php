@@ -19,7 +19,7 @@ define('RECIPE_NOTES_COL', 10);
 define('MAY_WORKING_DOC_ID', '1F3DdkZv7Gq4lu-0MyM68_HBGRg8NK1-sVZbIKBnqP74');
 define('JUNE_WORKING_DOC_ID', '1XNONqFyWBN5qX-1fSt8zMZ7TMVkEsgPDb_H1OL6fc5Q');
 
-$working_month = '2022-05-01';
+$working_month = '2022-03-01';
 
 $sheets = initializeSheets();
 $recipe_data = getData($sheets);

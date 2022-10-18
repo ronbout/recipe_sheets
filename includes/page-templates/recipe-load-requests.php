@@ -18,7 +18,7 @@ require_once RECIPE_SHEETS_PLUGIN_INCLUDES.'page-templates/partials/recipe-head.
 		<header>Recipe Requests:</header>
 		<div>
 			<?php
-				include RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-requests.php';
+				include RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/build_worksheet_from_brief.php';
 			?>
 		</div>
 	</div>

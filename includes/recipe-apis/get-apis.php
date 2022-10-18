@@ -57,8 +57,8 @@ function recipe_sheets_dist_requests_api($request) {
 function recipe_sheets_get_dist_requests() {
 	global $wpdb;
 
-	$recipe_requests_file = "rg_recipe_guru_requests_working";
-	$recipes_file = "rg_recipes";
+	$recipe_requests_file = "tc_recipe_requests";
+	$recipes_file = "tc_recipes";
 
 
 	$sql = "

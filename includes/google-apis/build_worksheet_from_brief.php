@@ -12,6 +12,12 @@ define('PREP_TIME_COL', 4);
 define('EQUIPMENT_COL', 5);
 define('RECIPE_COUNT_COL', 6);
 define('NOTES_COL', 7);
+define('ROOT_ID_COL', 8);
+define('WORKSHEET_ID_COL', 9);
+define('VIRGIN_ID_COL', 10);
+define('RECIPE_TITLE_COL', 11);
+define('RECIPE_TYPE_COL', 12);
+define('MONTH_COL', 13);
 define('BRIEF_RECIPE_TITLE_COL', 8);
 define('BRIEF_VIRGIN_TITLE_COL', 9);
 define('BRIEF_VIRGIN_TITLE2_COL', 10);
@@ -19,104 +25,69 @@ define('BRIEF_WORKSHEET_ID_COL', 11);
 define('BRIEF_VIRGIN_ID_COL', 12);
 define('BRIEF_RECIPE_TYPE_COL', 13);
 
-
-// define('ROOT_ID_COL', 8);
-// define('WORKSHEET_ID_COL', 9);
-// define('VIRGIN_ID_COL', 10);
-// define('RECIPE_TITLE_COL', 11);
-// define('RECIPE_TYPE_COL', 12);
-// define('MONTH_COL', 13);
-
 define('MAY_WORKING_DOC_ID', '1F3DdkZv7Gq4lu-0MyM68_HBGRg8NK1-sVZbIKBnqP74');
-define('MAY_BRIEF_ID', '189HnWpTZDUaYRdsBwc-62sYpLu5cKv7u8Ujq9XiJ19E');
+define('TRANSFER_BRIEF_ID', '189HnWpTZDUaYRdsBwc-62sYpLu5cKv7u8Ujq9XiJ19E');
 define('JUNE_BRIEF_ID', '1XNONqFyWBN5qX-1fSt8zMZ7TMVkEsgPDb_H1OL6fc5Q');
+define('JULY_WORKSHEET_ID', '1mNnL-ltG17fCc9odp0W1sUouyGT88jBYKZKNHAq9kO8');
 
-$working_month = '2022-04-01';
-
-define('WORKSHEET_ID_COL', 0);
-define('VIRGIN_ID_COL', 1);
-define('RECIPE_TITLE_COL', 2);
-define('RECIPE_TYPE_COL', 3);
-define('MONTH_COL', 4);
-
+$working_month = '2022-07-01';
+$month_name = date("F", strtotime($working_month));
+$recipe_id_seed = 339894;
 
 $sheets = initializeSheets();
-$recipe_working_doc_data = getWorkingDocData($sheets);
 $recipe_brief_data = getBriefData($sheets);
 
-$filtered_working_doc_data = filter_working_doc_by_month($recipe_working_doc_data, $working_month);
-$filtered_working_names = array_column($filtered_working_doc_data, RECIPE_TITLE_COL);
-$recipe_cnt = 0;
-$brief_recipe_w_virgins = array_reduce($recipe_brief_data, function($list, $row) use (&$recipe_cnt, $filtered_working_doc_data) {
-	$row[BRIEF_WORKSHEET_ID_COL] = $filtered_working_doc_data[$recipe_cnt][WORKSHEET_ID_COL];
-	$row[BRIEF_VIRGIN_ID_COL] = $filtered_working_doc_data[$recipe_cnt][VIRGIN_ID_COL];
-	$row[BRIEF_RECIPE_TYPE_COL] = "WO";
-	$list[] = $row;
-	$recipe_cnt++;
+$recipe_worksheet_id = $recipe_id_seed;
+$brief_recipe_w_virgins = array_reduce($recipe_brief_data, function($list, $row) use (&$recipe_worksheet_id, $month_name) {
+	$tmp_row = array_slice($row, 0, 8);
+	$tmp_row[ROOT_ID_COL] = $recipe_worksheet_id;
+	$tmp_row[WORKSHEET_ID_COL] = $recipe_worksheet_id;
+	$tmp_row[VIRGIN_ID_COL] = "";
+	$tmp_row[RECIPE_TITLE_COL] = $row[BRIEF_RECIPE_TITLE_COL];
+	$tmp_row[RECIPE_TYPE_COL] = "WO";
+	$tmp_row[MONTH_COL] = $month_name;
+	$list[] = $tmp_row;
+	$virgin_cnt = 0;
 	if ($row[BRIEF_VIRGIN_TITLE_COL]) {
-		$tmp_row = array();
-		$tmp_row[BRIEF_RECIPE_TITLE_COL] = $row[BRIEF_VIRGIN_TITLE_COL];
-		$tmp_row[BRIEF_WORKSHEET_ID_COL] = $filtered_working_doc_data[$recipe_cnt][WORKSHEET_ID_COL];
-		$tmp_row[BRIEF_VIRGIN_ID_COL] = $filtered_working_doc_data[$recipe_cnt][VIRGIN_ID_COL];
-		$tmp_row[BRIEF_RECIPE_TYPE_COL] = "Virgin";
+		$tmp_row = array_fill(0,8,'');
+		$tmp_row[ROOT_ID_COL] = $recipe_worksheet_id;
+		$tmp_row[WORKSHEET_ID_COL] = $recipe_worksheet_id . '-v';
+		$tmp_row[VIRGIN_ID_COL] = '';
+		$tmp_row[RECIPE_TITLE_COL] = $row[BRIEF_VIRGIN_TITLE_COL];
+		$tmp_row[RECIPE_TYPE_COL] = "Virgin";
+		$tmp_row[MONTH_COL] = $month_name;
 		$list[] = $tmp_row;
 		$recipe_cnt++;
+		$virgin_cnt++;
 	}
 	if ($row[BRIEF_VIRGIN_TITLE2_COL]) {
-		$tmp_row = array();
-		$tmp_row[BRIEF_RECIPE_TITLE_COL] = $row[BRIEF_VIRGIN_TITLE2_COL];
-		$tmp_row[BRIEF_WORKSHEET_ID_COL] = $filtered_working_doc_data[$recipe_cnt][WORKSHEET_ID_COL];
-		$tmp_row[BRIEF_VIRGIN_ID_COL] = $filtered_working_doc_data[$recipe_cnt][VIRGIN_ID_COL];
-		$tmp_row[BRIEF_RECIPE_TYPE_COL] = "Virgin";
+		$w_id = $recipe_worksheet_id . '-v';
+		if ($virgin_cnt) {
+			$w_id .= '2';
+		}
+		$tmp_row = array_fill(0,8,'');
+		$tmp_row[ROOT_ID_COL] = $recipe_worksheet_id;
+		$tmp_row[WORKSHEET_ID_COL] = $w_id;
+		$tmp_row[VIRGIN_ID_COL] = '';
+		$tmp_row[RECIPE_TITLE_COL] = $row[BRIEF_VIRGIN_TITLE2_COL];
+		$tmp_row[RECIPE_TYPE_COL] = "Virgin";
+		$tmp_row[MONTH_COL] = $month_name;
 		$list[] = $tmp_row;
-		$recipe_cnt++;
+		$virgin_cnt++;
 	}
+	$recipe_worksheet_id++;
 	return $list;
 }, []);
 
-$comp_working_list = array_map(function($name) {
-	return strtolower(trim($name));
-}, $filtered_working_names);
+$response = create_worksheet_recipe_list($sheets, $brief_recipe_w_virgins);
 
-$brief_recipe_names = array_column($brief_recipe_w_virgins, BRIEF_RECIPE_TITLE_COL);
-
-$comp_brief_list = array_map(function($name) {
-	return strtolower(trim($name));
-}, $brief_recipe_names);
-
-$diff_list1 = array_diff($comp_working_list, $comp_brief_list);
-$diff_list2 = array_diff($comp_brief_list, $comp_working_list);
-
-// echo "<h2>Count: ", count($filtered_working_doc_data), "</h2>";
-// echo "<pre>";
-// print_r($filtered_working_doc_data);
-// echo "</pre>";
-// die;
-
-// echo '<h1>Brief Row Count: ', count($brief_recipe_w_virgins), "</h1>";
-// echo "<pre>";
-// print_r($brief_recipe_w_virgins);
-// echo "</pre>";
-// die;
-
-// echo '<h1>Working Doc Row Count: ', count($filtered_working_names), "</h1>";
-// echo '<h1>Brief Row Count: ', count($brief_recipe_names), "</h1>";
-echo '<h1>diff 1 (working only): ', count($diff_list1), "</h1>";
-
+echo "<h1>", $response->getUpdatedCells() , "Updated</h1>";
 echo "<pre>";
-print_r($diff_list1);
+print_r($brief_recipe_w_virgins);
 echo "</pre>";
-
-echo '<h1>diff 2 (brief only): ', count($diff_list2), "</h1>";
-
-echo "<pre>";
-print_r($diff_list2);
-echo "</pre>";
-
-echo '<h1>Intersect Row Count: ', count(array_intersect($comp_working_list, $comp_brief_list)), "</h1>";
 die;
 
-load_recipe_request_table($brief_recipe_w_virgins, $working_month);
+// load_recipe_request_table($brief_recipe_w_virgins, $working_month);
 
 /**
  * Initializes an Analytics Reporting API V4 service object.
@@ -141,11 +112,10 @@ function initializeSheets()
 	return $sheets;
 }
 
-
-function getWorkingDocData($sheets) {
+function getBriefData($sheets) {
 	try{
-			$spreadsheetId = MAY_WORKING_DOC_ID;
-			$range = 'Recipe List!K2:O';
+			$spreadsheetId = TRANSFER_BRIEF_ID;
+			$range = 'July 2022!B4:L';
 			$response = $sheets->spreadsheets_values->get($spreadsheetId, $range);
 			$values = $response->getValues();
 			return $values;
@@ -156,18 +126,28 @@ function getWorkingDocData($sheets) {
 		}
 }
 
-function getBriefData($sheets) {
+function create_worksheet_recipe_list($sheets, $brief_recipe_w_virgins) {
 	try{
-			$spreadsheetId = MAY_BRIEF_ID;
-			$range = 'April 2022!B4:L';
-			$response = $sheets->spreadsheets_values->get($spreadsheetId, $range);
-			$values = $response->getValues();
-			return $values;
-		}
-		catch(Exception $e) {
-			// TODO(developer) - handle error appropriately
-			echo 'Message: ' .$e->getMessage();
-		}
+		$spreadsheetId = JULY_WORKSHEET_ID;
+		$range = 'Recipe List!B2';
+		$body = new Google_Service_Sheets_ValueRange(['values' => $brief_recipe_w_virgins]);
+		// $values = [["sample", 'values']];
+		// echo "<pre>";
+		// print_r($values);
+		// echo "</pre>";
+
+		// $body = new Google_Service_Sheets_ValueRange([
+		// 		'values' => $values
+		// ]);
+		$params = ['valueInputOption' => 'RAW'];
+		$response = $sheets->spreadsheets_values->update($spreadsheetId, $range,
+		$body, $params);
+		return $response;
+	}
+	catch(Exception $e) {
+		// TODO(developer) - handle error appropriately
+		echo 'Message: ' .$e->getMessage();
+	}
 }
 
 function load_recipe_request_table($data, $dt) {
