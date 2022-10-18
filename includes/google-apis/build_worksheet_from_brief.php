@@ -65,8 +65,11 @@ $sheets = initializeSheets();
 $recipe_brief_data = getBriefData($sheets);
 
 $recipe_worksheet_id = $recipe_id_seed;
+$recipe_cnt = 0;
 $recipe_entry_page = array();
-$brief_recipe_w_virgins = array_reduce($recipe_brief_data, function($list, $row) use (&$recipe_worksheet_id, &$recipe_entry_page, $month_name) {
+$support_data_page = array();
+$brief_recipe_w_virgins = array_reduce($recipe_brief_data, function($list, $row) 
+			use (&$recipe_worksheet_id, &$recipe_entry_page, &$support_data_page, $month_name) {
 	$tmp_row = array_slice($row, 0, 8);
 	$tmp_row[ROOT_ID_COL] = $recipe_worksheet_id;
 	$tmp_row[WORKSHEET_ID_COL] = $recipe_worksheet_id;
@@ -76,6 +79,8 @@ $brief_recipe_w_virgins = array_reduce($recipe_brief_data, function($list, $row)
 	$tmp_row[MONTH_COL] = $month_name;
 	$recipe_entry = build_single_recipe_entry($recipe_worksheet_id, $month_name, "WO", '', $recipe_worksheet_id, $tmp_row[RECIPE_TITLE_COL] ); 
 	$recipe_entry_page = array_merge($recipe_entry_page, $recipe_entry);
+	$recipe_cnt++;
+	$support_data_page[] = build_support_data_row($tmp_row[WORKSHEET_ID_COL], $month_name, $recipe_cnt);
 	$list[] = $tmp_row;
 	$virgin_cnt = 0;
 	if ($row[BRIEF_VIRGIN_TITLE_COL]) {
@@ -88,8 +93,9 @@ $brief_recipe_w_virgins = array_reduce($recipe_brief_data, function($list, $row)
 		$tmp_row[MONTH_COL] = $month_name;
 		$recipe_entry = build_single_recipe_entry($recipe_worksheet_id, $month_name, "Virgin", 1, $tmp_row[WORKSHEET_ID_COL], $tmp_row[RECIPE_TITLE_COL] ); 
 		$recipe_entry_page = array_merge($recipe_entry_page, $recipe_entry);
-		$list[] = $tmp_row;
 		$recipe_cnt++;
+		$support_data_page[] = build_support_data_row($tmp_row[WORKSHEET_ID_COL], $month_name, $recipe_cnt);
+		$list[] = $tmp_row;
 		$virgin_cnt++;
 	}
 	if ($row[BRIEF_VIRGIN_TITLE2_COL]) {
@@ -106,6 +112,8 @@ $brief_recipe_w_virgins = array_reduce($recipe_brief_data, function($list, $row)
 		$tmp_row[MONTH_COL] = $month_name;
 		$recipe_entry = build_single_recipe_entry($recipe_worksheet_id, $month_name, "Virgin", $virgin_cnt + 1, $tmp_row[WORKSHEET_ID_COL], $tmp_row[RECIPE_TITLE_COL] ); 
 		$recipe_entry_page = array_merge($recipe_entry_page, $recipe_entry);
+		$recipe_cnt++;
+		$support_data_page[] = build_support_data_row($tmp_row[WORKSHEET_ID_COL], $month_name, $recipe_cnt);
 		$list[] = $tmp_row;
 		$virgin_cnt++;
 	}
@@ -113,19 +121,26 @@ $brief_recipe_w_virgins = array_reduce($recipe_brief_data, function($list, $row)
 	return $list;
 }, []);
 
-$response = create_worksheet_recipe_list($sheets, $brief_recipe_w_virgins);
+// $response = create_worksheet_recipe_list($sheets, $brief_recipe_w_virgins);
 
-echo "<h1>", $response->getUpdatedCells() , " Recipe List Cells Updated</h1>";
+// echo "<h1>", $response->getUpdatedCells() , " Recipe List Cells Updated</h1>";
 // echo "<pre>";
 // print_r($brief_recipe_w_virgins);
 // echo "</pre>";
 
-$response2 = create_worksheet_recipe_entry($sheets, $recipe_entry_page);
+// $response2 = create_worksheet_recipe_entry($sheets, $recipe_entry_page);
 
-echo "<h1>", $response2->getUpdatedCells() , " Recipe Entry Cells Updated</h1>";
+// echo "<h1>", $response2->getUpdatedCells() , " Recipe Entry Cells Updated</h1>";
 // echo "<pre>";
 // print_r($recipe_entry_page);
 // echo "</pre>";
+
+$response3 = create_worksheet_support_data($sheets, $support_data_page);
+
+echo "<h1>", $response3->getUpdatedCells() , " Support Data Cells Updated</h1>";
+echo "<pre>";
+print_r($support_data_page);
+echo "</pre>";
 die;
 
 // load_recipe_request_table($brief_recipe_w_virgins, $working_month);
@@ -135,8 +150,7 @@ die;
  *
  * @return An authorized Analytics Reporting API V4 service object.
  */
-function initializeSheets()
-{
+function initializeSheets() {
 
 	// Use the developers console and download your service account
 	// credentials in JSON format. Place them in this directory or
@@ -195,19 +209,17 @@ function build_single_recipe_entry($root_id, $month, $rtype, $vcnt, $worksheet_i
 
 }
 
+function build_support_data_row($worksheet_id, $month, $recipe_cnt) {
+	return array($recipe_cnt, $worksheet_id, $month);
+}
+
+
 function create_worksheet_recipe_list($sheets, $brief_recipe_w_virgins) {
 	try{
 		$spreadsheetId = JULY_WORKSHEET_ID;
 		$range = 'Recipe List!B2';
 		$body = new Google_Service_Sheets_ValueRange(['values' => $brief_recipe_w_virgins]);
-		// $values = [["sample", 'values']];
-		// echo "<pre>";
-		// print_r($values);
-		// echo "</pre>";
 
-		// $body = new Google_Service_Sheets_ValueRange([
-		// 		'values' => $values
-		// ]);
 		$params = ['valueInputOption' => 'RAW'];
 		$response = $sheets->spreadsheets_values->update($spreadsheetId, $range,
 		$body, $params);
@@ -224,14 +236,24 @@ function create_worksheet_recipe_entry($sheets, $recipe_entry_page) {
 		$spreadsheetId = JULY_WORKSHEET_ID;
 		$range = 'Recipe Entry!A2';
 		$body = new Google_Service_Sheets_ValueRange(['values' => $recipe_entry_page]);
-		// $values = [["sample", 'values']];
-		// echo "<pre>";
-		// print_r($values);
-		// echo "</pre>";
 
-		// $body = new Google_Service_Sheets_ValueRange([
-		// 		'values' => $values
-		// ]);
+		$params = ['valueInputOption' => 'RAW'];
+		$response = $sheets->spreadsheets_values->update($spreadsheetId, $range,
+		$body, $params);
+		return $response;
+	}
+	catch(Exception $e) {
+		// TODO(developer) - handle error appropriately
+		echo 'Message: ' .$e->getMessage();
+	}
+}
+
+function create_worksheet_support_data($sheets, $support_data_page) {
+	try{
+		$spreadsheetId = JULY_WORKSHEET_ID;
+		$range = 'Support Data!A2';
+		$body = new Google_Service_Sheets_ValueRange(['values' => $support_data_page]);
+
 		$params = ['valueInputOption' => 'RAW'];
 		$response = $sheets->spreadsheets_values->update($spreadsheetId, $range,
 		$body, $params);
