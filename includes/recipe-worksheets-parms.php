@@ -23,6 +23,7 @@ define('MONTH_COL', 4);
 
 define('MARCH_MAY_WORKING_DOC_ID', '1F3DdkZv7Gq4lu-0MyM68_HBGRg8NK1-sVZbIKBnqP74');
 define('JUNE_WORKING_DOC_ID', '1XNONqFyWBN5qX-1fSt8zMZ7TMVkEsgPDb_H1OL6fc5Q');
+define('JULY_WORKING_DOC_ID', '1mNnL-ltG17fCc9odp0W1sUouyGT88jBYKZKNHAq9kO8');
 define('BRIEF_ID', '189HnWpTZDUaYRdsBwc-62sYpLu5cKv7u8Ujq9XiJ19E');
 
 $recipe_worksheets_parms = array(
@@ -52,6 +53,13 @@ $recipe_worksheets_parms = array(
 		'brief_doc_id' => BRIEF_ID,
 		'brief_sheet_name' => 'June 2022',
 		'month_display' => 'June',
+		'virgin_columns' => 2,
+	),
+	'2022-07-01' => array( 
+		'worksheet_doc_id' => JULY_WORKING_DOC_ID,
+		'brief_doc_id' => BRIEF_ID,
+		'brief_sheet_name' => 'July 2022',
+		'month_display' => 'July',
 		'virgin_columns' => 2,
 	),
 );

@@ -121,16 +121,16 @@ $brief_recipe_w_virgins = array_reduce($recipe_brief_data, function($list, $row)
 	return $list;
 }, []);
 
-// $response = create_worksheet_recipe_list($sheets, $brief_recipe_w_virgins);
+$response = create_worksheet_recipe_list($sheets, $brief_recipe_w_virgins);
 
-// echo "<h1>", $response->getUpdatedCells() , " Recipe List Cells Updated</h1>";
+echo "<h1>", $response->getUpdatedCells() , " Recipe List Cells Updated</h1>";
 // echo "<pre>";
 // print_r($brief_recipe_w_virgins);
 // echo "</pre>";
 
-// $response2 = create_worksheet_recipe_entry($sheets, $recipe_entry_page);
+$response2 = create_worksheet_recipe_entry($sheets, $recipe_entry_page);
 
-// echo "<h1>", $response2->getUpdatedCells() , " Recipe Entry Cells Updated</h1>";
+echo "<h1>", $response2->getUpdatedCells() , " Recipe Entry Cells Updated</h1>";
 // echo "<pre>";
 // print_r($recipe_entry_page);
 // echo "</pre>";
