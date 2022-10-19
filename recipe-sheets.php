@@ -21,6 +21,7 @@ define('RECIPE_SHEETS_PLUGIN_BUILD_URL', RECIPE_SHEETS_PLUGIN_URL.'build');
 require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'functions.php';
 require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'react-setup.php';
 require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'recipe-apis/get-apis.php';
+require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'ajax/ajax-functions.php';
 
 // we use GROUP_CONCAT in a number of instances.  To ensure that the
 // size of that field is always large enough, change it at the session level.
@@ -34,31 +35,15 @@ register_activation_hook( __FILE__, 'recipe_sheets_activation' );
 register_deactivation_hook( __FILE__, 'recipe_sheets_deactivation' );
 
 // set up page templates
-function recipes_add_react_recipe_template ($templates) {
-	$templates['recipe-status.php'] = 'Recipe Status';
-	$templates['recipe-load-requests.php'] = 'Recipe Load Requests';
-	$templates['recipe-load-recipe-names.php'] = 'Recipe Load Names';
-	$templates['recipe-load-recipe-entry.php'] = 'Recipe Load Entry Info';
-	$templates['recipe-load-recipe-status.php'] = 'Recipe Load Status';
+function recipes_add_recipe_template ($templates) {
+	$templates['recipe-load-sheets-data.php'] = 'Load Recipe Sheets Data';
 	return $templates;
 	}
-add_filter ('theme_page_templates', 'recipes_add_react_recipe_template');
+add_filter ('theme_page_templates', 'recipes_add_recipe_template');
 
 function recipes_redirect_page_template ($template) {
-	if (is_page_template('recipe-status.php')) {
-		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-status.php';
-	}
-	if (is_page_template('recipe-load-requests.php')) {
-		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-load-requests.php';
-	}
-	if (is_page_template('recipe-load-recipe-names.php')) {
-		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-load-recipe-names.php';
-	}
-	if (is_page_template('recipe-load-recipe-entry.php')) {
-		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-load-recipe-entry.php';
-	}
-	if (is_page_template('recipe-load-recipe-status.php')) {
-		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-load-recipe-status.php';
+	if (is_page_template('recipe-load-sheets-data.php')) {
+		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-load-sheets-data.php';
 	}
 	return $template;
 }

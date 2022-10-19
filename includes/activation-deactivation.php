@@ -30,6 +30,25 @@ function recipe_add_recipe_distributors_table() {
 	dbDelta($sql);
 }
 
+function recipe_add_recipe_types_table() {
+	global $wpdb;
+
+	$sql = "
+	CREATE TABLE IF NOT EXISTS `tc_recipe_types` (
+		`id` CHAR(50) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`description` CHAR(120) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`next_recipe_id` BIGINT(19) NULL DEFAULT NULL,
+		PRIMARY KEY (`id`) USING BTREE
+	)
+	COLLATE='utf8mb4_0900_ai_ci'
+	ENGINE=MyISAM
+	;
+	";
+
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta($sql);
+}
+
 function recipe_add_recipe_requests_table() {
 	global $wpdb;
 
@@ -67,7 +86,7 @@ function recipe_add_recipes_table() {
 		`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 		`worksheet_id` CHAR(50) NOT NULL DEFAULT '0' COLLATE 'utf8mb4_0900_ai_ci',
 		`root_id` CHAR(12) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
-		`virgin_id` TINYINT(3) UNSIGNED NULL DEFAULT NULL,
+		`client_id` TINYINT(3) UNSIGNED NULL DEFAULT NULL,
 		`author_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT '1',
 		`recipe_title` VARCHAR(80) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`request_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
@@ -102,11 +121,32 @@ function recipe_insert_distributor() {
 	$wpdb->query($sql);
 }
 
+function recipe_insert_types() {
+	global $wpdb;
+
+	$sql = "
+		INSERT INTO tc_recipe_types
+		(id, description)
+		VALUES 
+			('WO', 'Wholly Owned'),
+			('Virgin', 'Virgin'),
+			('New', 'Unattached')
+	";
+
+	$wpdb->query($sql);
+}
+
 function recipe_sheets_activation() {
 
 	recipe_add_recipe_roles();
 
 	recipe_add_recipe_distributors_table();
+	
+	recipe_insert_distributor();
+
+	recipe_add_recipe_types_table();
+
+	recipe_insert_types();
 	
 	recipe_add_recipe_requests_table();
 	
