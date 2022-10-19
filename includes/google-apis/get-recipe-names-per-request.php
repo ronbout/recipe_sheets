@@ -6,6 +6,8 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 function import_recipe_requests_and_names($working_month, $month_info) {
 
+	$test_month = strtolower(date("F", strtotime($working_month)));
+	echo "<h2>Request / Recipes Month: ", $test_month, "</h2>";
 	$sheets = initializeSheets();
 	$recipe_working_doc_data = getWorkingDocData($sheets, $month_info['worksheet_doc_id']);
 	$recipe_brief_data = getBriefData($sheets, $month_info['brief_doc_id'], $month_info['brief_sheet_name']);
@@ -87,31 +89,6 @@ function import_recipe_requests_and_names($working_month, $month_info) {
 	load_recipe_request_table($brief_recipe_w_virgins, $working_month);
 }
 
-
-/**
- * Initializes an Analytics Reporting API V4 service object.
- *
- * @return An authorized Analytics Reporting API V4 service object.
- */
-function initializeSheets()
-{
-
-	// Use the developers console and download your service account
-	// credentials in JSON format. Place them in this directory or
-	// change the key file location if necessary.
-	$KEY_FILE_LOCATION = __DIR__ . '/credentials.json';
-
-	// Create and configure a new client object.
-	$client = new Google_Client();
-	$client->setApplicationName("Google Sheets");
-	$client->setAuthConfig($KEY_FILE_LOCATION);
-	$client->setScopes(['https://www.googleapis.com/auth/spreadsheets']);
-	$sheets = new Google\Service\Sheets($client);
-
-	return $sheets;
-}
-
-
 function getWorkingDocData($sheets, $sheet_id) {
 	try{
 			$spreadsheetId = $sheet_id;
@@ -191,7 +168,6 @@ function load_recipe_request_table($data, $dt) {
 
 function filter_working_doc_by_month($data, $dt) {
 	$test_month = strtolower(date("F", strtotime($dt)));
-	echo "<h2>Month: ", $test_month, "</h2>";
 	$filtered_data = array_filter($data, function($row) use ($test_month) {
 		return (isset($row[MONTH_COL]) && strtolower($row[MONTH_COL]) === $test_month);
 	});

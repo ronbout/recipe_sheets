@@ -5,6 +5,8 @@ defined('ABSPATH') or die('Direct script access disallowed.');
 function import_recipe_sheets_data_all() {
 	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'recipe-worksheets-parms.php';
 	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-names-per-request.php';
+	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-entry-status.php';
+	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-printed-status.php';
 	echo "<h2>Import Data</h2>";
 
 	clear_tables();
@@ -21,8 +23,20 @@ function import_recipe_sheets_data_all() {
 	}
 
 	// load recipe entry status for each month
-
+	foreach($recipe_worksheets_parms as $month => $month_data) {
+		// if ('2022-04-01' == $month) {
+		// 	import_recipe_entry_status($month, $month_data);
+		// }
+		import_recipe_entry_status($month, $month_data);
+	}
+	
 	// load recipe printed status for each month
+	foreach($recipe_worksheets_parms as $month => $month_data) {
+		// if ('2022-04-01' == $month) {
+		// 	import_recipe_printed_status($month, $month_data);
+		// }
+		import_recipe_printed_status($month, $month_data);
+	}
 
 	// TODO: load photographed status for each month 
 

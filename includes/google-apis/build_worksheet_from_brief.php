@@ -59,7 +59,7 @@ $recipe_entry_fields = array(
 
 $working_month = '2022-07-01';
 $month_name = date("F", strtotime($working_month));
-$recipe_id_seed = 339894;
+$recipe_id_seed = 340200;
 
 $sheets = initializeSheets();
 $recipe_brief_data = getBriefData($sheets);
@@ -69,7 +69,7 @@ $recipe_cnt = 0;
 $recipe_entry_page = array();
 $support_data_page = array();
 $brief_recipe_w_virgins = array_reduce($recipe_brief_data, function($list, $row) 
-			use (&$recipe_worksheet_id, &$recipe_entry_page, &$support_data_page, $month_name) {
+			use (&$recipe_worksheet_id, &$recipe_entry_page, &$recipe_cnt, &$support_data_page, $month_name) {
 	$tmp_row = array_slice($row, 0, 8);
 	$tmp_row[ROOT_ID_COL] = $recipe_worksheet_id;
 	$tmp_row[WORKSHEET_ID_COL] = $recipe_worksheet_id;
