@@ -4,119 +4,89 @@
 // and access <<MONTH>>  Working Document
 require_once __DIR__ . '/vendor/autoload.php';
 
-define('CUISINE_COL', 0);
-define('MEAL_TYPE_COL', 1);
-define('CLASS_COL', 2);
-define('DIETARY_COL', 3);
-define('PREP_TIME_COL', 4);
-define('EQUIPMENT_COL', 5);
-define('RECIPE_COUNT_COL', 6);
-define('NOTES_COL', 7);
-define('BRIEF_RECIPE_TITLE_COL', 8);
-define('BRIEF_VIRGIN_TITLE_COL', 9);
-define('BRIEF_VIRGIN_TITLE2_COL', 10);
-define('BRIEF_WORKSHEET_ID_COL', 11);
-define('BRIEF_VIRGIN_ID_COL', 12);
-define('BRIEF_RECIPE_TYPE_COL', 13);
+function import_recipe_requests_and_names($working_month, $month_info) {
 
-
-// define('ROOT_ID_COL', 8);
-// define('WORKSHEET_ID_COL', 9);
-// define('VIRGIN_ID_COL', 10);
-// define('RECIPE_TITLE_COL', 11);
-// define('RECIPE_TYPE_COL', 12);
-// define('MONTH_COL', 13);
-
-define('MAY_WORKING_DOC_ID', '1F3DdkZv7Gq4lu-0MyM68_HBGRg8NK1-sVZbIKBnqP74');
-define('MAY_BRIEF_ID', '189HnWpTZDUaYRdsBwc-62sYpLu5cKv7u8Ujq9XiJ19E');
-define('JUNE_BRIEF_ID', '1XNONqFyWBN5qX-1fSt8zMZ7TMVkEsgPDb_H1OL6fc5Q');
-
-$working_month = '2022-04-01';
-
-define('WORKSHEET_ID_COL', 0);
-define('VIRGIN_ID_COL', 1);
-define('RECIPE_TITLE_COL', 2);
-define('RECIPE_TYPE_COL', 3);
-define('MONTH_COL', 4);
-
-
-$sheets = initializeSheets();
-$recipe_working_doc_data = getWorkingDocData($sheets);
-$recipe_brief_data = getBriefData($sheets);
-
-$filtered_working_doc_data = filter_working_doc_by_month($recipe_working_doc_data, $working_month);
-$filtered_working_names = array_column($filtered_working_doc_data, RECIPE_TITLE_COL);
-$recipe_cnt = 0;
-$brief_recipe_w_virgins = array_reduce($recipe_brief_data, function($list, $row) use (&$recipe_cnt, $filtered_working_doc_data) {
-	$row[BRIEF_WORKSHEET_ID_COL] = $filtered_working_doc_data[$recipe_cnt][WORKSHEET_ID_COL];
-	$row[BRIEF_VIRGIN_ID_COL] = $filtered_working_doc_data[$recipe_cnt][VIRGIN_ID_COL];
-	$row[BRIEF_RECIPE_TYPE_COL] = "WO";
-	$list[] = $row;
-	$recipe_cnt++;
-	if ($row[BRIEF_VIRGIN_TITLE_COL]) {
-		$tmp_row = array();
-		$tmp_row[BRIEF_RECIPE_TITLE_COL] = $row[BRIEF_VIRGIN_TITLE_COL];
-		$tmp_row[BRIEF_WORKSHEET_ID_COL] = $filtered_working_doc_data[$recipe_cnt][WORKSHEET_ID_COL];
-		$tmp_row[BRIEF_VIRGIN_ID_COL] = $filtered_working_doc_data[$recipe_cnt][VIRGIN_ID_COL];
-		$tmp_row[BRIEF_RECIPE_TYPE_COL] = "Virgin";
-		$list[] = $tmp_row;
+	$sheets = initializeSheets();
+	$recipe_working_doc_data = getWorkingDocData($sheets, $month_info['worksheet_doc_id']);
+	$recipe_brief_data = getBriefData($sheets, $month_info['brief_doc_id'], $month_info['brief_sheet_name']);
+	
+	$filtered_working_doc_data = filter_working_doc_by_month($recipe_working_doc_data, $working_month);
+	$filtered_working_names = array_column($filtered_working_doc_data, RECIPE_TITLE_COL);
+	$recipe_cnt = 0;
+	$brief_recipe_w_virgins = array_reduce($recipe_brief_data, function($list, $row) use (&$recipe_cnt, $filtered_working_doc_data) {
+		$row[BRIEF_WORKSHEET_ID_COL] = $filtered_working_doc_data[$recipe_cnt][WORKSHEET_ID_COL];
+		$row[BRIEF_VIRGIN_ID_COL] = $row[BRIEF_WORKSHEET_ID_COL];
+		$row[BRIEF_RECIPE_TYPE_COL] = "WO";
+		$list[] = $row;
 		$recipe_cnt++;
+		if ($row[BRIEF_VIRGIN_TITLE_COL]) {
+			$tmp_row = array();
+			$tmp_row[BRIEF_RECIPE_TITLE_COL] = $row[BRIEF_VIRGIN_TITLE_COL];
+			$tmp_row[BRIEF_WORKSHEET_ID_COL] = $filtered_working_doc_data[$recipe_cnt][WORKSHEET_ID_COL];
+			$tmp_row[BRIEF_VIRGIN_ID_COL] = $filtered_working_doc_data[$recipe_cnt][VIRGIN_ID_COL];
+			$tmp_row[BRIEF_RECIPE_TYPE_COL] = "Virgin";
+			$list[] = $tmp_row;
+			$recipe_cnt++;
+		}
+		if ($row[BRIEF_VIRGIN_TITLE2_COL]) {
+			$tmp_row = array();
+			$tmp_row[BRIEF_RECIPE_TITLE_COL] = $row[BRIEF_VIRGIN_TITLE2_COL];
+			$tmp_row[BRIEF_WORKSHEET_ID_COL] = $filtered_working_doc_data[$recipe_cnt][WORKSHEET_ID_COL];
+			$tmp_row[BRIEF_VIRGIN_ID_COL] = $filtered_working_doc_data[$recipe_cnt][VIRGIN_ID_COL];
+			$tmp_row[BRIEF_RECIPE_TYPE_COL] = "Virgin";
+			$list[] = $tmp_row;
+			$recipe_cnt++;
+		}
+		return $list;
+	}, []);
+	
+	$comp_working_list = array_map(function($name) {
+		return strtolower(trim($name));
+	}, $filtered_working_names);
+	
+	$brief_recipe_names = array_column($brief_recipe_w_virgins, BRIEF_RECIPE_TITLE_COL);
+	
+	$comp_brief_list = array_map(function($name) {
+		return strtolower(trim($name));
+	}, $brief_recipe_names);
+	
+	$diff_list1 = array_diff($comp_working_list, $comp_brief_list);
+	$diff_list2 = array_diff($comp_brief_list, $comp_working_list);
+	
+	echo "<h3>Working Doc Row Count: ", count($filtered_working_names), "</h3>";
+	echo "<h3>Brief Row Count: ", count($brief_recipe_names), "</h3>";
+	echo "<h3>Working Doc Row Count: ", count($comp_working_list), "</h3>";
+	echo "<h3>Brief Row Count: ", count($comp_brief_list), "</h3>";
+	echo "<br />";
+
+	if (count($diff_list1) || count($diff_list2) || count($comp_working_list) !== count($comp_brief_list)) {
+		echo "<h1>Month: $working_month</h1>"; 
+		echo '<h1>diff 1 (working only): ', count($diff_list1), "</h1>";
+	
+		echo "<pre>";
+		print_r($diff_list1);
+		echo "</pre>";
+		
+		echo '<h1>diff 2 (brief only): ', count($diff_list2), "</h1>";
+		
+		echo "<pre>";
+		print_r($diff_list2);
+		echo "</pre>";
+		echo "<pre>";
+		print_r($comp_working_list);
+		echo "</pre>";
+		echo "<pre>";
+		print_r($comp_brief_list);
+		echo "</pre>";
+		
+		echo '<h1>Intersect Row Count: ', count(array_intersect($comp_working_list, $comp_brief_list)), "</h1>";
+		die;
 	}
-	if ($row[BRIEF_VIRGIN_TITLE2_COL]) {
-		$tmp_row = array();
-		$tmp_row[BRIEF_RECIPE_TITLE_COL] = $row[BRIEF_VIRGIN_TITLE2_COL];
-		$tmp_row[BRIEF_WORKSHEET_ID_COL] = $filtered_working_doc_data[$recipe_cnt][WORKSHEET_ID_COL];
-		$tmp_row[BRIEF_VIRGIN_ID_COL] = $filtered_working_doc_data[$recipe_cnt][VIRGIN_ID_COL];
-		$tmp_row[BRIEF_RECIPE_TYPE_COL] = "Virgin";
-		$list[] = $tmp_row;
-		$recipe_cnt++;
-	}
-	return $list;
-}, []);
 
-$comp_working_list = array_map(function($name) {
-	return strtolower(trim($name));
-}, $filtered_working_names);
+	
+	load_recipe_request_table($brief_recipe_w_virgins, $working_month);
+}
 
-$brief_recipe_names = array_column($brief_recipe_w_virgins, BRIEF_RECIPE_TITLE_COL);
-
-$comp_brief_list = array_map(function($name) {
-	return strtolower(trim($name));
-}, $brief_recipe_names);
-
-$diff_list1 = array_diff($comp_working_list, $comp_brief_list);
-$diff_list2 = array_diff($comp_brief_list, $comp_working_list);
-
-// echo "<h2>Count: ", count($filtered_working_doc_data), "</h2>";
-// echo "<pre>";
-// print_r($filtered_working_doc_data);
-// echo "</pre>";
-// die;
-
-// echo '<h1>Brief Row Count: ', count($brief_recipe_w_virgins), "</h1>";
-// echo "<pre>";
-// print_r($brief_recipe_w_virgins);
-// echo "</pre>";
-// die;
-
-// echo '<h1>Working Doc Row Count: ', count($filtered_working_names), "</h1>";
-// echo '<h1>Brief Row Count: ', count($brief_recipe_names), "</h1>";
-echo '<h1>diff 1 (working only): ', count($diff_list1), "</h1>";
-
-echo "<pre>";
-print_r($diff_list1);
-echo "</pre>";
-
-echo '<h1>diff 2 (brief only): ', count($diff_list2), "</h1>";
-
-echo "<pre>";
-print_r($diff_list2);
-echo "</pre>";
-
-echo '<h1>Intersect Row Count: ', count(array_intersect($comp_working_list, $comp_brief_list)), "</h1>";
-die;
-
-load_recipe_request_table($brief_recipe_w_virgins, $working_month);
 
 /**
  * Initializes an Analytics Reporting API V4 service object.
@@ -142,9 +112,9 @@ function initializeSheets()
 }
 
 
-function getWorkingDocData($sheets) {
+function getWorkingDocData($sheets, $sheet_id) {
 	try{
-			$spreadsheetId = MAY_WORKING_DOC_ID;
+			$spreadsheetId = $sheet_id;
 			$range = 'Recipe List!K2:O';
 			$response = $sheets->spreadsheets_values->get($spreadsheetId, $range);
 			$values = $response->getValues();
@@ -156,10 +126,10 @@ function getWorkingDocData($sheets) {
 		}
 }
 
-function getBriefData($sheets) {
+function getBriefData($sheets, $sheet_id, $sheet_name) {
 	try{
-			$spreadsheetId = MAY_BRIEF_ID;
-			$range = 'April 2022!B4:L';
+			$spreadsheetId = $sheet_id;
+			$range = "$sheet_name!B4:L";
 			$response = $sheets->spreadsheets_values->get($spreadsheetId, $range);
 			$values = $response->getValues();
 			return $values;
@@ -175,24 +145,6 @@ function load_recipe_request_table($data, $dt) {
 
 	$recipe_requests_table = "tc_recipe_requests";
 	$recipes_table = "tc_recipes";
-
-	// easiest approach for now is just delete any for this month and rebuild
-
-	$sql = "
-		DELETE rec FROM $recipes_table rec 
-		JOIN $recipe_requests_table req ON req.id = rec.request_id
-		AND req.month_year = '$dt'
-		";
-	// 	AND req.month_year = %s
-	// ";
-
-	$sql = $wpdb->prepare($sql);
-
-	$db_result = $wpdb->query($sql);
-
-	$sql = "DELETE FROM $recipe_requests_table WHERE month_year = '$dt'";
-
-	$db_result = $wpdb->query($sql);
 
 	$current_vals = reset_current_vals();
 	$requests_list = array();
@@ -349,6 +301,8 @@ function insert_recipe_rows($recipes, $request_id, $recipes_table) {
 		$recipe_title = $recipe_info['recipe_title'];
 		$recipe_type = $recipe_info['recipe_type'];
 
+		$db_request_id = "WO" === $recipe_type ? request_id : 'makenull';
+
 		$insert_values .= '(%s, %s, %d, %s, %d, %s),';
 		$insert_parms[] = $recipe_id;
 		$insert_parms[] = $root_id;
@@ -362,11 +316,12 @@ function insert_recipe_rows($recipes, $request_id, $recipes_table) {
 	$insert_values = rtrim($insert_values, ',');
 	
 	$sql = "INSERT into $recipes_table
-		(worksheet_id, root_id, virgin_id, recipe_title, request_id, recipe_type)
+		(worksheet_id, root_id, client_id, recipe_title, request_id, recipe_type)
 	VALUES $insert_values";
 
-	$rows_affected = $wpdb->query(
-		$wpdb->prepare($sql, $insert_parms)
-	);
+	$prepared_sql = $wpdb->prepare($sql, $insert_parms);
+	$prepared_sql = str_replace("makenull",'NULL', $prepared_sql);
+
+	$rows_affected = $wpdb->query($prepared_sql);
 	return true;
 }

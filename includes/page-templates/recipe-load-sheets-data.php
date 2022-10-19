@@ -37,7 +37,7 @@ defined('ABSPATH') or die('Direct script access disallowed.');
 		#results {
 			width: 500px;
 			margin: auto;
-			height: 400px;
+			min-height: 400px;
 			border: 2px solid black;
 		}
 	</style>
