@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { fetchLogin } from "../assets/js/dataFetch";
-import { UserContext } from "./context/UserProvider";
+import { fetchLogin } from "../../assets/js/dataFetch";
+import { UserContext } from "../context/UserProvider";
 
 const Login = () => {
   const { userState, handleLogin } = useContext(UserContext);
@@ -46,14 +46,18 @@ const Login = () => {
           <p>Email: {user.user_email}</p>
         </section>
       ) : (
-        <section className="mt-5 mx-auto w-50">
+        <section className="login-form">
           {errMsg && <p ref={errRef}>{errMsg}</p>}
-          <h1>Sign In</h1>
+          <div className="login-title-container">
+            <h1>Recipe Exec</h1>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              Necessitatibus placeat ducimus error id in, culpa ut accusantium
+            </p>
+          </div>
           <form onSubmit={handleLoginSubmit}>
             <div className="mb-3">
-              <label htmlFor="username" className="form-label">
-                Username:
-              </label>
+              <label htmlFor="username">Email</label>
               <input
                 type="text"
                 className="form-control"
@@ -61,14 +65,13 @@ const Login = () => {
                 id="username"
                 onChange={(e) => setUsername(e.target.value)}
                 value={username}
+                placeholder="Email"
                 required
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label">
-                Password:
-              </label>
+            <div className="mb-5">
+              <label htmlFor="password">Password:</label>
               <input
                 type="password"
                 className="form-control"
@@ -76,10 +79,13 @@ const Login = () => {
                 autoComplete="new-password"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
+                placeholder="password"
                 required
               />
             </div>
-            <button className="btn btn-primary">Sign In</button>
+            <button type="submit">
+              <span>Sign In</span>
+            </button>
           </form>
         </section>
       )}

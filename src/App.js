@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import UserProvider from "./components/context/UserProvider";
 import Dashboard from "./components/Dashboard";
-import Login from "./components/Login";
+import LoginPage from "./components/login/LoginPage";
 
 function App() {
   const [userState, setUserState] = useState({
@@ -38,7 +38,7 @@ function App() {
             <Dashboard />
           </>
         ) : (
-          <Login />
+          <LoginPage />
         )}
       </div>
     </UserProvider>

@@ -3,7 +3,7 @@ import HomeDisplay from "./HomeDisplay";
 import Status from "./Status";
 import Recipes from "./Recipes";
 import Sidebar from "./Sidebar";
-import Login from "./Login";
+import Login from "./login/Login";
 import { fetchDistRequests } from "../assets/js/dataFetch";
 
 function Dashboard() {
