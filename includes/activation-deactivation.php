@@ -49,6 +49,32 @@ function recipe_add_recipe_types_table() {
 	dbDelta($sql);
 }
 
+function recipe_add_ingredients_table() {
+	global $wpdb;
+
+	$sql = "
+	CREATE TABLE IF NOT EXISTS `tc_ingredients` (
+		`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+		`name` VARCHAR(60) NOT NULL DEFAULT '0' COLLATE 'utf8mb4_0900_ai_ci',
+		`normalized` VARCHAR(60) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`pluralized` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`depluralize` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`derivative` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`mince` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		PRIMARY KEY (`id`) USING BTREE,
+		UNIQUE INDEX `name` (`name`) USING BTREE,
+		INDEX `normalized` (`normalized`) USING BTREE
+	)
+	COLLATE='utf8mb4_0900_ai_ci'
+	ENGINE=MyISAM
+	AUTO_INCREMENT=2265
+	;
+	";
+
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta($sql);
+}
+
 function recipe_add_recipe_requests_table() {
 	global $wpdb;
 
@@ -84,11 +110,20 @@ function recipe_add_recipes_table() {
 	$sql = "
 	CREATE TABLE `tc_recipes` (
 		`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+		`recipe_title` VARCHAR(80) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`description` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`servings` TINYINT(3) UNSIGNED NULL DEFAULT NULL,
+		`prep_time` CHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`cook_time` CHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`meal_type` CHAR(60) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`cuisine` CHAR(60) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`diet` CHAR(60) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`recipe_tip` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`ingredient_tip` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`worksheet_id` CHAR(50) NOT NULL DEFAULT '0' COLLATE 'utf8mb4_0900_ai_ci',
 		`root_id` CHAR(12) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`client_id` TINYINT(3) UNSIGNED NULL DEFAULT NULL,
 		`author_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT '1',
-		`recipe_title` VARCHAR(80) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`request_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
 		`recipe_type` ENUM('WO','Virgin','Generic') NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`recipe_status` ENUM('proposed','accepted','entered','printed','photographed','exported') NOT NULL DEFAULT 'accepted' COLLATE 'utf8mb4_0900_ai_ci',
@@ -98,11 +133,14 @@ function recipe_add_recipes_table() {
 		INDEX `root_id` (`root_id`) USING BTREE,
 		INDEX `recipe_title` (`recipe_title`) USING BTREE,
 		INDEX `recipe_type` (`recipe_type`) USING BTREE,
-		INDEX `worksheet_id` (`worksheet_id`) USING BTREE
+		INDEX `worksheet_id` (`worksheet_id`) USING BTREE,
+		INDEX `meal_type` (`meal_type`) USING BTREE,
+		INDEX `cuisine` (`cuisine`) USING BTREE,
+		INDEX `diet` (`diet`) USING BTREE
 	)
 	COLLATE='utf8mb4_0900_ai_ci'
 	ENGINE=MyISAM
-	;
+	AUTO_INCREMENT=111111
 	";
 
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -147,6 +185,8 @@ function recipe_sheets_activation() {
 	recipe_add_recipe_types_table();
 
 	recipe_insert_types();
+
+	recipe_add_ingredients_table();
 	
 	recipe_add_recipe_requests_table();
 	
