@@ -103,7 +103,6 @@ function recipe_add_recipe_requests_table() {
 	dbDelta($sql);
 }
 
-
 function recipe_add_recipes_table() {
 	global $wpdb;
 
@@ -141,6 +140,29 @@ function recipe_add_recipes_table() {
 	COLLATE='utf8mb4_0900_ai_ci'
 	ENGINE=MyISAM
 	AUTO_INCREMENT=111111
+	";
+
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta($sql);
+}
+
+function recipe_add_recipe_ingredients_table() {
+	global $wpdb;
+
+	$sql = "
+	CREATE TABLE `tc_recipe_ingredients` (
+		`recipe_id` BIGINT(20) UNSIGNED NOT NULL,
+		`ingred_cnt` TINYINT(3) UNSIGNED NOT NULL,
+		`ingred_id` BIGINT(20) UNSIGNED NOT NULL,
+		`measure` TINYINT(3) UNSIGNED NOT NULL,
+		`unit` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`notes` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		PRIMARY KEY (`recipe_id`, `ingred_cnt`) USING BTREE,
+		INDEX `ingred_id` (`ingred_id`) USING BTREE
+	)
+	COLLATE='utf8mb4_0900_ai_ci'
+	ENGINE=MyISAM
+	;
 	";
 
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -191,6 +213,8 @@ function recipe_sheets_activation() {
 	recipe_add_recipe_requests_table();
 	
 	recipe_add_recipes_table();
+
+	recipe_add_recipe_ingredients_table();
 
 	recipe_insert_distributor();
 
