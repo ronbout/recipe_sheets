@@ -9,6 +9,15 @@ Template Name: Load Recipe Sheets Data
  */
 defined('ABSPATH') or die('Direct script access disallowed.');
 
+if (!is_user_logged_in(  )) {
+	die("Must be logged in as admin to use this page");
+}
+
+$user = wp_get_current_user(  );
+if ('administrator' != strtolower($user->roles[0])) {
+	die("Must be logged in as admin to use this page");
+}
+
 ?>
 <!DOCTYPE HTML>
 

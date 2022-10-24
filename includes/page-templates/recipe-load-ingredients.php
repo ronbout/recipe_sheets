@@ -18,8 +18,8 @@ require_once RECIPE_SHEETS_PLUGIN_INCLUDES.'page-templates/partials/recipe-head.
 		<header>Recipe Requests:</header>
 		<div>
 			<?php
-				// include RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/load_ingredients_table.php';
-				include RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/test_ingredient_search.php';
+				include RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/load_ingredients_table.php';
+				// include RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/test_ingredient_search.php';
 			?>
 		</div>
 	</div>

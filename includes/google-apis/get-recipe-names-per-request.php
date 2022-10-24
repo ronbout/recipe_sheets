@@ -81,6 +81,13 @@ function import_recipe_requests_and_names($working_month, $month_info) {
 		print_r($comp_brief_list);
 		echo "</pre>";
 		
+		echo "<pre>";
+		print_r($filtered_working_doc_data);
+		echo "</pre>";
+		echo "<pre>";
+		print_r($brief_recipe_w_virgins);
+		echo "</pre>";
+		
 		echo '<h1>Intersect Row Count: ', count(array_intersect($comp_working_list, $comp_brief_list)), "</h1>";
 		die;
 	}
@@ -190,6 +197,7 @@ function reset_current_vals() {
 			'recipe_count' => null, 
 			'notes' => null,
 	);
+	return $current_vals;
 }
 
 function load_current_vals(&$current_vals, $recipe_row) {

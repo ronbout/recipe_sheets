@@ -39,13 +39,13 @@ function binary_search($needle, $haystack, $start=0, $end=0) {
 	} 
 
 	$comp_ndx = ceil (($end + $start) / 2);
-	echo "<p>start: $start - end: $end - comp_ndx: $comp_ndx</p>";
+	// echo "<p>start: $start - end: $end - comp_ndx: $comp_ndx</p>";
 	$comp_value = $haystack[$comp_ndx];	
 	if (is_string($comp_value)) {
 		$comp_value = trim(strtolower($comp_value));
 	}
 
-	echo "<p>needle: *$needle* - comp value: *$comp_value*</p>";
+	// echo "<p>needle: *$needle* - comp value: *$comp_value*</p>";
 	if ($needle == $comp_value) {
 		return $comp_ndx;
 	} elseif ($needle < $comp_value) {

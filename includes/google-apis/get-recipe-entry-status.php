@@ -5,6 +5,20 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 function import_recipe_entry_status($working_month, $month_info) {
+	global $wpdb; 
+
+	$sql = "
+		SELECT ingred.* 
+		FROM tc_ingredients ingred
+		ORDER BY ingred.name ASC
+	";
+
+	$ingreds = $wpdb->get_results($sql, ARRAY_A);
+
+	array_walk($ingreds, function(&$row) {
+		$row['name'] = strtolower($row['name']);
+	});
+
 
 	$sheets = initializeSheets();
 	$recipe_data = getEntryData($sheets, $month_info['worksheet_doc_id']);
@@ -15,13 +29,47 @@ function import_recipe_entry_status($working_month, $month_info) {
 		return (isset($row[ENTRY_MONTH_COL]) && trim(strtolower($row[ENTRY_MONTH_COL]) === $test_month));
 	});
 
-	// echo '<h1>Count: ', count($recipe_data), "</h1>";
-	// echo '<pre>';
-	// print_r($recipe_data);
-	// echo '</pre>';
+	/*
+	**  this was for testing that all ingredients exist in the db
+	**  will still write code to insert ingredient if not found, but want
+	** 	to run test first to see if it is a mistake that can be corrected
+	** 	w/o adding new ingredient (misspelling, for instance....or missing plural entry)
+
+
+	$recipe_ingreds_rows = array_filter($recipe_data, function($recipe_row) {
+		$fieldname = strtolower($recipe_row[RECIPE_FIELD_COL]);
+		$fielddesc = strtolower($recipe_row[RECIPE_FIELD_DESC_COL]);
+		return ('ingredient' === $fieldname && $fielddesc) ;
+	});
+
+	$recipe_ingred_names = array_column($recipe_ingreds_rows, RECIPE_FIELD_DESC_COL);
+
+
+	foreach($recipe_ingred_names as $ingred_name) {
+		$fnd = binary_search($ingred_name, $ingred_db_names);
+		if (-1 === $fnd) {
+				$fnd = array_search($fielddesc, $ingred_db_plurals);
+			if (-1 === $fnd) {
+				echo "<h2>*** $ingred_name NOT FOUND ***</h2>";
+				die;
+			} else {
+				// echo "<p>Ingred Id Plural: $fnd  Ingred: $ingred_name </p>";
+			}
+		} else {
+			// echo "<p>Ingred Id: $fnd  Ingred: $ingred_name</p>";
+		}
+	}
 	// die;
 
-	update_recipe_table_entry($recipe_data);
+	echo '<h1>Recipe Ingredients Count: ', count($recipe_ingred_names), "</h1>";
+	echo '<pre>';
+	print_r($recipe_ingred_names);
+	echo '</pre>';
+	die;
+*/
+
+	$update_cnt = update_recipe_table_entry($recipe_data, $ingreds);
+	echo "<h1>Recipe Entries Updated: $update_cnt</h1>";
 }
 
 function getEntryData($sheets, $sheet_id) {
@@ -40,49 +88,273 @@ function getEntryData($sheets, $sheet_id) {
 		}
 }
 
-function update_recipe_table_entry($recipe_rows) {
-	/**
-	 * for now, we only need to know if a recipe has been entered
-	 * for that purpose, just need to see if at least one ingredient
-	 */
-	$recipe_rows = array_filter($recipe_rows, function($recipe_row) {
-		$fieldname = strtolower($recipe_row[RECIPE_FIELD_COL]);
-		$fielddesc = strtolower($recipe_row[RECIPE_FIELD_DESC_COL]);
-		return ('ingredient' === $fieldname && 1 == $recipe_row[RECIPE_FIELD_STEP_COL] && $fielddesc) ;
-	});
-
-	$recipe_worksheet_ids = array_column($recipe_rows, ENTRY_RECIPE_WORKSHEET_ID_COL);
-	$recipe_worksheet_ids = array_map(function($id) {
-		return sanitize_text_field($id);
-	}, $recipe_worksheet_ids);
-
-	echo '<h1>Recipe Entered Count: ', count($recipe_worksheet_ids), "</h1>";
-	// echo '<pre>';
-	// print_r($recipe_worksheet_ids);
-	// echo '</pre>';
+function update_recipe_table_entry($recipe_rows, $ingreds) {
+	
+	// echo "<pre>";
+	// print_r($recipe_rows);
+	// echo "</pre>";
 	// die;
 
-	return update_recipe_rows_entry($recipe_worksheet_ids);
+	$ingred_db_names = array_column($ingreds, 'name');
+	$ingred_db_plurals = array_column($ingreds, 'pluralized');
+	$ingred_db_plurals = array_filter($ingred_db_plurals, function($row) {
+		return $row;
+	});
+	array_walk($ingred_db_names, function(&$name) {
+		$name = strtolower($name);
+	});
+	array_walk($ingred_db_plurals, function(&$name) {
+		$name = strtolower($name);
+	});
+
+// 	echo "<pre>";
+// 	print_r($ingred_db_names);
+// 	echo "</pre>";
+// die;
+
+	$prev_worksheet_id = -1;
+	$update_cnt = 0;
+	$not_found = array();
+	foreach($recipe_rows as $row) {
+		$worksheet_id = $row[ENTRY_RECIPE_WORKSHEET_ID_COL];
+		if ($worksheet_id !== $prev_worksheet_id) {
+			if (-1 !== $prev_worksheet_id) {
+				update_recipe_table_info($recipe_info, $prev_worksheet_id);
+				$update_cnt++;
+			}
+			$recipe_info = new_recipe_info();
+			$prev_worksheet_id = $worksheet_id;
+		}
+		$fieldname = strtolower($row[RECIPE_FIELD_COL]);
+		$fielddesc = $row[RECIPE_FIELD_DESC_COL];
+		if ('name' === $fieldname || 'create date' === $fieldname) {
+			continue;
+		}
+		if ('method' === $fieldname) {
+			if ('' == trim($fielddesc)) {
+				continue;
+			}
+			$recipe_info['methods'][] = $fielddesc;
+		} elseif ('ingredient' === $fieldname) {
+			if ('' == trim($fielddesc)) {
+				continue;
+			}
+			$ingred_search_name = strtolower($fielddesc);
+			$plural = 0;
+			$fnd = array_search($ingred_search_name, $ingred_db_names);
+			if (false === $fnd) {
+				// $fnd = binary_search($fielddesc, $ingred_db_plurals);
+				// not all ingredients have plurals so there are either gaps
+				// in the keys or the nulls are included and it is not sequential
+				// workarounds are too annoying to just do array search as there are 
+				// far fewer plural ingredients
+				$fnd = array_search($ingred_search_name, $ingred_db_plurals);
+				if (false === $fnd) {
+					echo "<h4>** $fielddesc NOT FOUND - Worksheet id: $worksheet_id **</h4>";
+					$not_found[] = array('ingred' => $fielddesc, 'worksheet_id' => $worksheet_id);
+					$new_ingred_data = insert_new_ingredient($fielddesc, $ingreds, $ingred_db_names, $ingred_db_plurals);
+					$ingreds = $new_ingred_data['ingreds'];
+					$ingred_db_names = $new_ingred_data['names'];
+					$ingred_db_plurals = $new_ingred_data['plurals'];
+					$fnd = $new_ingred_data['fnd'];
+					// echo "<pre>";
+					// print_r($new_ingred_data);
+					// echo "</pre>";
+					// die;
+				} else {
+					$plural = true;
+				}
+			}
+			$ingred_id = $ingreds[$fnd]['id'];
+			$recipe_info['ingredients'][] = array( 
+				'ingred_cnt' => $row[RECIPE_FIELD_CNT_COL],
+				'ingred_id' => $ingred_id,
+				'measure' => $row[RECIPE_MEASURE_COL],
+				'unit' => $row[RECIPE_UNIT_COL],
+				'notes' => $row[RECIPE_NOTES_COL],
+				'plural' => $plural,
+			);
+		} else {
+			if ('type' === $fieldname) {
+				$db_name = 'meal_type';
+			} else {
+				$db_name = str_replace(' ', '_', $fieldname);
+			}
+			$recipe_info[$db_name] = $fielddesc;
+		}
+	}
+
+	if (isset($worksheet_id) ) {
+		update_recipe_table_info($recipe_info, $worksheet_id);
+		$update_cnt++;
+	}
+
+	// if (count($not_found)) {
+	// 	echo '<pre>';
+	// 	print_r($not_found);
+	// 	echo '</pre>';
+	// 	die;
+	// }
+	return $update_cnt;
 }
 
- 
-function update_recipe_rows_entry($recipe_worksheet_ids) {
+function new_recipe_info()  {
+	return array(
+		'description' => null,
+		'servings' => null,
+		'prep_time' => null,
+		'cook_time' => null,
+		'meal_type' => null,
+		'cuisine' => null,
+		'diet' => null,
+		'recipe_tip' => null,
+		'recipe_status' => 'entered',
+		'ingredient_tip' => null,
+		'source' => null,
+		'ingredients' => array(),
+		'methods' => array(),
+	);
+}
+
+function insert_new_ingredient($ingred_name, $ingreds, $ingred_db_names, $ingred_db_plurals) {
 	global $wpdb;
 
-	$recipes_table = "tc_recipes";
-
-	$placeholders = array_fill(0, count($recipe_worksheet_ids), '%s');
-	$placeholders = implode(', ', $placeholders);
-	
-	$insert_values = rtrim($insert_values, ',');
-	
-	$sql = "
-		UPDATE $recipes_table
-		SET recipe_status = 'entered'
-		WHERE worksheet_id in ($placeholders)";
-
-	$rows_affected = $wpdb->get_results(
-		$wpdb->prepare($sql, $recipe_worksheet_ids)
+	$normalized = strtolower($ingred_name);
+	$wpdb->insert('tc_ingredients', ['name' => $ingred_name, 'normalized' => $normalized]);
+	$ingred_id = $wpdb->insert_id;
+	$new_ingred_row = array( 
+		'id' => $ingred_id,
+		'name' => $normalized,
+		'normalized' => $normalized,
+		'pluralized' => null,
+		'depluralize' => null,
+		'derivative' => null,
+		'mince' => null,
 	);
-	return $rows_affected;
+	$ingreds[] = $new_ingred_row;
+
+	$names = array_column($ingreds, 'name');
+	array_multisort($names, SORT_ASC, $ingreds );
+
+	$ingred_db_names = array_column($ingreds, 'name');
+	$ingred_db_plurals = array_column($ingreds, 'pluralized');
+	$ingred_db_plurals = array_filter($ingred_db_plurals, function($row) {
+		return $row;
+	});
+	array_walk($ingred_db_names, function(&$name) {
+		$name = strtolower($name);
+	});
+	array_walk($ingred_db_plurals, function(&$name) {
+		$name = strtolower($name);
+	});
+	
+	$fnd = array_search($normalized, $ingred_db_names);
+
+	return array( 
+		'ingreds' => $ingreds,
+		'names' => $ingred_db_names,
+		'plurals' => $ingred_db_plurals,
+		'fnd' => $fnd,
+	);
+
+}
+ 
+function update_recipe_table_info($recipe_info, $worksheet_id) {
+	global $wpdb;
+
+	// if ('339986' == $worksheet_id) {
+	// 	echo "<pre>";
+	// 	print_r($recipe_info);
+	// 	echo "</pre>";
+	// 	die;
+	// }
+
+
+	$ingredients = $recipe_info['ingredients'];
+	$methods = $recipe_info['methods'];
+
+	unset($recipe_info['ingredients']);
+	unset($recipe_info['methods']);
+
+	$update_result = $wpdb->update('tc_recipes', $recipe_info, ['worksheet_id' => $worksheet_id], null, ['%s']);
+
+	if (false === $update_result) {
+		echo "<h1>Could not update $worksheet_id</h1>";
+		die;
+	}
+
+	$sql = "SELECT id FROM tc_recipes WHERE worksheet_id = %s";
+
+	$recipe_id = $wpdb->get_var($wpdb->prepare($sql, $worksheet_id));
+
+	if (count($ingredients)) {
+		update_recipe_ingredients_table($ingredients, $recipe_id);
+	}
+
+	if (count($methods)) {
+		update_recipe_instructions_table($methods, $recipe_id);
+	}
+	
+}
+
+function update_recipe_ingredients_table($ingredients, $recipe_id) {
+	global $wpdb;
+
+	$wpdb->delete('tc_recipe_ingredients', ['recipe_id' => $recipe_id], ['%d']);
+
+	$insert_values = '';
+	$insert_parms = [];
+
+	foreach($ingredients as $cnt => $ingredient) {
+
+		$insert_values .= '(%d, %d, %d, %s, %s, %s, %d),';
+		$insert_parms[] = $recipe_id;
+		$insert_parms[] = $cnt+1;
+		$insert_parms[] = $ingredient['ingred_id'];
+		$insert_parms[] = $ingredient['measure'];
+		$insert_parms[] = $ingredient['unit'];
+		$insert_parms[] = $ingredient['notes'];
+		$insert_parms[] = $ingredient['plural'];
+
+	}
+
+	$insert_values = rtrim($insert_values, ',');
+
+	$sql = "INSERT into tc_recipe_ingredients
+		(recipe_id, ingred_cnt, ingred_id, measure, unit, notes, plural)
+	VALUES $insert_values";
+
+	$prepared_sql = $wpdb->prepare($sql, $insert_parms);
+
+	$rows_affected = $wpdb->query($prepared_sql);
+	 
+}
+
+function update_recipe_instructions_table($ingredients, $recipe_id) {
+	global $wpdb;
+
+	$wpdb->delete('tc_recipe_instructions', ['recipe_id' => $recipe_id], ['%d']);
+
+	$insert_values = '';
+	$insert_parms = [];
+
+	foreach($ingredients as $cnt => $instructions) {
+
+		$insert_values .= '(%d, %d, %s),';
+		$insert_parms[] = $recipe_id;
+		$insert_parms[] = $cnt+1;
+		$insert_parms[] = $instructions;
+
+	}
+
+	$insert_values = rtrim($insert_values, ',');
+
+	$sql = "INSERT into tc_recipe_instructions
+		(recipe_id, instruction_cnt, instruction)
+	VALUES $insert_values";
+
+	$prepared_sql = $wpdb->prepare($sql, $insert_parms);
+
+	$rows_affected = $wpdb->query($prepared_sql);
+	 
 }

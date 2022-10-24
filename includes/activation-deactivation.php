@@ -107,10 +107,10 @@ function recipe_add_recipes_table() {
 	global $wpdb;
 
 	$sql = "
-	CREATE TABLE `tc_recipes` (
+	CREATE TABLE IF NOT EXISTS  `tc_recipes` (
 		`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 		`recipe_title` VARCHAR(80) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-		`description` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`description` VARCHAR(500) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`servings` TINYINT(3) UNSIGNED NULL DEFAULT NULL,
 		`prep_time` CHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`cook_time` CHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
@@ -121,7 +121,7 @@ function recipe_add_recipes_table() {
 		`ingredient_tip` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`worksheet_id` CHAR(50) NOT NULL DEFAULT '0' COLLATE 'utf8mb4_0900_ai_ci',
 		`root_id` CHAR(12) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
-		`client_id` TINYINT(3) UNSIGNED NULL DEFAULT NULL,
+		`client_id` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`author_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT '1',
 		`request_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
 		`recipe_type` ENUM('WO','Virgin','Generic') NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
@@ -150,15 +150,35 @@ function recipe_add_recipe_ingredients_table() {
 	global $wpdb;
 
 	$sql = "
-	CREATE TABLE `tc_recipe_ingredients` (
+	CREATE TABLE IF NOT EXISTS  `tc_recipe_ingredients` (
 		`recipe_id` BIGINT(20) UNSIGNED NOT NULL,
 		`ingred_cnt` TINYINT(3) UNSIGNED NOT NULL,
 		`ingred_id` BIGINT(20) UNSIGNED NOT NULL,
-		`measure` TINYINT(3) UNSIGNED NOT NULL,
+		`measure` TINYTEXT NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`unit` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`notes` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`plural` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
 		PRIMARY KEY (`recipe_id`, `ingred_cnt`) USING BTREE,
 		INDEX `ingred_id` (`ingred_id`) USING BTREE
+	)
+	COLLATE='utf8mb4_0900_ai_ci'
+	ENGINE=MyISAM
+	;
+	";
+
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta($sql);
+}
+
+function recipe_add_recipe_instructions_table() {
+	global $wpdb;
+
+	$sql = "
+	CREATE TABLE IF NOT EXISTS  `tc_recipe_instructions` (
+		`recipe_id` BIGINT(20) UNSIGNED NOT NULL,
+		`instruction_cnt` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
+		`instruction` VARCHAR(500) NOT NULL DEFAULT '' COLLATE 'utf8mb4_0900_ai_ci',
+		PRIMARY KEY (`recipe_id`, `instruction_cnt`) USING BTREE
 	)
 	COLLATE='utf8mb4_0900_ai_ci'
 	ENGINE=MyISAM
@@ -216,7 +236,7 @@ function recipe_sheets_activation() {
 
 	recipe_add_recipe_ingredients_table();
 
-	recipe_insert_distributor();
+	recipe_add_recipe_instructions_table();
 
 }
 /**** END OF ACTIVATION CODE ****/
