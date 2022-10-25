@@ -8,8 +8,9 @@ function tc_ajax_import_recipe_sheets_data() {
 		wp_die();
 	}
 
+	$routine = isset($_POST['routine']) ? $_POST['routine'] : 0;
 	require_once RECIPE_SHEETS_PLUGIN_INCLUDES.'ajax/import-recipe-sheets-data.php';
-	import_recipe_sheets_data_all();
+	import_recipe_sheets_data_all($routine);
 
 	wp_die();
 }

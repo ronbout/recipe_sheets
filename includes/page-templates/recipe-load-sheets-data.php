@@ -65,7 +65,22 @@ if ('administrator' != strtolower($user->roles[0])) {
 
 	<main>
 		<div class="entry">
-			<!--<div><input id="start-date" type="date" value="2020-01-01"></div>-->
+			<div>
+				<label for="import-routine-selector">Choose Process</label>
+				<select id="import-routine-selector">
+					<optgroup label="Imports">
+						<option value="0" selected>All Imports</option>
+						<option value="1">Import Ingredients only</option>
+						<option value="2">Imports Requests/Names only</option>
+						<option value="3">Imports Recipe Entry only</option>
+						<option value="4">Imports Recipe Status only</option>
+					</optgroup>
+					<optgroup label="Delete Data">
+						<option value="5">Delete Recipe Data (requests / recipes)</option>
+						<option value="6">Delete Ingredients Table Data</option>
+					</optgroup>
+				</select>
+			</div>
 			<div><button id="run-import-recipe-sheets" type="button">Run</button>	</div>
 		</div>
 		<div id="results">Results here</div>

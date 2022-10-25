@@ -4,7 +4,10 @@ jQuery(document).ready(function () {
 });
 
 const tcRunImportSheetsData = () => {
-  jQuery("#results").html("Importing recipe data..");
+  const routine = jQuery("#import-routine-selector").val();
+  const spinnerMsg =
+    routine < 5 ? "Importing recipe data.." : "Deleting data..";
+  jQuery("#results").html(spinnerMsg);
   jQuery.ajax({
     url: recipeSheets.ajaxurl,
     type: "POST",
@@ -12,6 +15,7 @@ const tcRunImportSheetsData = () => {
     data: {
       action: "import_recipe_sheets",
       security: recipeSheets.security,
+      routine: routine,
     },
     success: function (responseText) {
       console.log(responseText);
