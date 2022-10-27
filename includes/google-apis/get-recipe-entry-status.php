@@ -76,7 +76,7 @@ function getEntryData($sheets, $sheet_id) {
 	try{
 
 		$spreadsheetId = $sheet_id;
-		$range = 'Recipe Entry!B2:L';
+		$range = 'Recipe Entry!B2:AC';
 		$response = $sheets->spreadsheets_values->get($spreadsheetId, $range);
 		$recipe_rows = $response->getValues();
 
@@ -127,14 +127,44 @@ function update_recipe_table_entry($recipe_rows, $ingreds) {
 		}
 		$fieldname = strtolower($row[RECIPE_FIELD_COL]);
 		$fielddesc = $row[RECIPE_FIELD_DESC_COL];
-		if ('name' === $fieldname || 'create date' === $fieldname) {
+		if ('create date' === $fieldname) {
+			continue;
+		}
+		if ('name' === $fieldname ) {
+			$photo_date = $row[RECIPE_PHOTO_DATE_COL];
+			if ($dt = strtotime($photo_date)) {
+				$photo_date = date("Y-m-d", $dt);
+			} else {
+				$photo_date = null;
+			}
+			$camera_id = $row[RECIPE_CAMERA_ID_COL];
+			if ('#N/A' == trim($camera_id) ) {
+				$camera_id = null;
+			} 
+			if ($row[RECIPE_SUBMITTED_BATCH_COL]) {
+				$recipe_status = "submitted";
+			} elseif ($camera_id) {
+				$recipe_status = "image";
+			} elseif ($row[RECIPE_PRINTED_COL] ) {
+				$recipe_status = "printed";
+			} else {
+				$recipe_status = 'entered';
+			}
+			$recipe_info['recipe_title'] = trim($fielddesc);
+			$recipe_info['photo_date'] = $photo_date;
+			$recipe_info['recipe_status'] = $recipe_status;
+			$recipe_info['camera_id'] = $camera_id;
+			$recipe_info['submission_batch'] = $row[RECIPE_SUBMITTED_BATCH_COL];
 			continue;
 		}
 		if ('method' === $fieldname) {
 			if ('' == trim($fielddesc)) {
 				continue;
 			}
-			$recipe_info['methods'][] = $fielddesc;
+			$recipe_info['methods'][] = array( 
+				'instruction' => $fielddesc,
+				'recipe_group' => $row[RECIPE_GROUP_COL],
+			);
 		} elseif ('ingredient' === $fieldname) {
 			if ('' == trim($fielddesc)) {
 				continue;
@@ -173,6 +203,7 @@ function update_recipe_table_entry($recipe_rows, $ingreds) {
 				'unit' => $row[RECIPE_UNIT_COL],
 				'notes' => $row[RECIPE_NOTES_COL],
 				'plural' => $plural,
+				'recipe_group' => $row[RECIPE_GROUP_COL],
 			);
 		} else {
 			if ('type' === $fieldname) {
@@ -200,6 +231,7 @@ function update_recipe_table_entry($recipe_rows, $ingreds) {
 
 function new_recipe_info()  {
 	return array(
+		'recipe_title' => null,
 		'description' => null,
 		'servings' => null,
 		'prep_time' => null,
@@ -211,6 +243,10 @@ function new_recipe_info()  {
 		'recipe_status' => 'entered',
 		'ingredient_tip' => null,
 		'source' => null,
+		'photo_date' => null,
+		'recipe_status' => null,
+		'camera_id' => null,
+		'submission_batch' => null,
 		'ingredients' => array(),
 		'methods' => array(),
 	);
@@ -307,7 +343,7 @@ function update_recipe_ingredients_table($ingredients, $recipe_id) {
 
 	foreach($ingredients as $cnt => $ingredient) {
 
-		$insert_values .= '(%d, %d, %d, %s, %s, %s, %d),';
+		$insert_values .= '(%d, %d, %d, %s, %s, %s, %d, %s),';
 		$insert_parms[] = $recipe_id;
 		$insert_parms[] = $cnt+1;
 		$insert_parms[] = $ingredient['ingred_id'];
@@ -315,13 +351,14 @@ function update_recipe_ingredients_table($ingredients, $recipe_id) {
 		$insert_parms[] = $ingredient['unit'];
 		$insert_parms[] = $ingredient['notes'];
 		$insert_parms[] = $ingredient['plural'];
+		$insert_parms[] = $ingredient['recipe_group'];
 
 	}
 
 	$insert_values = rtrim($insert_values, ',');
 
 	$sql = "INSERT into tc_recipe_ingredients
-		(recipe_id, ingred_cnt, ingred_id, measure, unit, notes, plural)
+		(recipe_id, ingred_cnt, ingred_id, measure, unit, notes, plural, recipe_group)
 	VALUES $insert_values";
 
 	$prepared_sql = $wpdb->prepare($sql, $insert_parms);
@@ -330,7 +367,7 @@ function update_recipe_ingredients_table($ingredients, $recipe_id) {
 	 
 }
 
-function update_recipe_instructions_table($ingredients, $recipe_id) {
+function update_recipe_instructions_table($instructions, $recipe_id) {
 	global $wpdb;
 
 	$wpdb->delete('tc_recipe_instructions', ['recipe_id' => $recipe_id], ['%d']);
@@ -338,19 +375,20 @@ function update_recipe_instructions_table($ingredients, $recipe_id) {
 	$insert_values = '';
 	$insert_parms = [];
 
-	foreach($ingredients as $cnt => $instructions) {
+	foreach($instructions as $cnt => $instruction) {
 
-		$insert_values .= '(%d, %d, %s),';
+		$insert_values .= '(%d, %d, %s, %s),';
 		$insert_parms[] = $recipe_id;
 		$insert_parms[] = $cnt+1;
-		$insert_parms[] = $instructions;
+		$insert_parms[] = $instruction['instruction'];
+		$insert_parms[] = $instruction['recipe_group'];
 
 	}
 
 	$insert_values = rtrim($insert_values, ',');
 
 	$sql = "INSERT into tc_recipe_instructions
-		(recipe_id, instruction_cnt, instruction)
+		(recipe_id, instruction_cnt, instruction, recipe_group)
 	VALUES $insert_values";
 
 	$prepared_sql = $wpdb->prepare($sql, $insert_parms);

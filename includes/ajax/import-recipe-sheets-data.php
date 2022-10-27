@@ -12,7 +12,7 @@ function import_recipe_sheets_data_all($routine) {
 			import_ingredients_data_from_sheets();
 			import_all_recipe_requests_and_names($recipe_worksheets_parms);
 			import_all_recipe_entry_status($recipe_worksheets_parms);
-			import_all_recipe_printed_status($recipe_worksheets_parms);
+			// import_all_recipe_printed_status($recipe_worksheets_parms);
 			break;
 		case 1:
 			echo "<h2>Import Data</h2>";
@@ -28,7 +28,7 @@ function import_recipe_sheets_data_all($routine) {
 			import_all_recipe_entry_status($recipe_worksheets_parms);
 			break;
 		case 4: 
-			import_all_recipe_printed_status($recipe_worksheets_parms);
+			// import_all_recipe_printed_status($recipe_worksheets_parms);
 			break;
 		case 5:
 			clear_recipe_tables();
