@@ -125,9 +125,13 @@ function recipe_add_recipes_table() {
 		`author_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT '1',
 		`request_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
 		`recipe_type` ENUM('WO','Virgin','Generic') NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-		`recipe_status` ENUM('proposed','accepted','entered','printed','photographed','exported') NOT NULL DEFAULT 'accepted' COLLATE 'utf8mb4_0900_ai_ci',
+		`recipe_status` ENUM('proposed','accepted','entered','printed','image','submitted') NOT NULL DEFAULT 'accepted' COLLATE 'utf8mb4_0900_ai_ci',
 		`source` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`image_url` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`photo_date` DATE NULL DEFAULT NULL,
+		`camera_id` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`submission_batch` TINYINT(3) UNSIGNED NULL DEFAULT NULL,
+		`submission_month_year` DATE NULL DEFAULT NULL,
 		PRIMARY KEY (`id`) USING BTREE,
 		INDEX `root_id` (`root_id`) USING BTREE,
 		INDEX `recipe_title` (`recipe_title`) USING BTREE,
@@ -135,11 +139,13 @@ function recipe_add_recipes_table() {
 		INDEX `worksheet_id` (`worksheet_id`) USING BTREE,
 		INDEX `meal_type` (`meal_type`) USING BTREE,
 		INDEX `cuisine` (`cuisine`) USING BTREE,
-		INDEX `diet` (`diet`) USING BTREE
+		INDEX `diet` (`diet`) USING BTREE,
+		INDEX `submission_month_year` (`submission_month_year`)
 	)
 	COLLATE='utf8mb4_0900_ai_ci'
 	ENGINE=MyISAM
-	AUTO_INCREMENT=111111
+	AUTO_INCREMENT=85517
+	;
 	";
 
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -158,6 +164,7 @@ function recipe_add_recipe_ingredients_table() {
 		`unit` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`notes` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`plural` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
+		`recipe_group` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		PRIMARY KEY (`recipe_id`, `ingred_cnt`) USING BTREE,
 		INDEX `ingred_id` (`ingred_id`) USING BTREE
 	)
@@ -178,6 +185,7 @@ function recipe_add_recipe_instructions_table() {
 		`recipe_id` BIGINT(20) UNSIGNED NOT NULL,
 		`instruction_cnt` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
 		`instruction` VARCHAR(500) NOT NULL DEFAULT '' COLLATE 'utf8mb4_0900_ai_ci',
+		`recipe_group` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		PRIMARY KEY (`recipe_id`, `instruction_cnt`) USING BTREE
 	)
 	COLLATE='utf8mb4_0900_ai_ci'
