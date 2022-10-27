@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') or die('Direct script access disallowed.');
+
 // Load the Google API PHP Client Library.
 // and access <<MONTH>>  Working Document
 require_once __DIR__ . '/vendor/autoload.php';
