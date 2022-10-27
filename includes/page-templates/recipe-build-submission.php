@@ -1,11 +1,11 @@
 <?php
 /*
-Template Name: Taste Creative Build Worksheet
+Template Name: Taste Creative Build Submission Sheets
 */
 
 /**
- * 	Test page building the Working Doc Worksheet
- *  Date:  9/28/2022
+ * 	Test page for building the Submission Sheet
+ *  Date:  10/24/2022
  * 	Author: Ron Boutilier
  */
 defined('ABSPATH') or die('Direct script access disallowed.');
@@ -18,7 +18,7 @@ require_once RECIPE_SHEETS_PLUGIN_INCLUDES.'page-templates/partials/recipe-head.
 		<header>Recipe Requests:</header>
 		<div>
 			<?php
-				include RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/build-worksheet-from-brief.php';
+				include RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/build-submission-sheets.php';
 			?>
 		</div>
 	</div>
