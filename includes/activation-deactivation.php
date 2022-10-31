@@ -81,6 +81,7 @@ function recipe_add_recipe_requests_table() {
 	$sql = "
 	CREATE TABLE IF NOT EXISTS `tc_recipe_requests` (
 		`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+		`tier` ENUM('WO','Virgin') NOT NULL DEFAULT 'WO' COLLATE 'utf8mb4_0900_ai_ci',
 		`distributor_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
 		`cuisine` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`meal_type` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
@@ -124,8 +125,9 @@ function recipe_add_recipes_table() {
 		`client_id` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`author_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT '1',
 		`request_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
-		`recipe_type` ENUM('WO','Virgin','Generic') NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`recipe_type` ENUM('WO','Catalog') NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`recipe_status` ENUM('proposed','accepted','entered','printed','image','submitted') NOT NULL DEFAULT 'accepted' COLLATE 'utf8mb4_0900_ai_ci',
+		`orig_recipe_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
 		`source` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`image_url` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`photo_date` DATE NULL DEFAULT NULL,
@@ -217,8 +219,7 @@ function recipe_insert_types() {
 		(id, description)
 		VALUES 
 			('WO', 'Wholly Owned'),
-			('Virgin', 'Virgin'),
-			('New', 'Unattached')
+			('Catalog', 'Catalog')
 	";
 
 	$wpdb->query($sql);

@@ -14,6 +14,7 @@ define('BRIEF_VIRGIN_TITLE2_COL', 10);
 define('BRIEF_WORKSHEET_ID_COL', 11);
 define('BRIEF_VIRGIN_ID_COL', 12);
 define('BRIEF_RECIPE_TYPE_COL', 13);
+define('BRIEF_ORIG_RECIPE_ID_COL', 14);  // dummy internal column for matching catalog to original recipe
 
 define('WORKSHEET_ID_COL', 0);
 define('VIRGIN_ID_COL', 1);
@@ -28,11 +29,19 @@ define('ENTRY_RECIPE_WORKSHEET_ID_COL', 3);
 define('RECIPE_FIELD_COL', 4);
 define('RECIPE_FIELD_CNT_COL', 5);
 define('RECIPE_FIELD_STEP_COL', 6);
+
+// define('RECIPE_FIELD_DESC_COL', 7);
+// define('RECIPE_MEASURE_COL', 8);
+// define('RECIPE_UNIT_COL', 9);
+// define('RECIPE_NOTES_COL', 10);
+// define('RECIPE_GROUP_COL', 11);
+
 define('RECIPE_FIELD_DESC_COL', 15);
 define('RECIPE_MEASURE_COL', 16);
 define('RECIPE_UNIT_COL', 18);
 define('RECIPE_NOTES_COL', 20);
 define('RECIPE_GROUP_COL', 21);
+
 define('RECIPE_PHOTO_DATE_COL', 24);
 define('RECIPE_PRINTED_COL', 25);
 define('RECIPE_CAMERA_ID_COL', 26);
