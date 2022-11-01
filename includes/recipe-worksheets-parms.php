@@ -65,6 +65,9 @@ define('JUNE_WORKING_DOC_ID', '1XNONqFyWBN5qX-1fSt8zMZ7TMVkEsgPDb_H1OL6fc5Q');
 define('JULY_WORKING_DOC_ID', '1mNnL-ltG17fCc9odp0W1sUouyGT88jBYKZKNHAq9kO8');
 define('BRIEF_ID', '189HnWpTZDUaYRdsBwc-62sYpLu5cKv7u8Ujq9XiJ19E');
 
+define('IMAGE_FOLDER_ID', '1n7qWQExvik_hoXsnMIBpjaEbnV-IAIsc');
+define('VIRGIN_FOLDER_ID', '16JSXrgQCLyUIyD-k6tY3Cj9HR6y2vtmz' );
+
 $recipe_worksheets_parms = array(
 	'2022-03-01' => array( 
 		'worksheet_doc_id' => MARCH_MAY_WORKING_DOC_ID,

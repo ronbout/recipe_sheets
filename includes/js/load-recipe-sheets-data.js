@@ -6,7 +6,7 @@ jQuery(document).ready(function () {
 const tcRunImportSheetsData = () => {
   const routine = jQuery("#import-routine-selector").val();
   const spinnerMsg =
-    routine < 5 ? "Importing recipe data.." : "Deleting data..";
+    routine < 6 ? "Importing recipe data.." : "Deleting data..";
   jQuery("#results").html(spinnerMsg);
   jQuery.ajax({
     url: recipeSheets.ajaxurl,

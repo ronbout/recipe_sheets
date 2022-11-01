@@ -28,12 +28,15 @@ function import_recipe_sheets_data_all($routine) {
 			import_all_recipe_entry_status($recipe_worksheets_parms);
 			break;
 		case 4: 
-			import_all_recipe_image_data($recipe_worksheets_parms);
+			import_all_recipe_image_data($recipe_worksheets_parms, 'WO');
 			break;
-		case 5:
-			clear_recipe_tables();
+		case 5: 
+			import_all_recipe_image_data($recipe_worksheets_parms, 'Catalog');
 			break;
 		case 6:
+			clear_recipe_tables();
+			break;
+		case 7:
 			clear_ingredients_table();	
 			break;
 	}
@@ -85,14 +88,17 @@ function import_all_recipe_printed_status($recipe_worksheets_parms) {
 }
 */
 
-function import_all_recipe_image_data($recipe_worksheets_parms) {
+function import_all_recipe_image_data($recipe_worksheets_parms, $recipe_type) {
 	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-working-images.php';
 	// load recipe printed status for each month
-	foreach($recipe_worksheets_parms as $month => $month_data) {
-		if ('2022-05-01' == $month) {
-			import_recipe_image_data($month, $month_data);
+	if ('WO' === $recipe_type) {
+		foreach($recipe_worksheets_parms as $month => $month_data) {
+			if ('2022-05-01' == $month) {
+				import_recipe_image_data($month, $month_data, $recipe_type);
+			}
 		}
-		// import_recipe_image_data($month, $month_data);
+	} else {
+		import_recipe_image_data($month, $month_data, $recipe_type);
 	}
 }
 

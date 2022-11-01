@@ -5,9 +5,10 @@ defined('ABSPATH') or die('Direct script access disallowed.');
 // Load the Google API PHP Client Library.
 require_once __DIR__ . '/vendor/autoload.php';
 
-function get_working_images_dir_info() {
+function get_working_images_dir_info($recipe_type='WO') {
 	$drive = initializeImageDrive();
-	return get_image_dir_files($drive);
+	$folder_id = 'WO' === $recipe_type ? IMAGE_FOLDER_ID : VIRGIN_FOLDER_ID;
+	return get_image_dir_files($drive, $folder_id);
 }
 
 
@@ -37,12 +38,10 @@ function initializeImageDrive()
 }
 
 
-function get_image_dir_files($drive) {
+function get_image_dir_files($drive, $folder_id) {
 
 	try{
 		$files = array();
-		$pageToken = null;
-		$folder_id = '1n7qWQExvik_hoXsnMIBpjaEbnV-IAIsc';
 
 		do {
 				$response = $drive->files->listFiles(array(
