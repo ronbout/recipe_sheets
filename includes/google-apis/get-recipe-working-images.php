@@ -13,6 +13,13 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 		die;
 	}
 
+	// echo '<pre>';
+	// print_r($image_files);
+	// echo '</pre>';
+	// die;
+
+	$process_images_flg = true;
+
 	$missing_worksheet_id_images = array_filter($image_files, function($image_info) {
 		return !isset($image_info['worksheet_id']) || !trim($image_info['worksheet_id']);
 	});
@@ -47,10 +54,11 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 
 
 	if (count($dup_list)) {
-		echo '<h2>Duplicates: </h2>';
+		echo '<h2>Duplicates (correct before processing): </h2>';
 		echo "<pre>";
 		print_r($dup_list);
 		echo "</pre>";
+		$process_images_flg = false;
 	}
 
 	// echo "<pre>";
@@ -117,24 +125,14 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	}
 
 
-	die;
-	// loop through each and update  recipe file if not already submitted
+	// if (!$process_images_flg) {
+	// 	echo '<h2>Processing will not occur due to Duplicate Images</h2>';
+	// 	die;
+	// }
 
-	$upd_cnt = 0;
-	foreach($recipe_rows as $recipe_row) {
-		$worksheet_id = $recipe_row['worksheet_id'];
-		$image_info = $image_files_by_worksheet_id[$worksheet_id];
-		$google_id = $image_info['id'];
-		$camera_id = $image_info['name'];
-		if ($camera_id != $recipe_row['camera_id']) {
-			echo "<h3>Mismatch camera id for worksheet $worksheet_id</h3>";
-			echo "<p>Drive file name: $camera_id  --- table camera id: $recipe_row[camera_id]</p>";
-		}
-		$upd_success = update_recipe_row($recipe_row['id'], $google_id);
-		$upd_cnt += $upd_success;
-	}
+	$upd_cnt = process_images($recipe_rows, $image_files_by_worksheet_id);
 
-	echo "<h2>$upd_cnt recipes updates</h2>";
+	echo "<h2>$upd_cnt recipes updated</h2>";
 }
 
 function check_missing_info($images, $recipes) {
@@ -207,11 +205,34 @@ function check_missing_info($images, $recipes) {
 	);
 }
 
-function update_recipe_row($recipe_id, $google_id) { 
+function process_images($recipe_rows, $image_files_by_worksheet_id) {	
+	$upd_cnt = 0;
+	foreach($recipe_rows as $recipe_row) {
+		$worksheet_id = $recipe_row['worksheet_id'];
+		if (!isset($image_files_by_worksheet_id[$worksheet_id])) {
+			continue;
+		}
+		$image_info = $image_files_by_worksheet_id[$worksheet_id];
+		$google_id = $image_info['id'];
+		$camera_id = $image_info['name'];
+		if ($recipe_row['camera_id'] && $camera_id != $recipe_row['camera_id']) {
+			echo "<h3>Mismatch camera id for worksheet $worksheet_id</h3>";
+			echo "<p>Drive file name: $camera_id  --- table camera id: $recipe_row[camera_id]</p>";
+		}
+		$upd_success = update_recipe_row($recipe_row['id'], $google_id, $camera_id);
+		$upd_cnt += $upd_success;
+	}
+
+	return $upd_cnt;
+}
+
+function update_recipe_row($recipe_id, $google_id, $camera_id) { 
 	global $wpdb;
 
 	$image_url = "https://drive.google.com/file/d/$google_id/view?usp=drivesdk";
-	$result = $wpdb->update('tc_recipes', array('image_url' => $image_url), array('id' => $recipe_id) );
+	$result = $wpdb->update('tc_recipes', 
+		array('image_url' => $image_url, 'camera_id' => $camera_id), 
+		array('id' => $recipe_id) );
 
 	if (!$result) {
 		echo "<h2>Error Updating Recipe Id: $recipe_id</h2>";
