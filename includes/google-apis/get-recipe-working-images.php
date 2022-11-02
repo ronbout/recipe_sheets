@@ -192,10 +192,18 @@ function check_missing_info($images, $recipes) {
 		return $lst;
 	}, array());
 
+	$missing_images_recipe_info = array_reduce($recipes, function($lst, $recipe) use ($missing_image_list) {
+		$worksheet_id = $recipe['worksheet_id'];
+		if (in_array($worksheet_id, $missing_image_list) ) {
+			$lst[] = array('worksheet_id' => $worksheet_id, 'recipe_title' => $recipe['recipe_title']);
+		}
+		return $lst;
+	}, array());
+
 	return array( 
 		'fnd_missing_recipe_rows' => $fnd_missing_recipe_images,
 		'not_fnd_missing_recipe_ids' => $not_fnd_missing_recipe_images,
-		'missing_image_worksheet_ids' => $missing_image_list,
+		'missing_image_worksheet_ids' => $missing_images_recipe_info,
 	);
 }
 
