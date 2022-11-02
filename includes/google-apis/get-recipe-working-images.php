@@ -96,21 +96,21 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	$not_fnd_missing_recipes = $missing_info['not_fnd_missing_recipe_ids'];
 
 	if (count($missing_images)) {
-		echo '<h2>Missing Images - Recipe ids in Submission List: </h2>';
+		echo '<h2>Missing Images - Recipe ids in Submission List but no Image: </h2>';
 		echo "<pre>";
 		print_r($missing_images);
 		echo "</pre>";
 	}
 
 	if (count($fnd_missing_recipes)) {
-		echo '<h2>Images Worksheet Recipe Ids not in Submission List: </h2>';
+		echo '<h2>Images Worksheet Recipe Ids exist, but recipes not in Submission List: </h2>';
 		echo "<pre>";
 		print_r($fnd_missing_recipes);
 		echo "</pre>";
 	}
 
 	if (count($not_fnd_missing_recipes)) {
-		echo '<h2>Image Worksheet Recipe Ids not in System: </h2>';
+		echo '<h2>Image Worksheet Recipe Ids, but recipes not in System: </h2>';
 		echo "<pre>";
 		print_r($not_fnd_missing_recipes);
 		echo "</pre>";
@@ -176,9 +176,25 @@ function check_missing_info($images, $recipes) {
 	$fnd_missing_recipe_ids = array_column($missing_recipe_rows, 'worksheet_id');
 	$not_fnd_missing_recipe_ids = array_values(array_diff($missing_recipe_list, $fnd_missing_recipe_ids));
 
+	$fnd_missing_recipe_images = array_reduce($images, function($lst, $img) use ($fnd_missing_recipe_ids) {
+		$worksheet_id = $img['worksheet_id'];
+		if (in_array($worksheet_id, $fnd_missing_recipe_ids) ) {
+			$lst[] = $img;
+		}
+		return $lst;
+	}, array());
+
+	$not_fnd_missing_recipe_images = array_reduce($images, function($lst, $img) use ($not_fnd_missing_recipe_ids) {
+		$worksheet_id = $img['worksheet_id'];
+		if (in_array($worksheet_id, $not_fnd_missing_recipe_ids) ) {
+			$lst[] = $img;
+		}
+		return $lst;
+	}, array());
+
 	return array( 
-		'fnd_missing_recipe_rows' => $missing_recipe_rows,
-		'not_fnd_missing_recipe_ids' => $not_fnd_missing_recipe_ids,
+		'fnd_missing_recipe_rows' => $fnd_missing_recipe_images,
+		'not_fnd_missing_recipe_ids' => $not_fnd_missing_recipe_images,
 		'missing_image_worksheet_ids' => $missing_image_list,
 	);
 }
