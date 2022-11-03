@@ -127,7 +127,7 @@ function recipe_add_recipes_table() {
 		`request_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
 		`recipe_type` ENUM('WO','Catalog') NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`recipe_status` ENUM('proposed','accepted','entered','printed','image','submitted') NOT NULL DEFAULT 'accepted' COLLATE 'utf8mb4_0900_ai_ci',
-		`orig_recipe_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+		`parent_recipe_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
 		`source` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`image_url` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`photo_date` DATE NULL DEFAULT NULL,
