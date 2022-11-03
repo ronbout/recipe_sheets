@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') or die('Direct script access disallowed.');
+
 define('CUISINE_COL', 0);
 define('MEAL_TYPE_COL', 1);
 define('CLASS_COL', 2);
@@ -31,17 +33,17 @@ define('RECIPE_FIELD_COL', 4);
 define('RECIPE_FIELD_CNT_COL', 5);
 define('RECIPE_FIELD_STEP_COL', 6);
 
-// define('RECIPE_FIELD_DESC_COL', 7);
-// define('RECIPE_MEASURE_COL', 8);
-// define('RECIPE_UNIT_COL', 9);
-// define('RECIPE_NOTES_COL', 10);
-// define('RECIPE_GROUP_COL', 11);
+define('RECIPE_FIELD_DESC_COL', 7);
+define('RECIPE_MEASURE_COL', 8);
+define('RECIPE_UNIT_COL', 9);
+define('RECIPE_NOTES_COL', 10);
+define('RECIPE_GROUP_COL', 11);
 
-define('RECIPE_FIELD_DESC_COL', 15);
-define('RECIPE_MEASURE_COL', 16);
-define('RECIPE_UNIT_COL', 18);
-define('RECIPE_NOTES_COL', 20);
-define('RECIPE_GROUP_COL', 21);
+// define('RECIPE_FIELD_DESC_COL', 15);
+// define('RECIPE_MEASURE_COL', 16);
+// define('RECIPE_UNIT_COL', 18);
+// define('RECIPE_NOTES_COL', 20);
+// define('RECIPE_GROUP_COL', 21);
 
 define('RECIPE_PHOTO_DATE_COL', 24);
 define('RECIPE_PRINTED_COL', 25);
@@ -65,6 +67,7 @@ define('MARCH_MAY_WORKING_DOC_ID', '1F3DdkZv7Gq4lu-0MyM68_HBGRg8NK1-sVZbIKBnqP74
 define('JUNE_WORKING_DOC_ID', '1XNONqFyWBN5qX-1fSt8zMZ7TMVkEsgPDb_H1OL6fc5Q');
 define('JULY_WORKING_DOC_ID', '1mNnL-ltG17fCc9odp0W1sUouyGT88jBYKZKNHAq9kO8');
 define('BRIEF_ID', '189HnWpTZDUaYRdsBwc-62sYpLu5cKv7u8Ujq9XiJ19E');
+define('RECIPE_CATALOGUE_ID', '1owKkQnhWFWEgN63pOq6sZwXELEIdSK-LWS5G0NL1jzM');
 
 define('IMAGE_FOLDER_ID', '1n7qWQExvik_hoXsnMIBpjaEbnV-IAIsc');
 define('VIRGIN_FOLDER_ID', '16JSXrgQCLyUIyD-k6tY3Cj9HR6y2vtmz' );
@@ -91,20 +94,20 @@ $recipe_worksheets_parms = array(
 		'month_display' => 'May',
 		'virgin_columns' => 2,
 	),
-	// '2022-06-01' => array( 
-	// 	'worksheet_doc_id' => JUNE_WORKING_DOC_ID,
-	// 	'brief_doc_id' => BRIEF_ID,
-	// 	'brief_sheet_name' => 'June 2022',
-	// 	'month_display' => 'June',
-	// // 	'virgin_columns' => 2,
-	// ),
-	// '2022-07-01' => array( 
-	// 	'worksheet_doc_id' => JULY_WORKING_DOC_ID,
-	// 	'brief_doc_id' => BRIEF_ID,
-	// 	'brief_sheet_name' => 'July 2022',
-	// 	'month_display' => 'July',
+	'2022-06-01' => array( 
+		'worksheet_doc_id' => JUNE_WORKING_DOC_ID,
+		'brief_doc_id' => BRIEF_ID,
+		'brief_sheet_name' => 'June 2022',
+		'month_display' => 'June',
 	// 	'virgin_columns' => 2,
-	// ),
+	),
+	'2022-07-01' => array( 
+		'worksheet_doc_id' => JULY_WORKING_DOC_ID,
+		'brief_doc_id' => BRIEF_ID,
+		'brief_sheet_name' => 'July 2022',
+		'month_display' => 'July',
+		'virgin_columns' => 2,
+	),
 );
 
 

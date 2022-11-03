@@ -68,9 +68,9 @@ function import_all_recipe_entry_status($recipe_worksheets_parms) {
 	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-entry-status.php';
 	// load recipe entry status for each month
 	foreach($recipe_worksheets_parms as $month => $month_data) {
-		if ('2022-06-01' == $month) {
+		// if ('2022-06-01' == $month) {
 			// import_recipe_entry_status($month, $month_data);
-		}
+		// }
 		import_recipe_entry_status($month, $month_data);
 	}
 }

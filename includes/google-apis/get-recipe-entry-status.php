@@ -142,7 +142,10 @@ function update_recipe_table_entry($recipe_rows, $ingreds) {
 			$camera_id = $row[RECIPE_CAMERA_ID_COL];
 			if ('#N/A' == trim($camera_id) ) {
 				$camera_id = null;
-			} 
+			} elseif (str_contains($camera_id, '-')) {
+				$camera_id = explode('-', $camera_id)[1];
+			}
+
 			if ($row[RECIPE_SUBMITTED_BATCH_COL]) {
 				$recipe_status = "submitted";
 			} elseif ($camera_id) {

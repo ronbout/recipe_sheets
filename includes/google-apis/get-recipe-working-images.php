@@ -214,24 +214,26 @@ function process_images($recipe_rows, $image_files_by_worksheet_id) {
 		}
 		$image_info = $image_files_by_worksheet_id[$worksheet_id];
 		$google_id = $image_info['id'];
-		$camera_id = $image_info['name'];
+		$camera_info = explode('-',$image_info['name']);
+		$photo_date = $camera_info[0];
+		$camera_id = $camera_info[1];
 		if ($recipe_row['camera_id'] && $camera_id != $recipe_row['camera_id']) {
 			echo "<h3>Mismatch camera id for worksheet $worksheet_id</h3>";
 			echo "<p>Drive file name: $camera_id  --- table camera id: $recipe_row[camera_id]</p>";
 		}
-		$upd_success = update_recipe_row($recipe_row['id'], $google_id, $camera_id);
+		$upd_success = update_recipe_row($recipe_row['id'], $google_id, $camera_id, $photo_date);
 		$upd_cnt += $upd_success;
 	}
 
 	return $upd_cnt;
 }
 
-function update_recipe_row($recipe_id, $google_id, $camera_id) { 
+function update_recipe_row($recipe_id, $google_id, $camera_id, $photo_date) { 
 	global $wpdb;
 
 	$image_url = "https://drive.google.com/file/d/$google_id/view?usp=drivesdk";
 	$result = $wpdb->update('tc_recipes', 
-		array('image_url' => $image_url, 'camera_id' => $camera_id), 
+		array('image_url' => $image_url, 'camera_id' => $camera_id, 'photo_date' => $photo_date), 
 		array('id' => $recipe_id) );
 
 	if (!$result) {
