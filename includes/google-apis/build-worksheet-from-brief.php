@@ -60,10 +60,11 @@ $recipe_entry_fields = array(
 	array('Ingredient Tip', 1),
 );
 
-$working_month = '2022-08-01';
+$working_month = '2022-10-01';
 $month_name = date("F", strtotime($working_month));
-$worksheet_id = AUGUST_WORKSHEET_ID;
-$recipe_id_seed = 340310;
+$worksheet_id = OCTOBER_WORKSHEET_ID;
+// $recipe_id_seed = 340310;
+$recipe_id_seed = 340430;
 
 $sheets = initializeSheets();
 $recipe_brief_data = getBriefData($sheets, "$month_name 2022");
