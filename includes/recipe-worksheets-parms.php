@@ -11,10 +11,11 @@ define('NOTES_COL', 7);
 define('BRIEF_RECIPE_TITLE_COL', 8);
 define('BRIEF_VIRGIN_TITLE_COL', 9);
 define('BRIEF_VIRGIN_TITLE2_COL', 10);
-define('BRIEF_WORKSHEET_ID_COL', 11);
-define('BRIEF_VIRGIN_ID_COL', 12);
-define('BRIEF_RECIPE_TYPE_COL', 13);
-define('BRIEF_ORIG_RECIPE_ID_COL', 14);  // dummy internal column for matching catalog to original recipe
+define('BRIEF_SOURCE_ID_COL', 11);
+define('BRIEF_WORKSHEET_ID_COL', 12);
+define('BRIEF_VIRGIN_ID_COL', 13);
+define('BRIEF_RECIPE_TYPE_COL', 14);
+define('BRIEF_PARENT_RECIPE_ID_COL', 15);  // dummy internal column for matching catalog to original recipe
 
 define('WORKSHEET_ID_COL', 0);
 define('VIRGIN_ID_COL', 1);

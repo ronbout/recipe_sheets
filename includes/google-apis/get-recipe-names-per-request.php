@@ -21,7 +21,7 @@ function import_recipe_requests_and_names($working_month, $month_info) {
 		$row[BRIEF_WORKSHEET_ID_COL] = $filtered_working_doc_data[$recipe_cnt][WORKSHEET_ID_COL];
 		$row[BRIEF_VIRGIN_ID_COL] = $row[BRIEF_WORKSHEET_ID_COL];
 		$row[BRIEF_RECIPE_TYPE_COL] = "WO";
-		$tmp_row[BRIEF_ORIG_RECIPE_ID_COL] = null;
+		$tmp_row[BRIEF_PARENT_RECIPE_ID_COL] = null;
 		$list[] = $row;
 		$recipe_cnt++;
 		if ($row[BRIEF_VIRGIN_TITLE_COL]) {
@@ -30,7 +30,7 @@ function import_recipe_requests_and_names($working_month, $month_info) {
 			$tmp_row[BRIEF_WORKSHEET_ID_COL] = $filtered_working_doc_data[$recipe_cnt][WORKSHEET_ID_COL];
 			$tmp_row[BRIEF_VIRGIN_ID_COL] = $filtered_working_doc_data[$recipe_cnt][VIRGIN_ID_COL];
 			$tmp_row[BRIEF_RECIPE_TYPE_COL] = "Catalog";
-			$tmp_row[BRIEF_ORIG_RECIPE_ID_COL] = $row[BRIEF_WORKSHEET_ID_COL];
+			$tmp_row[BRIEF_PARENT_RECIPE_ID_COL] = $row[BRIEF_WORKSHEET_ID_COL];
 			$list[] = $tmp_row;
 			$recipe_cnt++;
 		}
@@ -40,7 +40,7 @@ function import_recipe_requests_and_names($working_month, $month_info) {
 			$tmp_row[BRIEF_WORKSHEET_ID_COL] = $filtered_working_doc_data[$recipe_cnt][WORKSHEET_ID_COL];
 			$tmp_row[BRIEF_VIRGIN_ID_COL] = $filtered_working_doc_data[$recipe_cnt][VIRGIN_ID_COL];
 			$tmp_row[BRIEF_RECIPE_TYPE_COL] = "Catalog";
-			$tmp_row[BRIEF_ORIG_RECIPE_ID_COL] = $row[BRIEF_WORKSHEET_ID_COL];
+			$tmp_row[BRIEF_PARENT_RECIPE_ID_COL] = $row[BRIEF_WORKSHEET_ID_COL];
 			$list[] = $tmp_row;
 			$recipe_cnt++;
 		}
@@ -174,7 +174,7 @@ function load_recipe_request_table($data, $dt) {
 				'client_id' => $client_id,
 				'recipe_title' => sanitize_text_field($recipe_row[BRIEF_RECIPE_TITLE_COL]),
 				'recipe_type' => $recipe_type,
-				'orig_recipe_id' => sanitize_text_field($recipe_row[BRIEF_ORIG_RECIPE_ID_COL]),
+				'parent_recipe_id' => sanitize_text_field($recipe_row[BRIEF_PARENT_RECIPE_ID_COL]),
 			);}
 	
 	}
@@ -301,7 +301,7 @@ function insert_recipe_rows($recipes, $request_id, $recipes_table) {
 		$client_id = $recipe_info['client_id'];
 		$recipe_title = $recipe_info['recipe_title'];
 		$recipe_type = $recipe_info['recipe_type'];
-		$orig_recipe_id = $recipe_info['orig_recipe_id'];
+		$parent_recipe_id = $recipe_info['parent_recipe_id'];
 
 		$db_request_id = "WO" === $recipe_type ? $request_id : null;
 		$db_client_id = $client_id ? $client_id : 'makenull';
@@ -313,13 +313,13 @@ function insert_recipe_rows($recipes, $request_id, $recipes_table) {
 		$insert_parms[] = $recipe_title;
 		$insert_parms[] = $db_request_id;
 		$insert_parms[] = $recipe_type;
-		$insert_parms[] = $orig_recipe_id;
+		$insert_parms[] = $parent_recipe_id;
 	}
 	
 	$insert_values = rtrim($insert_values, ',');
 	
 	$sql = "INSERT into $recipes_table
-		(worksheet_id, root_id, client_id, recipe_title, request_id, recipe_type, orig_recipe_id)
+		(worksheet_id, root_id, client_id, recipe_title, request_id, recipe_type, parent_recipe_id)
 	VALUES $insert_values";
 
 	$prepared_sql = $wpdb->prepare($sql, $insert_parms);
