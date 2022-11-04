@@ -199,6 +199,27 @@ function recipe_add_recipe_instructions_table() {
 	dbDelta($sql);
 }
 
+function recipe_add_recipe_names_table() {
+	global $wpdb;
+
+	$sql = "
+	CREATE TABLE IF NOT EXISTS  `tc_recipe_names` (
+		`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+		`recipe_id` BIGINT(20) UNSIGNED NOT NULL,
+		`recipe_name` VARCHAR(80) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		PRIMARY KEY (`id`) USING BTREE,
+		UNIQUE INDEX `recipe_name` (`recipe_name`) USING BTREE,
+		INDEX `recipe_id` (`recipe_id`) USING BTREE
+	)
+	COLLATE='utf8mb4_0900_ai_ci'
+	ENGINE=MyISAM
+	;
+	";
+
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta($sql);
+}
+
 function recipe_insert_distributor() {
 	global $wpdb;
 
@@ -246,6 +267,8 @@ function recipe_sheets_activation() {
 	recipe_add_recipe_ingredients_table();
 
 	recipe_add_recipe_instructions_table();
+
+	recipe_add_recipe_names_table();
 
 }
 /**** END OF ACTIVATION CODE ****/
