@@ -15,9 +15,10 @@ define('BRIEF_VIRGIN_TITLE_COL', 9);
 define('BRIEF_VIRGIN_TITLE2_COL', 10);
 define('BRIEF_SOURCE_ID_COL', 11);
 define('BRIEF_WORKSHEET_ID_COL', 12);
-define('BRIEF_VIRGIN_ID_COL', 13);
-define('BRIEF_RECIPE_TYPE_COL', 14);
-define('BRIEF_PARENT_RECIPE_ID_COL', 15);  // dummy internal column for matching catalog to original recipe
+define('BRIEF_TIER_COL', 13);
+define('BRIEF_VIRGIN_ID_COL', 14);
+define('BRIEF_RECIPE_TYPE_COL', 15);
+define('BRIEF_PARENT_RECIPE_ID_COL', 16);  // dummy internal column for matching catalog to original recipe
 
 define('WORKSHEET_ID_COL', 0);
 define('VIRGIN_ID_COL', 1);
@@ -72,6 +73,8 @@ define('RECIPE_CATALOGUE_ID', '1Mc97WIj8HnXDwuUjUookzjnqEJt5Gq2Of9G4kp_JoXs');
 define('IMAGE_FOLDER_ID', '1n7qWQExvik_hoXsnMIBpjaEbnV-IAIsc');
 define('VIRGIN_FOLDER_ID', '16JSXrgQCLyUIyD-k6tY3Cj9HR6y2vtmz' );
 
+define('REPORT_IMAGES_ID', '1nqbWsHr9U03sU9eQyQtB8S8Je9zy_K1LZP50wYbRKWs' );
+
 $recipe_worksheets_parms = array(
 	'2022-03-01' => array( 
 		'worksheet_doc_id' => MARCH_MAY_WORKING_DOC_ID,
@@ -110,26 +113,9 @@ $recipe_worksheets_parms = array(
 	),
 );
 
+$report_title_ids = array( 
+	'Image Recipe Comparisons' => REPORT_IMAGES_ID,
 
-/**
- * Initializes an Analytics Reporting API V4 service object.
- *
- * @return An authorized Analytics Reporting API V4 service object.
- */
-function initializeSheets()
-{
+);
 
-	// Use the developers console and download your service account
-	// credentials in JSON format. Place them in this directory or
-	// change the key file location if necessary.
-	$KEY_FILE_LOCATION = RECIPE_SHEETS_PLUGIN_INCLUDES. 'google-apis/credentials.json';
-
-	// Create and configure a new client object.
-	$client = new Google_Client();
-	$client->setApplicationName("Google Sheets");
-	$client->setAuthConfig($KEY_FILE_LOCATION);
-	$client->setScopes(['https://www.googleapis.com/auth/spreadsheets']);
-	$sheets = new Google\Service\Sheets($client);
-
-	return $sheets;
-}
+require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/google_sheet_functions.php';

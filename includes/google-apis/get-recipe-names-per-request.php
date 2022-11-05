@@ -17,7 +17,18 @@ function import_recipe_requests_and_names($working_month, $month_info) {
 	$filtered_working_doc_data = filter_working_doc_by_month($recipe_working_doc_data, $working_month);
 	$filtered_working_names = array_column($filtered_working_doc_data, RECIPE_TITLE_COL);
 	$recipe_cnt = 0;
-	$brief_recipe_w_virgins = array_reduce($recipe_brief_data, function($list, $row) use (&$recipe_cnt, $filtered_working_doc_data) {
+	$virgin_tier_row = array();
+	$virgin_tier_recipes = array();
+	$brief_recipe_w_virgins = array_reduce($recipe_brief_data, function($list, $row) use (&$recipe_cnt, $filtered_working_doc_data, &$virgin_tier_row, &$virgin_tier_recipes) {
+		if (isset($row[BRIEF_TIER_COL]) && 'virgin' === strtolower($row[BRIEF_TIER_COL])) {
+			$virgin_tier_row = $row;
+		}
+		if (count($virgin_tier_row) ) {
+			if (isset($row[BRIEF_RECIPE_TITLE_COL]) && $row[BRIEF_RECIPE_TITLE_COL]) {
+				$virgin_tier_recipes[] = $row[BRIEF_RECIPE_TITLE_COL];
+			}
+			return $list;
+		}
 		$row[BRIEF_WORKSHEET_ID_COL] = $filtered_working_doc_data[$recipe_cnt][WORKSHEET_ID_COL];
 		$row[BRIEF_VIRGIN_ID_COL] = $row[BRIEF_WORKSHEET_ID_COL];
 		$row[BRIEF_RECIPE_TYPE_COL] = "WO";
@@ -46,6 +57,12 @@ function import_recipe_requests_and_names($working_month, $month_info) {
 		}
 		return $list;
 	}, []);
+
+	// echo '<pre>';
+	// print_r($virgin_tier_row);
+	// print_r($virgin_tier_recipes);
+	// echo '</pre>';
+	// die;
 	
 	$comp_working_list = array_map(function($name) {
 		return strtolower(trim($name));
@@ -99,6 +116,14 @@ function import_recipe_requests_and_names($working_month, $month_info) {
 
 	
 	load_recipe_request_table($brief_recipe_w_virgins, $working_month);
+
+	if (count($virgin_tier_row)) {
+		$virgin_recipe_cnt = load_recipe_request_tier_data($virgin_tier_row, $virgin_tier_recipes, $working_month);
+		if ($virgin_recipe_cnt) {
+			echo '<h3>Virgin Tier Recipes Listed: ' . count($virgin_tier_recipes) . '</h3>';
+			echo "<h3>Virgin Tier Rows Updated: $virgin_recipe_cnt</h3>";
+		}
+	}
 }
 
 function getWorkingDocData($sheets, $sheet_id) {
@@ -118,7 +143,7 @@ function getWorkingDocData($sheets, $sheet_id) {
 function getBriefData($sheets, $sheet_id, $sheet_name) {
 	try{
 			$spreadsheetId = $sheet_id;
-			$range = "$sheet_name!B4:L";
+			$range = "$sheet_name!B4:O";
 			$response = $sheets->spreadsheets_values->get($spreadsheetId, $range);
 			$values = $response->getValues();
 			return $values;
@@ -335,4 +360,37 @@ function insert_recipe_rows($recipes, $request_id, $recipes_table) {
 
 	$rows_affected = $wpdb->query($prepared_sql);
 	return true;
+}
+
+function load_recipe_request_tier_data($virgin_tier_row, $virgin_tier_recipes, $working_month) {
+	global $wpdb;
+
+	$current_vals = reset_current_vals();
+	load_current_vals($current_vals, $virgin_tier_row);
+	$current_vals['tier'] = "Virgin";
+	$current_vals['distributor_id'] = 1;
+	$current_vals['month_year'] = $working_month;
+	if (!$current_vals['classification']) {
+		$current_vals['classification'] = 'Virgin Recipes from the Catalogue';
+	}
+	$formats = array(	'%s','%s','%s','%s','%s','%s','%d','%s','%s','%d','%s');
+
+	$wpdb->insert('tc_recipe_requests', $current_vals, $formats);
+	$request_id = $wpdb->insert_id;
+
+	$placeholders = array_fill(0, count($virgin_tier_recipes), '%s');
+	$placeholders = implode(', ', $placeholders);
+	
+
+	$sql = "
+		UPDATE tc_recipes
+		SET request_id = $request_id
+		WHERE worksheet_id in ($placeholders)
+	";
+
+	$sql = $wpdb->prepare($sql, $virgin_tier_recipes);
+	$db_result = $wpdb->query($sql);
+
+	return $db_result;
+
 }

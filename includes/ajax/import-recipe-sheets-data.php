@@ -53,13 +53,11 @@ function import_recipe_sheets_data_all($routine) {
 function import_all_recipe_requests_and_names($recipe_worksheets_parms) {
 	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-names-per-request.php';
 	// Load requests and recipes for each month
-	// TODO:  eventually, deal with db id matching WO worksheet id and
-	//				virgin/new recipes being assigned with auto inc.  for now,
-	// 				the db recipe id is unrelated to the worksheet id
+
 	foreach($recipe_worksheets_parms as $month => $month_data) {
 		// if ('2022-06-01' == $month) {
 		// 	import_recipe_requests_and_names($month, $month_data);
-		// // }
+		// }
 		import_recipe_requests_and_names($month, $month_data);
 	}
 }

@@ -6,12 +6,17 @@ require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/load-working-images-di
 
 function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	global $wpdb;
+
+	$report_name = 'Image Recipe Comparisons';
+	$sheet_name = 'June Virgin';
 	$image_files = get_working_images_dir_info($recipe_type);
 
 	if (!count($image_files)) {
 		echo "<h2>No image files found</h2>";
 		die;
 	}
+
+	
 
 	// echo '<pre>';
 	// print_r($image_files);
@@ -29,6 +34,8 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 		echo "<pre>";
 		print_r($missing_worksheet_id_images);
 		echo "</pre>";
+
+		
 	}
 
 	$image_files = array_filter($image_files, function($image_info) {
@@ -80,12 +87,14 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 		$recipe_rows = $wpdb->get_results($sql, ARRAY_A);
 	} else {
 		$sql = "
-			SELECT rec.*
-			FROM tc_recipes rec
-			WHERE rec.recipe_type = 'Catalog'
+		SELECT rec.*
+		FROM tc_recipes rec
+		JOIN tc_recipe_requests req ON req.id = rec.request_id
+		WHERE rec.recipe_type = 'Catalog'
+			AND req.tier = 'Virgin'
+			AND req.month_year = '2022-06-01'
+			AND rec.submission_batch IS null
 		";
-		// 	AND rec.submission_batch IS NULL
-		// ";
 	
 		$recipe_rows = $wpdb->get_results($sql, ARRAY_A);
 	}
