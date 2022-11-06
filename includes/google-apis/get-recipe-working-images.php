@@ -7,16 +7,15 @@ require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/load-working-images-di
 function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	global $wpdb;
 
-	$report_name = 'Image Recipe Comparisons';
-	$sheet_name = 'June Virgin';
+	$report_id = JUNE_VIRGIN_IMAGES_REPORT_ID;
 	$image_files = get_working_images_dir_info($recipe_type);
 
 	if (!count($image_files)) {
 		echo "<h2>No image files found</h2>";
 		die;
 	}
-
 	
+	$sheets = initializeSheets();
 
 	// echo '<pre>';
 	// print_r($image_files);
@@ -34,8 +33,10 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 		echo "<pre>";
 		print_r($missing_worksheet_id_images);
 		echo "</pre>";
-
-		
+		$report_data = array_values_multi($missing_worksheet_id_images);
+		create_report($sheets, $report_id, 'Missing Ids', $report_data);		
+	} else {
+		clear_report($sheets, $report_id, 'Missing Ids');	
 	}
 
 	$image_files = array_filter($image_files, function($image_info) {
@@ -66,6 +67,12 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 		print_r($dup_list);
 		echo "</pre>";
 		$process_images_flg = false;
+		$report_data = array_reduce($dup_list, function($rpt, $dup_arr) {
+			return array_merge($rpt,  array_values_multi($dup_arr));
+		}, array());
+		create_report($sheets, $report_id, 'Duplicate Recipe Ids', $report_data);		
+	} else {
+		clear_report($sheets, $report_id, 'Duplicate Recipe Ids');	
 	}
 
 	// echo "<pre>";
@@ -93,8 +100,9 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 		WHERE rec.recipe_type = 'Catalog'
 			AND req.tier = 'Virgin'
 			AND req.month_year = '2022-06-01'
-			AND rec.submission_batch IS null
-		";
+			";
+		// 	AND rec.submission_batch IS null
+		// ";
 	
 		$recipe_rows = $wpdb->get_results($sql, ARRAY_A);
 	}
@@ -117,13 +125,10 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 		echo "<pre>";
 		print_r($missing_images);
 		echo "</pre>";
-	}
-
-	if (count($fnd_missing_recipes)) {
-		echo '<h2>Images Worksheet Recipe Ids exist, but recipes not in Submission List: </h2>';
-		echo "<pre>";
-		print_r($fnd_missing_recipes);
-		echo "</pre>";
+		$report_data = array_values_multi($missing_images);
+		create_report($sheets, $report_id, 'Missing Images', $report_data);		
+	} else {
+		clear_report($sheets, $report_id, 'Missing Images');	
 	}
 
 	if (count($not_fnd_missing_recipes)) {
@@ -131,15 +136,29 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 		echo "<pre>";
 		print_r($not_fnd_missing_recipes);
 		echo "</pre>";
+		$report_data = array_values_multi($not_fnd_missing_recipes);
+		create_report($sheets, $report_id, 'Unknown Recipes', $report_data);	
+	} else {
+		clear_report($sheets, $report_id, 'Recipes');	
 	}
 
+	if (count($fnd_missing_recipes)) {
+		echo '<h2>Images Worksheet Recipe Ids exist, but recipes not in Submission List: </h2>';
+		echo "<pre>";
+		print_r($fnd_missing_recipes);
+		echo "</pre>";
+		$report_data = array_values_multi($fnd_missing_recipes);
+		create_report($sheets, $report_id, 'Recipes Not in Submission List', $report_data);	
+	} else {
+		clear_report($sheets, $report_id, 'Recipes Not in Submission List');	
+	}
 
 	// if (!$process_images_flg) {
 	// 	echo '<h2>Processing will not occur due to Duplicate Images</h2>';
 	// 	die;
 	// }
 
-	$upd_cnt = process_images($recipe_rows, $image_files_by_worksheet_id);
+	$upd_cnt = process_images($recipe_rows, $image_files_by_worksheet_id, $sheets, $report_id);
 
 	echo "<h2>$upd_cnt recipes updated</h2>";
 }
@@ -214,8 +233,9 @@ function check_missing_info($images, $recipes) {
 	);
 }
 
-function process_images($recipe_rows, $image_files_by_worksheet_id) {	
+function process_images($recipe_rows, $image_files_by_worksheet_id, $sheets, $report_id) {	
 	$upd_cnt = 0;
+	clear_report($sheets, $report_id, 'Mismatch Camera ID');	
 	foreach($recipe_rows as $recipe_row) {
 		$worksheet_id = $recipe_row['worksheet_id'];
 		if (!isset($image_files_by_worksheet_id[$worksheet_id])) {
@@ -229,6 +249,8 @@ function process_images($recipe_rows, $image_files_by_worksheet_id) {
 		if ($recipe_row['camera_id'] && $camera_id != $recipe_row['camera_id']) {
 			echo "<h3>Mismatch camera id for worksheet $worksheet_id</h3>";
 			echo "<p>Drive file name: $camera_id  --- table camera id: $recipe_row[camera_id]</p>";
+			$report_data = array(array($worksheet_id, $recipe_row['camera_id'], $camera_id));
+			create_report($sheets, $report_id, 'Mismatch Camera ID', $report_data, false);		
 		}
 		$upd_success = update_recipe_row($recipe_row['id'], $google_id, $camera_id, $photo_date);
 		$upd_cnt += $upd_success;
@@ -245,7 +267,7 @@ function update_recipe_row($recipe_id, $google_id, $camera_id, $photo_date) {
 		array('image_url' => $image_url, 'camera_id' => $camera_id, 'photo_date' => $photo_date), 
 		array('id' => $recipe_id) );
 
-	if (!$result) {
+	if (false === $result) {
 		echo "<h2>Error Updating Recipe Id: $recipe_id</h2>";
 		echo "<p>$wpdb->error</p>";
 		return 0;

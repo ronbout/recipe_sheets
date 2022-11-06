@@ -25,26 +25,44 @@ function initializeSheets()
 	return $sheets;
 }
 
-function create_report($sheets=null, $wkbk_name, $sheet_name, $data, $overwrite=true) {
+function array_values_multi($arr) {
+	return array_values(array_map(function ($inner) {
+		return array_map(function ($val) {
+			return null === $val ? '' : $val;
+		},array_values($inner));
+	}, $arr));
+}
+
+function create_report($sheets=null, $sheet_id, $sheet_name, $data, $overwrite=true) {
 	if (!$sheets) {
 		$sheets = initializeSheets();
 	}
 
-	if (!isset($report_title_ids[$wkbk_name])) {
-		echo "<h3>Unknown Report Workbook name: $wkbk_name</h3>";
-		return -1;
-	}
-	$sheet_id = $report_title_ids[$wkbk_name];
-
 	if ($overwrite) {
-		$current_rows = read_cells_from_sheet($sheets, $sheet_id, $sheet_name, 'A1Z');
-		$range = 'A2Z' . (count($current_rows) + 1);
-		clear_cells_in_sheet($sheets, $sheet_id, $sheet_name, $range);
+		$current_rows = read_cells_from_sheet($sheets, $sheet_id, $sheet_name, 'A2:Z');
+		$report_rows_cnt = count($current_rows);
+		if ($report_rows_cnt) {
+			$range = 'A2:Z' . ($report_rows_cnt + 1);
+			clear_cells_in_sheet($sheets, $sheet_id, $sheet_name, $range);
+		}
 		return write_cells_to_sheet($sheets, $sheet_id, $sheet_name, 'A2', $data);
 	}
 
 	// append the data to the end of the rows
-	return append_cells_to_sheet($sheets, $sheet_id, $sheet_name, 'A1Z', $data);
+	return append_cells_to_sheet($sheets, $sheet_id, $sheet_name, 'A1:Z', $data);
+
+}
+
+function clear_report($sheets=null, $sheet_id, $sheet_name) {
+	if (!$sheets) {
+		$sheets = initializeSheets();
+	}
+	$current_rows = read_cells_from_sheet($sheets, $sheet_id, $sheet_name, 'A2:Z');
+	$report_rows_cnt = count($current_rows);
+	if ($report_rows_cnt) {
+		$range = 'A2:Z' . ($report_rows_cnt + 1);
+		clear_cells_in_sheet($sheets, $sheet_id, $sheet_name, $range);
+	}
 
 }
 
@@ -97,7 +115,7 @@ function append_cells_to_sheet($sheets, $sheet_id, $sheet_name, $sheet_range, $s
 	}
 }
 
-function clear_cells_in_sheet($sheets, $sheet_id, $sheet_name, $range) {
+function clear_cells_in_sheet($sheets, $sheet_id, $sheet_name, $sheet_range) {
 	try{
 		$range = "$sheet_name!$sheet_range";
 		$body = new Google_Service_Sheets_ClearValuesRequest();

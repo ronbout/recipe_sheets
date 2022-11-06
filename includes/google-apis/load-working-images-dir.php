@@ -58,9 +58,9 @@ function get_image_dir_files($drive, $folder_id) {
 						// printf("Found file: %s (%s)\n", $file->name, $file->id);
 						// echo "<p>name: $file->name - id: $file->id => $file->description</p>";
 						$files[] = array( 
-							'id' => $file->id,
 							'name' => $file->name,
-							'worksheet_id' => $file->description
+							'worksheet_id' => $file->description,
+							'id' => $file->id,
 						);
 				}
 				// array_push($files, $response->files);

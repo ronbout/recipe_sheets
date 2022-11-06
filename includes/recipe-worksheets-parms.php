@@ -73,7 +73,7 @@ define('RECIPE_CATALOGUE_ID', '1Mc97WIj8HnXDwuUjUookzjnqEJt5Gq2Of9G4kp_JoXs');
 define('IMAGE_FOLDER_ID', '1n7qWQExvik_hoXsnMIBpjaEbnV-IAIsc');
 define('VIRGIN_FOLDER_ID', '16JSXrgQCLyUIyD-k6tY3Cj9HR6y2vtmz' );
 
-define('REPORT_IMAGES_ID', '1nqbWsHr9U03sU9eQyQtB8S8Je9zy_K1LZP50wYbRKWs' );
+define('JUNE_VIRGIN_IMAGES_REPORT_ID', '1nqbWsHr9U03sU9eQyQtB8S8Je9zy_K1LZP50wYbRKWs' );
 
 $recipe_worksheets_parms = array(
 	'2022-03-01' => array( 
@@ -111,11 +111,6 @@ $recipe_worksheets_parms = array(
 		'month_display' => 'July',
 		'virgin_columns' => 2,
 	),
-);
-
-$report_title_ids = array( 
-	'Image Recipe Comparisons' => REPORT_IMAGES_ID,
-
 );
 
 require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/google_sheet_functions.php';
