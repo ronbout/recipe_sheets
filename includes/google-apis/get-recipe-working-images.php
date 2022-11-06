@@ -249,7 +249,7 @@ function process_images($recipe_rows, $image_files_by_worksheet_id, $sheets, $re
 		if ($recipe_row['camera_id'] && $camera_id != $recipe_row['camera_id']) {
 			echo "<h3>Mismatch camera id for worksheet $worksheet_id</h3>";
 			echo "<p>Drive file name: $camera_id  --- table camera id: $recipe_row[camera_id]</p>";
-			$report_data = array(array($worksheet_id, $recipe_row['camera_id'], $camera_id));
+			$report_data = array(array($worksheet_id, $recipe_row['recipe_title'], $recipe_row['camera_id'], $camera_id));
 			create_report($sheets, $report_id, 'Mismatch Camera ID', $report_data, false);		
 		}
 		$upd_success = update_recipe_row($recipe_row['id'], $google_id, $camera_id, $photo_date);

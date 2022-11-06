@@ -57,10 +57,11 @@ function get_image_dir_files($drive, $folder_id) {
 				foreach ($response->files as $file) {
 						// printf("Found file: %s (%s)\n", $file->name, $file->id);
 						// echo "<p>name: $file->name - id: $file->id => $file->description</p>";
+						$image_url = "https://drive.google.com/file/d/$file->id/view?usp=drivesdk";
 						$files[] = array( 
 							'name' => $file->name,
 							'worksheet_id' => $file->description,
-							'id' => $file->id,
+							'image_url' => $image_url,
 						);
 				}
 				// array_push($files, $response->files);
