@@ -61,20 +61,6 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	});
 
 
-	if (count($dup_list)) {
-		echo '<h2>Duplicates (correct before processing): </h2>';
-		echo "<pre>";
-		print_r($dup_list);
-		echo "</pre>";
-		$process_images_flg = false;
-		$report_data = array_reduce($dup_list, function($rpt, $dup_arr) {
-			return array_merge($rpt,  array_values_multi($dup_arr));
-		}, array());
-		create_report($sheets, $report_id, 'Duplicate Recipe Ids', $report_data);		
-	} else {
-		clear_report($sheets, $report_id, 'Duplicate Recipe Ids');	
-	}
-
 	// echo "<pre>";
 	// print_r($image_files);
 	// print_r($image_files_by_worksheet_id);
@@ -119,6 +105,50 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	$missing_images = $missing_info['missing_image_worksheet_ids'];
 	$fnd_missing_recipes = $missing_info['fnd_missing_recipe_rows'];
 	$not_fnd_missing_recipes = $missing_info['not_fnd_missing_recipe_ids'];
+	$fnd_missing_recipes_by_worksheet_id = $missing_info['fnd_missing_recipes_by_worksheet_id'];
+
+	if (count($dup_list)) {
+		// get recipe titles
+		$dup_names = array_reduce(array_keys($dup_list), function ($lst, $worksheet_id) use ($recipes_by_worksheet_id, $fnd_missing_recipes_by_worksheet_id) {
+			if (isset($recipes_by_worksheet_id[$worksheet_id])) {
+				$name =  $recipes_by_worksheet_id[$worksheet_id]['recipe_title'];
+			} elseif (isset($fnd_missing_recipes_by_worksheet_id[$worksheet_id])) {
+				$name =  $fnd_missing_recipes_by_worksheet_id[$worksheet_id]['recipe_title'];
+			} else {
+				$name =  'N/A';
+			}
+			$lst[$worksheet_id] = $name;
+			return $lst;
+		}, array_keys());
+
+		$process_images_flg = false;
+		$report_data = array_reduce($dup_list, function($rpt, $dup_arr) use ($dup_names) {
+			$dup_arr = array_map(function($arr) use ($dup_names) {
+				$worksheet_id = $arr['worksheet_id'];
+				$tmp = array( 
+					$arr['name'],
+					$arr['worksheet_id'],
+					$dup_names[$worksheet_id],
+					$arr['image_url'],
+				);
+				return $tmp;
+			}, $dup_arr);
+
+			echo '<pre>';
+			print_r($dup_arr);
+			echo '</pre>';
+
+
+			return array_merge($rpt,  $dup_arr);
+		}, array());
+		echo '<h2>Duplicates (correct before processing): </h2>';
+		echo "<pre>";
+		print_r($report_data);
+		echo "</pre>";
+		create_report($sheets, $report_id, 'Duplicate Recipe Ids', $report_data);		
+	} else {
+		clear_report($sheets, $report_id, 'Duplicate Recipe Ids');	
+	}
 
 	if (count($missing_images)) {
 		echo '<h2>Missing Images - Recipe ids in Submission List but no Image: </h2>';
@@ -139,7 +169,7 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 		$report_data = array_values_multi($not_fnd_missing_recipes);
 		create_report($sheets, $report_id, 'Unknown Recipes', $report_data);	
 	} else {
-		clear_report($sheets, $report_id, 'Recipes');	
+		clear_report($sheets, $report_id, 'Unknown Recipes');	
 	}
 
 	if (count($fnd_missing_recipes)) {
@@ -186,7 +216,6 @@ function check_missing_info($images, $recipes) {
 	if (count($missing_recipe_list)) {	
 		$placeholders = array_fill(0, count($missing_recipe_list), '%s');
 		$placeholders = implode(', ', $placeholders);
-
 	
 		$sql = "
 			SELECT rec.* FROM tc_recipes rec
@@ -202,10 +231,19 @@ function check_missing_info($images, $recipes) {
 	$fnd_missing_recipe_ids = array_column($missing_recipe_rows, 'worksheet_id');
 	$not_fnd_missing_recipe_ids = array_values(array_diff($missing_recipe_list, $fnd_missing_recipe_ids));
 
-	$fnd_missing_recipe_images = array_reduce($images, function($lst, $img) use ($fnd_missing_recipe_ids) {
+	$fnd_missing_recipes_by_worksheet_id = array_column($missing_recipe_rows, null, 'worksheet_id');
+
+	$fnd_missing_recipe_images = array_reduce($images, function($lst, $img) use ($fnd_missing_recipes_by_worksheet_id) {
 		$worksheet_id = $img['worksheet_id'];
-		if (in_array($worksheet_id, $fnd_missing_recipe_ids) ) {
-			$lst[] = $img;
+		// if (in_array($worksheet_id, $fnd_missing_recipe_ids) ) {
+		if (isset($fnd_missing_recipes_by_worksheet_id[$worksheet_id]) ) {
+			$tmp = array( 
+				'name' => $img['name'],
+				'worksheet_id' => $img['worksheet_id'],
+				'title' => $fnd_missing_recipes_by_worksheet_id[$worksheet_id]['recipe_title'],
+				'image_url' => $img['image_url'],
+			);
+			$lst[] = $tmp;
 		}
 		return $lst;
 	}, array());
@@ -228,6 +266,7 @@ function check_missing_info($images, $recipes) {
 
 	return array( 
 		'fnd_missing_recipe_rows' => $fnd_missing_recipe_images,
+		'fnd_missing_recipes_by_worksheet_id' => $fnd_missing_recipes_by_worksheet_id,
 		'not_fnd_missing_recipe_ids' => $not_fnd_missing_recipe_images,
 		'missing_image_worksheet_ids' => $missing_images_recipe_info,
 	);
@@ -273,4 +312,8 @@ function update_recipe_row($recipe_id, $google_id, $camera_id, $photo_date) {
 		return 0;
 	}
 	return 1;
+}
+
+function get_recipe_titles($worksheet_ids) {
+
 }
