@@ -40,8 +40,10 @@ function load_ingredients_table($ingred_data){
 	global $wpdb;
 
 	$sql = "DELETE FROM tc_ingredients WHERE 1";
-
 	$wpdb->query($sql);
+	$sql = "ALTER TABLE tc_ingredients AUTO_INCREMENT = 1";
+	$wpdb->query($sql);
+
 
 	$insert_sql = "
 		INSERT INTO tc_ingredients 

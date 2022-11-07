@@ -104,9 +104,6 @@ function import_all_recipe_image_data($recipe_worksheets_parms, $recipe_type) {
 function clear_recipe_tables() {
 	global $wpdb;
 
-	$sql = "DELETE FROM tc_recipes WHERE 1";
-	$db_results = $wpdb->query($sql);
-	echo "<h2>$db_results recipes deleted</h2>";
 
 	$sql = "DELETE FROM tc_recipe_requests WHERE 1";
 	$db_results = $wpdb->query($sql);
@@ -119,6 +116,14 @@ function clear_recipe_tables() {
 	$sql = "DELETE FROM tc_recipe_instructions WHERE 1";
 	$db_results = $wpdb->query($sql);
 	echo "<h2>$db_results recipe instructions deleted</h2>";
+
+	$sql = "DELETE FROM tc_recipe_names WHERE 1";
+	$db_results = $wpdb->query($sql);
+	echo "<h2>$db_results recipe names deleted</h2>";
+	
+	$sql = "DELETE FROM tc_recipes WHERE 1";
+	$db_results = $wpdb->query($sql);
+	echo "<h2>$db_results recipes deleted</h2>";
 }
 
 function clear_ingredients_table() {
