@@ -220,6 +220,42 @@ function recipe_add_recipe_names_table() {
 	dbDelta($sql);
 }
 
+function recipe_add_recipe_names_trigger() {
+	global $wpdb;
+
+	$sql = "
+		DROP TRIGGER if EXISTS tr_au_recipes;
+		delimiter $$
+		CREATE TRIGGER tr_au_recipes
+		AFTER UPDATE ON tc_recipes FOR EACH ROW 
+		BEGIN
+			IF OLD.recipe_title <> NEW.recipe_title THEN
+				INSERT INTO tc_recipe_names (recipe_id, recipe_name)
+					SELECT * FROM 
+						(SELECT NEW.id AS recipe_id, NEW.recipe_title AS recipe_name) AS new_value
+					WHERE NOT EXISTS (
+						SELECT id FROM tc_recipe_names WHERE recipe_name = NEW.recipe_title) LIMIT 1;
+			
+			END IF;
+		END; $$
+		delimiter ;
+		DROP TRIGGER if EXISTS tr_ai_recipes;
+		delimiter $$
+		CREATE TRIGGER tr_ai_recipes
+		AFTER INSERT ON tc_recipes FOR EACH ROW 
+		BEGIN
+			INSERT INTO tc_recipe_names (recipe_id, recipe_name)
+				SELECT * FROM 
+					(SELECT NEW.id AS recipe_id, NEW.recipe_title AS recipe_name) AS new_value
+				WHERE NOT EXISTS (
+					SELECT id FROM tc_recipe_names WHERE recipe_name = NEW.recipe_title) LIMIT 1;
+			
+		END; $$
+		delimiter ;
+	";
+	mysqli_multi_query($wpdb->dbh, $sql);
+}
+
 function recipe_insert_distributor() {
 	global $wpdb;
 
@@ -269,6 +305,8 @@ function recipe_sheets_activation() {
 	recipe_add_recipe_instructions_table();
 
 	recipe_add_recipe_names_table();
+
+	recipe_add_recipe_names_trigger();
 
 }
 /**** END OF ACTIVATION CODE ****/
