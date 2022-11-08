@@ -6,7 +6,7 @@ global $wpdb;
 // and access <<MONTH>>  Working Document
 require_once __DIR__ . '/vendor/autoload.php';
 
-require RECIPE_SHEETS_PLUGIN_INCLUDES . 'recipe-worksheets-parms.php';
+require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'recipe-worksheets-parms.php';
 
 $sheets = initializeSheets();
 

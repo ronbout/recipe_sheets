@@ -75,6 +75,32 @@ function recipe_add_ingredients_table() {
 	dbDelta($sql);
 }
 
+function recipe_add_measure_units_table() {
+	global $wpdb;
+
+	$sql = "
+	CREATE TABLE IF NOT EXISTS `tc_measure_units` (
+		`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+		`name` VARCHAR(60) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`normalized` VARCHAR(60) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`pluralized` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`depluralize` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`mark` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`derivative` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`cheese` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		PRIMARY KEY (`id`) USING BTREE,
+		UNIQUE INDEX `name` (`name`) USING BTREE,
+		INDEX `normalized` (`normalized`) USING BTREE
+	)
+	COLLATE='utf8mb4_0900_ai_ci'
+	ENGINE=MyISAM
+	;
+	";
+
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta($sql);
+}
+
 function recipe_add_recipe_requests_table() {
 	global $wpdb;
 
@@ -295,6 +321,8 @@ function recipe_sheets_activation() {
 	recipe_insert_types();
 
 	recipe_add_ingredients_table();
+
+	recipe_add_measure_units_table();
 	
 	recipe_add_recipe_requests_table();
 	
@@ -306,7 +334,7 @@ function recipe_sheets_activation() {
 
 	recipe_add_recipe_names_table();
 
-	recipe_add_recipe_names_trigger();
+	// recipe_add_recipe_names_trigger();
 
 }
 /**** END OF ACTIVATION CODE ****/

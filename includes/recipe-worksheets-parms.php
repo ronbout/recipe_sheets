@@ -115,3 +115,5 @@ $recipe_worksheets_parms = array(
 );
 
 require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/google_sheet_functions.php';
+
+require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'report_functions.php';

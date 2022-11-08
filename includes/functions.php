@@ -1,8 +1,6 @@
 <?php
-/**
-  * Add a "browse_resumes" capability to admins and venues
-  * Can be used to test for other employer capabilities
-  */
+
+defined('ABSPATH') or die('Direct script access disallowed.');
 
 function recipe_sheets_add_capability() {
 	$role = get_role( 'administrator' );

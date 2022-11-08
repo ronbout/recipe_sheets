@@ -3,7 +3,7 @@
 defined('ABSPATH') or die('Direct script access disallowed.');
 
 function import_recipe_sheets_data_all($routine) {
-	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'recipe-worksheets-parms.php';
+	require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'recipe-worksheets-parms.php';
 
 	switch($routine) {
 		case 0:
@@ -63,6 +63,10 @@ function import_all_recipe_requests_and_names($recipe_worksheets_parms) {
 }
 
 function import_all_recipe_entry_status($recipe_worksheets_parms) {
+	// start the import recipe entry report by writing out ingredients.
+	// must be done outside the import so it does not include ingredients
+	// from previous months
+	generate_ingredients_report(RECIPE_ENTRY_IMPORT_REPORT_ID, "Ingredients");
 	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-entry-status.php';
 	// load recipe entry status for each month
 	foreach($recipe_worksheets_parms as $month => $month_data) {

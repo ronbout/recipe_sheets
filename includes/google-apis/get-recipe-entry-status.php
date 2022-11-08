@@ -8,6 +8,9 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 function import_recipe_entry_status($working_month, $month_info) {
 	global $wpdb; 
+	
+	$report_id = RECIPE_ENTRY_IMPORT_REPORT_ID;
+	$sheets = initializeSheets();
 
 	$sql = "
 		SELECT ingred.* 
@@ -70,7 +73,7 @@ function import_recipe_entry_status($working_month, $month_info) {
 	die;
 */
 
-	$update_cnt = update_recipe_table_entry($recipe_data, $ingreds);
+	$update_cnt = update_recipe_table_entry($recipe_data, $ingreds, $sheets, $report_id, $test_month);
 	echo "<h1>Recipe Entries Updated: $update_cnt</h1>";
 }
 
@@ -90,7 +93,7 @@ function getEntryData($sheets, $sheet_id) {
 		}
 }
 
-function update_recipe_table_entry($recipe_rows, $ingreds) {
+function update_recipe_table_entry($recipe_rows, $ingreds, $sheets, $report_id, $month) {
 	
 	// echo "<pre>";
 	// print_r($recipe_rows);
@@ -186,8 +189,11 @@ function update_recipe_table_entry($recipe_rows, $ingreds) {
 				$fnd = array_search($ingred_search_name, $ingred_db_plurals);
 				if (false === $fnd) {
 					echo "<h4>** $fielddesc NOT FOUND - Worksheet id: $worksheet_id **</h4>";
-					$not_found[] = array('ingred' => $fielddesc, 'worksheet_id' => $worksheet_id);
 					$new_ingred_data = insert_new_ingredient($fielddesc, $ingreds, $ingred_db_names, $ingred_db_plurals);
+					$new_ingred_row = $new_ingred_data['new_ingred_row'];
+					$new_ingred_row['recipe_worksheet_id' ] = $worksheet_id;
+					$new_ingred_row['brief_month' ] = $month;
+					$not_found[] = $new_ingred_row;
 					$ingreds = $new_ingred_data['ingreds'];
 					$ingred_db_names = $new_ingred_data['names'];
 					$ingred_db_plurals = $new_ingred_data['plurals'];
@@ -225,12 +231,12 @@ function update_recipe_table_entry($recipe_rows, $ingreds) {
 		$update_cnt++;
 	}
 
-	// if (count($not_found)) {
-	// 	echo '<pre>';
-	// 	print_r($not_found);
-	// 	echo '</pre>';
-	// 	die;
-	// }
+	if (count($not_found)) {
+		$new_names = array_column($not_found, 'name');
+		array_multisort($new_names, SORT_ASC, $not_found );
+		$report_data = array_values_multi($not_found);
+		create_report($sheets, $report_id, $sheet_name, $report_data, false);	
+	}
 	return $update_cnt;
 }
 
@@ -265,14 +271,23 @@ function insert_new_ingredient($ingred_name, $ingreds, $ingred_db_names, $ingred
 	$ingred_id = $wpdb->insert_id;
 	$new_ingred_row = array( 
 		'id' => $ingred_id,
+		'name' => $ingred_name,
+		'normalized' => $normalized,
+		'pluralized' => '',
+		'depluralize' => '',
+		'derivative' => '',
+		'mince' => '',
+	);
+	$new_ingred_search_row = array( 
+		'id' => $ingred_id,
 		'name' => $normalized,
 		'normalized' => $normalized,
-		'pluralized' => null,
-		'depluralize' => null,
-		'derivative' => null,
-		'mince' => null,
+		'pluralized' => '',
+		'depluralize' => '',
+		'derivative' => '',
+		'mince' => '',
 	);
-	$ingreds[] = $new_ingred_row;
+	$ingreds[] = $new_ingred_search_row;
 
 	$names = array_column($ingreds, 'name');
 	array_multisort($names, SORT_ASC, $ingreds );
@@ -296,6 +311,7 @@ function insert_new_ingredient($ingred_name, $ingreds, $ingred_db_names, $ingred
 		'names' => $ingred_db_names,
 		'plurals' => $ingred_db_plurals,
 		'fnd' => $fnd,
+		'new_ingred_row' => $new_ingred_row,
 	);
 
 }
