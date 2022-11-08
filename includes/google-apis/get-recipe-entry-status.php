@@ -23,7 +23,14 @@ function import_recipe_entry_status($working_month, $month_info) {
 	array_walk($ingreds, function(&$row) {
 		$row['name'] = strtolower($row['name']);
 	});
+	
+	$sql = "
+		SELECT units.* 
+		FROM tc_measure_units units
+		ORDER BY units.name ASC
+	";
 
+	$units = $wpdb->get_results($sql, ARRAY_A);
 
 	$sheets = initializeSheets();
 	$recipe_data = getEntryData($sheets, $month_info['worksheet_doc_id']);
@@ -73,7 +80,7 @@ function import_recipe_entry_status($working_month, $month_info) {
 	die;
 */
 
-	$update_cnt = update_recipe_table_entry($recipe_data, $ingreds, $sheets, $report_id, $test_month);
+	$update_cnt = update_recipe_table_entry($recipe_data, $ingreds, $units, $sheets, $report_id, $test_month);
 	echo "<h1>Recipe Entries Updated: $update_cnt</h1>";
 }
 
@@ -93,7 +100,7 @@ function getEntryData($sheets, $sheet_id) {
 		}
 }
 
-function update_recipe_table_entry($recipe_rows, $ingreds, $sheets, $report_id, $month) {
+function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $report_id, $month) {
 	
 	// echo "<pre>";
 	// print_r($recipe_rows);
@@ -112,6 +119,18 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $sheets, $report_id, 
 		$name = strtolower($name);
 	});
 
+	$unit_db_names = array_column($units, 'name');
+	$unit_db_plurals = array_column($units, 'pluralized');
+	$unit_db_plurals = array_filter($unit_db_plurals, function($row) {
+		return $row;
+	});
+	array_walk($unit_db_names, function(&$name) {
+		$name = strtolower($name);
+	});
+	array_walk($unit_db_plurals, function(&$name) {
+		$name = strtolower($name);
+	});
+
 // 	echo "<pre>";
 // 	print_r($ingred_db_names);
 // 	echo "</pre>";
@@ -119,7 +138,8 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $sheets, $report_id, 
 
 	$prev_worksheet_id = -1;
 	$update_cnt = 0;
-	$not_found = array();
+	$not_found_ingreds = array();
+	$not_found_units = array();
 	foreach($recipe_rows as $row) {
 		$worksheet_id = $row[ENTRY_RECIPE_WORKSHEET_ID_COL];
 		if ($worksheet_id !== $prev_worksheet_id) {
@@ -193,7 +213,7 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $sheets, $report_id, 
 					$new_ingred_row = $new_ingred_data['new_ingred_row'];
 					$new_ingred_row['recipe_worksheet_id' ] = $worksheet_id;
 					$new_ingred_row['brief_month' ] = $month;
-					$not_found[] = $new_ingred_row;
+					$not_found_ingreds[] = $new_ingred_row;
 					$ingreds = $new_ingred_data['ingreds'];
 					$ingred_db_names = $new_ingred_data['names'];
 					$ingred_db_plurals = $new_ingred_data['plurals'];
@@ -207,11 +227,38 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $sheets, $report_id, 
 				}
 			}
 			$ingred_id = $ingreds[$fnd]['id'];
+			// check unit name, creating new unit if needed
+			$unit_name = trim($row[RECIPE_UNIT_COL]);
+			if ('' === $unit_name) {
+				$unit_id = null;
+				$unit_plural = null;
+			} else {
+				$unit_data = check_unit_data($units, $unit_db_names, $unit_db_plurals, $unit_name);
+				if ($unit_data['new_unit_row']) {
+					echo "<h4>Unit $unit_name NOT FOUND - Worksheet id: $worksheet_id Ingred: $fielddesc**</h4>";
+					$new_unit_row = $unit_data['new_unit_row'];
+					$new_unit_row['recipe_worksheet_id' ] = $worksheet_id;
+					$new_unit_row['brief_month' ] = $month;
+					$not_found_units[] = $new_unit_row;
+				}
+				$units = $unit_data['units'];
+				$unit_db_names = $unit_data['unit_names'];
+				$unit_db_plurals = $unit_data['unit_plurals'];
+				$unit_fnd = $unit_data['unit_fnd'];
+				$unit_plural = $unit_data['plural'];
+				$unit_id = $units[$unit_fnd]['id'];
+				// echo '<pre>';
+				// print_r($unit_data);
+				// echo '</pre>';
+				// echo '<h2>unit id', $unit_id, '</h2>';
+				// die;
+			}
 			$recipe_info['ingredients'][] = array( 
 				'ingred_cnt' => $row[RECIPE_FIELD_CNT_COL],
 				'ingred_id' => $ingred_id,
 				'measure' => $row[RECIPE_MEASURE_COL],
-				'unit' => $row[RECIPE_UNIT_COL],
+				'unit' => $unit_id,
+				'unit_plural' => $unit_plural,
 				'notes' => $row[RECIPE_NOTES_COL],
 				'plural' => $plural,
 				'recipe_group' => $row[RECIPE_GROUP_COL],
@@ -231,11 +278,18 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $sheets, $report_id, 
 		$update_cnt++;
 	}
 
-	if (count($not_found)) {
-		$new_names = array_column($not_found, 'name');
-		array_multisort($new_names, SORT_ASC, $not_found );
-		$report_data = array_values_multi($not_found);
-		create_report($sheets, $report_id, $sheet_name, $report_data, false);	
+	if (count($not_found_ingreds)) {
+		$new_names = array_column($not_found_ingreds, 'name');
+		array_multisort($new_names, SORT_ASC, $not_found_ingreds );
+		$report_data = array_values_multi($not_found_ingreds);
+		create_report($sheets, $report_id, 'Ingredients', $report_data, false);	
+	}
+
+	if (count($not_found_units)) {
+		$new_names = array_column($not_found_units, 'name');
+		array_multisort($new_names, SORT_ASC, $not_found_units );
+		$report_data = array_values_multi($not_found_units);
+		create_report($sheets, $report_id, 'Units', $report_data, false);	
 	}
 	return $update_cnt;
 }
@@ -364,12 +418,13 @@ function update_recipe_ingredients_table($ingredients, $recipe_id) {
 
 	foreach($ingredients as $cnt => $ingredient) {
 
-		$insert_values .= '(%d, %d, %d, %s, %s, %s, %d, %s),';
+		$insert_values .= '(%d, %d, %d, %s, %d, %d, %s, %d, %s),';
 		$insert_parms[] = $recipe_id;
 		$insert_parms[] = $cnt+1;
 		$insert_parms[] = $ingredient['ingred_id'];
 		$insert_parms[] = $ingredient['measure'];
 		$insert_parms[] = $ingredient['unit'];
+		$insert_parms[] = $ingredient['unit_plural'];
 		$insert_parms[] = $ingredient['notes'];
 		$insert_parms[] = $ingredient['plural'];
 		$insert_parms[] = $ingredient['recipe_group'];
@@ -379,7 +434,7 @@ function update_recipe_ingredients_table($ingredients, $recipe_id) {
 	$insert_values = rtrim($insert_values, ',');
 
 	$sql = "INSERT into tc_recipe_ingredients
-		(recipe_id, ingred_cnt, ingred_id, measure, unit, notes, plural, recipe_group)
+		(recipe_id, ingred_cnt, ingred_id, measure, unit, unit_plural, notes, plural, recipe_group)
 	VALUES $insert_values";
 
 	$prepared_sql = $wpdb->prepare($sql, $insert_parms);
@@ -417,3 +472,88 @@ function update_recipe_instructions_table($instructions, $recipe_id) {
 	$rows_affected = $wpdb->query($prepared_sql);
 	 
 }
+
+function check_unit_data($units, $unit_db_names, $unit_db_plurals, $unit_name) {
+	$unit_search_name = strtolower($unit_name);
+	$plural = 0;
+	$new_unit_row = false;
+	$fnd = array_search($unit_search_name, $unit_db_names);
+	if (false === $fnd) {
+		$fnd = array_search($unit_search_name, $unit_db_plurals);
+		if (false === $fnd) {
+			$new_unit_data = insert_new_measure_unit($unit_name, $units, $unit_db_names, $unit_db_plurals);
+			$new_unit_row = $new_unit_data['new_unit_row'];
+			$units = $new_unit_data['units'];
+			$unit_db_names = $new_unit_data['names'];
+			$unit_db_plurals = $new_unit_data['plurals'];
+			$fnd = $new_unit_data['fnd'];
+		} else {
+			$plural = true;
+		}
+	}
+	return array( 
+		'new_unit_row' => $new_unit_row,
+		'units' => $units,
+		'unit_names' => $unit_db_names,
+		'unit_plurals' => $unit_db_plurals,
+		'unit_fnd' => $fnd,
+		'plural' => $plural,
+	);
+}
+
+
+function insert_new_measure_unit($unit_name, $units, $unit_db_names, $unit_db_plurals) {
+	global $wpdb;
+
+	$normalized = strtolower($unit_name);
+	$wpdb->insert('tc_measure_units', ['name' => $unit_name, 'normalized' => $normalized]);
+	$unit_id = $wpdb->insert_id;
+	$new_unit_row = array( 
+		'id' => $unit_id,
+		'name' => $unit_name,
+		'normalized' => $normalized,
+		'pluralized' => '',
+		'depluralize' => '',
+		'mark' => '',
+		'derivative' => '',
+		'cheese' => '',
+	);
+	$new_unit_search_row = array( 
+		'id' => $unit_id,
+		'name' => $normalized,
+		'normalized' => $normalized,
+		'pluralized' => '',
+		'depluralize' => '',
+		'mark' => '',
+		'derivative' => '',
+		'cheese' => '',
+	);
+	$units[] = $new_unit_search_row;
+
+	$names = array_column($units, 'name');
+	array_multisort($names, SORT_ASC, $units );
+
+	$unit_db_names = array_column($units, 'name');
+	$unit_db_plurals = array_column($units, 'pluralized');
+	$unit_db_plurals = array_filter($unit_db_plurals, function($row) {
+		return $row;
+	});
+	array_walk($unit_db_names, function(&$name) {
+		$name = strtolower($name);
+	});
+	array_walk($unit_db_plurals, function(&$name) {
+		$name = strtolower($name);
+	});
+	
+	$fnd = array_search($normalized, $unit_db_names);
+
+	return array( 
+		'units' => $units,
+		'names' => $unit_db_names,
+		'plurals' => $unit_db_plurals,
+		'fnd' => $fnd,
+		'new_unit_row' => $new_unit_row,
+	);
+
+}
+ 

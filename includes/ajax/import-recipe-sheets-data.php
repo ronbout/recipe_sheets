@@ -70,6 +70,7 @@ function import_all_recipe_entry_status($recipe_worksheets_parms) {
 	// must be done outside the import so it does not include ingredients
 	// from previous months
 	generate_ingredients_report(RECIPE_ENTRY_IMPORT_REPORT_ID, "Ingredients");
+	generate_measure_units_report(RECIPE_ENTRY_IMPORT_REPORT_ID, "Units");
 	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-entry-status.php';
 	// load recipe entry status for each month
 	foreach($recipe_worksheets_parms as $month => $month_data) {

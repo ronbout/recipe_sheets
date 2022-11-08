@@ -184,12 +184,13 @@ function recipe_add_recipe_ingredients_table() {
 	global $wpdb;
 
 	$sql = "
-	CREATE TABLE IF NOT EXISTS  `tc_recipe_ingredients` (
+	CREATE TABLE IF NOT EXISTS `tc_recipe_ingredients` (
 		`recipe_id` BIGINT(20) UNSIGNED NOT NULL,
 		`ingred_cnt` TINYINT(3) UNSIGNED NOT NULL,
 		`ingred_id` BIGINT(20) UNSIGNED NOT NULL,
 		`measure` TINYTEXT NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-		`unit` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`unit` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+		`unit_plural` TINYINT(3) UNSIGNED NULL DEFAULT NULL,
 		`notes` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`plural` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
 		`recipe_group` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
