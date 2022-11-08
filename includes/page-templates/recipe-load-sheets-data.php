@@ -70,7 +70,7 @@ if ('administrator' != strtolower($user->roles[0])) {
 				<select id="import-routine-selector">
 					<optgroup label="Imports">
 						<option value="0" disabled >All Imports</option>
-						<option value="1" selected>Import Ingredients only</option>
+						<option value="1" selected>Import Ingredients and Units only</option>
 						<option value="2">Imports Requests/Names only</option>
 						<option value="3">Imports Recipe Entry only</option>
 						<option value="4">Imports WO Image Data only</option>
@@ -78,7 +78,7 @@ if ('administrator' != strtolower($user->roles[0])) {
 					</optgroup>
 					<optgroup label="Delete Data">
 						<option value="6">Delete Recipe Data (requests / recipes)</option>
-						<option value="7">Delete Ingredients Table Data</option>
+						<option value="7">Delete Ingredients and Units Table Data</option>
 					</optgroup>
 				</select>
 			</div>

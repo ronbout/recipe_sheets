@@ -18,6 +18,8 @@ function import_recipe_sheets_data_all($routine) {
 			echo "<h2>Import Data</h2>";
 			require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/load-ingredients-table.php';
 			import_ingredients_data_from_sheets();
+			require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/load-measure-units-table.php';
+			import_units_data_from_sheets();
 			break;
 		case 2:
 			echo "<h2>Import Data</h2>";
@@ -38,6 +40,7 @@ function import_recipe_sheets_data_all($routine) {
 			break;
 		case 7:
 			clear_ingredients_table();	
+			clear_measure_units_table();	
 			break;
 	}
 
@@ -136,5 +139,14 @@ function clear_ingredients_table() {
 	$sql = "DELETE FROM tc_ingredients WHERE 1";
 	$db_results = $wpdb->query($sql);
 	echo "<h2>$db_results ingredients deleted</h2>";
+
+}
+
+function clear_measure_units_table() {
+	global $wpdb;
+
+	$sql = "DELETE FROM tc_measure_units WHERE 1";
+	$db_results = $wpdb->query($sql);
+	echo "<h2>$db_results measure units deleted</h2>";
 
 }

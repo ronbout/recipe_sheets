@@ -24,7 +24,7 @@ function import_ingredients_data_from_sheets() {
 function get_ingredient_data($sheets) {
 	try{
 
-			$spreadsheetId = '1XNONqFyWBN5qX-1fSt8zMZ7TMVkEsgPDb_H1OL6fc5Q';
+			$spreadsheetId = JUNE_WORKING_DOC_ID;
 			$range = 'Ingredients!A2:F';
 			$response = $sheets->spreadsheets_values->get($spreadsheetId, $range);
 			$values = $response->getValues();
