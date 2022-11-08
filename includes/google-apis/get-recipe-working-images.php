@@ -106,6 +106,15 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	$fnd_missing_recipes = $missing_info['fnd_missing_recipe_rows'];
 	$not_fnd_missing_recipes = $missing_info['not_fnd_missing_recipe_ids'];
 	$fnd_missing_recipes_by_worksheet_id = $missing_info['fnd_missing_recipes_by_worksheet_id'];
+	$matching_recipe_images = $missing_info['matching_recipe_images'];
+	
+	
+	if (count($matching_recipe_images)) {
+		$report_data = array_values_multi($matching_recipe_images);
+		create_report($sheets, $report_id, 'Matched Images', $report_data);	
+	} else {
+		clear_report($sheets, $report_id, 'Matched Images');	
+	}
 
 	if (count($dup_list)) {
 		// get recipe titles
@@ -211,6 +220,7 @@ function check_missing_info($images, $recipes) {
 
 	$missing_recipe_list = array_values(array_diff($image_id_list, $recipe_id_list));
 	$missing_image_list = array_values(array_diff($recipe_id_list, $image_id_list));
+	$matching_image_list = array_values(array_intersect($image_id_list, $recipe_id_list));
 
 
 	if (count($missing_recipe_list)) {	
@@ -232,7 +242,6 @@ function check_missing_info($images, $recipes) {
 	$not_fnd_missing_recipe_ids = array_values(array_diff($missing_recipe_list, $fnd_missing_recipe_ids));
 
 	$fnd_missing_recipes_by_worksheet_id = array_column($missing_recipe_rows, null, 'worksheet_id');
-
 	$fnd_missing_recipe_images = array_reduce($images, function($lst, $img) use ($fnd_missing_recipes_by_worksheet_id) {
 		$worksheet_id = $img['worksheet_id'];
 		// if (in_array($worksheet_id, $fnd_missing_recipe_ids) ) {
@@ -241,6 +250,21 @@ function check_missing_info($images, $recipes) {
 				'name' => $img['name'],
 				'worksheet_id' => $img['worksheet_id'],
 				'title' => $fnd_missing_recipes_by_worksheet_id[$worksheet_id]['recipe_title'],
+				'image_url' => $img['image_url'],
+			);
+			$lst[] = $tmp;
+		}
+		return $lst;
+	}, array());
+	
+	$matching_recipe_images = array_reduce($images, function($lst, $img) use ($matching_image_list, $recipes) {
+		$worksheet_id = $img['worksheet_id'];
+		// if (in_array($worksheet_id, $fnd_missing_recipe_ids) ) {
+		if (in_array($worksheet_id, $matching_image_list )) {
+			$tmp = array( 
+				'name' => $img['name'],
+				'worksheet_id' => $img['worksheet_id'],
+				'title' => $recipes[$worksheet_id]['recipe_title'],
 				'image_url' => $img['image_url'],
 			);
 			$lst[] = $tmp;
@@ -269,6 +293,7 @@ function check_missing_info($images, $recipes) {
 		'fnd_missing_recipes_by_worksheet_id' => $fnd_missing_recipes_by_worksheet_id,
 		'not_fnd_missing_recipe_ids' => $not_fnd_missing_recipe_images,
 		'missing_image_worksheet_ids' => $missing_images_recipe_info,
+		'matching_recipe_images' => $matching_recipe_images,
 	);
 }
 
