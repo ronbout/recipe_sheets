@@ -142,6 +142,7 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 	$not_found_units = array();
 	$degree_converts = array();
 	$degree_converts_reviews = array();
+	$degree_not_converted_reviews = array();
 	foreach($recipe_rows as $row) {
 		$worksheet_id = $row[ENTRY_RECIPE_WORKSHEET_ID_COL];
 		if ($worksheet_id !== $prev_worksheet_id) {
@@ -151,6 +152,7 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 			}
 			$recipe_info = new_recipe_info();
 			$prev_worksheet_id = $worksheet_id;
+			$recipe_request_id = get_recipe_request_id($worksheet_id);
 		}
 		$fieldname = strtolower($row[RECIPE_FIELD_COL]);
 		$fielddesc = $row[RECIPE_FIELD_DESC_COL];
@@ -185,7 +187,7 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 			$recipe_info['photo_date'] = $photo_date;
 			$recipe_info['recipe_status'] = $recipe_status;
 			$recipe_info['camera_id'] = $camera_id;
-			$recipe_info['submission_batch'] = $row[RECIPE_SUBMITTED_BATCH_COL];
+			$recipe_info['submission_batch'] = $recipe_request_id ? $row[RECIPE_SUBMITTED_BATCH_COL] : null;
 			continue;
 		}
 		if ('method' === $fieldname) {
@@ -195,8 +197,21 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 			$instruct_info = convert_recipe_instructions($fielddesc);
 			$instructs = $instruct_info['instructs'];
 			$instruct_status = $instruct_info['status'];
-			// $instructs = $fielddesc;
-			// $instruct_status = 0;
+			// some instructs forgot or misspelled 'oven'
+			if (0 == $instruct_status) {
+				if (false !== stripos($instructs, 'Preheat') && false === stripos($instructs, 'fryer') && false !== stripos($instructs, 'degree')) {
+					$tmp = array( 
+						'month' => $month,
+						'recipe_id' => $worksheet_id,
+						'recipe_title' => $recipe_info['recipe_title'],
+						'recipe_instruct_cnt' => $row[RECIPE_FIELD_STEP_COL],
+						'orig_instruct' => $fielddesc,
+						'new_instruct' => '',
+						'issue' => 'Preheat with no oven or air fryer',
+					);
+					$degree_not_converted_reviews[] = $tmp;
+				}
+			}
 			if ($instruct_status > 0) {
 				$tmp = array( 
 					'month' => $month,
@@ -344,6 +359,11 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 		create_report($sheets, $report_id, 'Degrees', $report_data, false);	
 	}
 
+	if (count($degree_not_converted_reviews)) {
+		$report_data = array_values_multi($degree_not_converted_reviews);
+		create_report($sheets, $report_id, 'Degrees', $report_data, false);	
+	}
+
 	return $update_cnt;
 }
 
@@ -368,6 +388,21 @@ function new_recipe_info()  {
 		'ingredients' => array(),
 		'methods' => array(),
 	);
+}
+
+function get_recipe_request_id($worksheet_id) {
+	global $wpdb;
+
+	$sql = "
+		SELECT request_id
+		FROM tc_recipes
+		WHERE worksheet_id = %s
+	";
+
+	$sql = $wpdb->prepare($sql, $worksheet_id);
+
+	$request_id = $wpdb->get_var($sql);
+	return $request_id;
 }
 
 function insert_new_ingredient($ingred_name, $ingreds, $ingred_db_names, $ingred_db_plurals) {
