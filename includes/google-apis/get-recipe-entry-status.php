@@ -335,26 +335,11 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 	}
 
 	if (count($degree_converts)) {
-		// $tmp = array( 
-		// 	'Instructions with converted degrees and no issues detected',
-		// 	'',
-		// 	'',
-		// 	'',
-		// );
-		// $report_data = array_merge($tmp, array_values_multi($degree_converts));
 		$report_data = array_values_multi($degree_converts);
 		create_report($sheets, $report_id, 'Degrees', $report_data, false);	
 	}
 
 	if (count($degree_converts_reviews)) {
-		// $tmp = array( 
-		// 	'Instructions with converted degrees and and possible issues',
-		// 	'',
-		// 	'',
-		// 	'',
-		// 	'',
-		// );
-		// $report_data = array_merge($tmp, array_values_multi($degree_converts_reviews));
 		$report_data = array_values_multi($degree_converts_reviews);
 		create_report($sheets, $report_id, 'Degrees', $report_data, false);	
 	}
