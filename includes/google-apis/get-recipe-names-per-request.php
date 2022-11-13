@@ -162,6 +162,8 @@ function load_recipe_request_table($data, $dt) {
 	$wpdb->query($sql);
 	$sql = "ALTER TABLE tc_recipe_requests AUTO_INCREMENT = 1";
 	$wpdb->query($sql);
+	$sql = "ALTER TABLE tc_recipe_names AUTO_INCREMENT = 1";
+	$wpdb->query($sql);
 
 	$recipe_requests_table = "tc_recipe_requests";
 	$recipes_table = "tc_recipes";

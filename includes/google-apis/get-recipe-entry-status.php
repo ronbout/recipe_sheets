@@ -140,6 +140,8 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 	$update_cnt = 0;
 	$not_found_ingreds = array();
 	$not_found_units = array();
+	$degree_converts = array();
+	$degree_converts_reviews = array();
 	foreach($recipe_rows as $row) {
 		$worksheet_id = $row[ENTRY_RECIPE_WORKSHEET_ID_COL];
 		if ($worksheet_id !== $prev_worksheet_id) {
@@ -165,7 +167,7 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 			$camera_id = $row[RECIPE_CAMERA_ID_COL];
 			if ('#N/A' == trim($camera_id) ) {
 				$camera_id = null;
-			} elseif (str_contains($camera_id, '-')) {
+			} elseif (strpos($camera_id, '-')) {
 				$camera_id = explode('-', $camera_id)[1];
 			}
 
@@ -178,7 +180,8 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 			} else {
 				$recipe_status = 'entered';
 			}
-			$recipe_info['recipe_title'] = trim($fielddesc);
+			$recipe_title = convert_recipe_title($fielddesc);
+			$recipe_info['recipe_title'] = $recipe_title;
 			$recipe_info['photo_date'] = $photo_date;
 			$recipe_info['recipe_status'] = $recipe_status;
 			$recipe_info['camera_id'] = $camera_id;
@@ -189,9 +192,39 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 			if ('' == trim($fielddesc)) {
 				continue;
 			}
+			$instruct_info = convert_recipe_instructions($fielddesc);
+			$instructs = $instruct_info['instructs'];
+			$instruct_status = $instruct_info['status'];
+			// $instructs = $fielddesc;
+			// $instruct_status = 0;
+			if ($instruct_status > 0) {
+				$tmp = array( 
+					'month' => $month,
+					'recipe_id' => $worksheet_id,
+					'recipe_title' => $recipe_info['recipe_title'],
+					'recipe_instruct_cnt' => $row[RECIPE_FIELD_STEP_COL],
+					'orig_instruct' => $fielddesc,
+					'new_instruct' => $instructs,
+				);
+				$degree_converts[] = $tmp;
+			}
+			if ($instruct_status < 0) {
+				$issue = -1 == $instruct_status ? "Had both 'fan-forced' and 'degree'" : "Temp outside range or not found";
+				$tmp = array( 
+					'month' => $month,
+					'recipe_id' => $worksheet_id,
+					'recipe_title' => $recipe_info['recipe_title'],
+					'recipe_instruct_cnt' => $row[RECIPE_FIELD_STEP_COL],
+					'orig_instruct' => $fielddesc,
+					'new_instruct' => $instructs,
+					'issue' => $issue,
+				);
+				$degree_converts_reviews[] = $tmp;
+			}
+			$group = convert_recipe_group($row[RECIPE_GROUP_COL]);
 			$recipe_info['methods'][] = array( 
-				'instruction' => $fielddesc,
-				'recipe_group' => $row[RECIPE_GROUP_COL],
+				'instruction' => $instructs,
+				'recipe_group' => $group,
 			);
 		} elseif ('ingredient' === $fieldname) {
 			if ('' == trim($fielddesc)) {
@@ -253,17 +286,26 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 				// echo '<h2>unit id', $unit_id, '</h2>';
 				// die;
 			}
+			$ingred_notes = convert_recipe_ingred_notes($row[RECIPE_NOTES_COL]);
+			$group = convert_recipe_group($row[RECIPE_GROUP_COL]);
 			$recipe_info['ingredients'][] = array( 
 				'ingred_cnt' => $row[RECIPE_FIELD_CNT_COL],
 				'ingred_id' => $ingred_id,
 				'measure' => $row[RECIPE_MEASURE_COL],
 				'unit' => $unit_id,
 				'unit_plural' => $unit_plural,
-				'notes' => $row[RECIPE_NOTES_COL],
+				'notes' => $ingred_notes,
 				'plural' => $plural,
-				'recipe_group' => $row[RECIPE_GROUP_COL],
+				'recipe_group' => $group,
 			);
-		} else {
+		} elseif ('description' === $fieldname) {
+			$recipe_desc = convert_recipe_desc($fielddesc);
+			$recipe_info['description'] = $recipe_desc;
+		} elseif (in_array($fieldname, array('prep_time', 'cook_time')))	{
+			$time_desc = convert_recipe_times($fielddesc);
+			$recipe_name[$fieldname] = $time_desc;
+		}
+		else {
 			if ('type' === $fieldname) {
 				$db_name = 'meal_type';
 			} else {
@@ -291,6 +333,32 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 		$report_data = array_values_multi($not_found_units);
 		create_report($sheets, $report_id, 'Units', $report_data, false);	
 	}
+
+	if (count($degree_converts)) {
+		// $tmp = array( 
+		// 	'Instructions with converted degrees and no issues detected',
+		// 	'',
+		// 	'',
+		// 	'',
+		// );
+		// $report_data = array_merge($tmp, array_values_multi($degree_converts));
+		$report_data = array_values_multi($degree_converts);
+		create_report($sheets, $report_id, 'Degrees', $report_data, false);	
+	}
+
+	if (count($degree_converts_reviews)) {
+		// $tmp = array( 
+		// 	'Instructions with converted degrees and and possible issues',
+		// 	'',
+		// 	'',
+		// 	'',
+		// 	'',
+		// );
+		// $report_data = array_merge($tmp, array_values_multi($degree_converts_reviews));
+		$report_data = array_values_multi($degree_converts_reviews);
+		create_report($sheets, $report_id, 'Degrees', $report_data, false);	
+	}
+
 	return $update_cnt;
 }
 

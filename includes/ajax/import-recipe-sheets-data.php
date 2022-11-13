@@ -71,11 +71,12 @@ function import_all_recipe_entry_status($recipe_worksheets_parms) {
 	// from previous months
 	generate_ingredients_report(RECIPE_ENTRY_IMPORT_REPORT_ID, "Ingredients");
 	generate_measure_units_report(RECIPE_ENTRY_IMPORT_REPORT_ID, "Units");
+	clear_report(null, RECIPE_ENTRY_IMPORT_REPORT_ID, 'Degrees');
 	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-entry-status.php';
 	// load recipe entry status for each month
 	foreach($recipe_worksheets_parms as $month => $month_data) {
 		// if ('2022-06-01' == $month) {
-			// import_recipe_entry_status($month, $month_data);
+		// 	import_recipe_entry_status($month, $month_data);
 		// }
 		import_recipe_entry_status($month, $month_data);
 	}
