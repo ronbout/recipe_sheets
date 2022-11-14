@@ -39,11 +39,17 @@ function get_recipes_to_submit($month, $recipe_type='WO') {
 		AND rec.recipe_type = 'WO'
 		";
 	} else {
+		/*****
+		 * 
+		 * **** TEMP CHANGE TO PULL IN RECIPES W/O image_url DUE TO DATA ISSUE
+		 * ****  MUST BE CHANGED BACK AFTER IMAGE ACCESS IS RESTORED!!!	
+		 * 
+		 */
 		$sql = "
 			SELECT rec.* FROM tc_recipes rec
 			JOIN tc_recipe_requests req ON req.id = rec.request_id
-			WHERE rec.image_url IS NOT NULL 
-			AND req.month_year = '%s'
+			WHERE req.month_year = '%s'
+			AND (rec.image_url IS NOT NULL OR rec.image_url IS NULL)
 			AND req.tier = 'Virgin'
 			ORDER BY rec.request_id ASC 
 		";
@@ -178,7 +184,7 @@ function get_recipe_images_submit_rows($recipe_rows) {
 		$recipe_id = get_submission_sheet_recipe_id($row);
 		return array( 
 			$recipe_id,
-			$row['image_url'],
+			$row['image_url'] ? $row['image_url'] : 'N/A' ,
 			$row['recipe_title'],
 		);
 	}, $recipe_rows);
