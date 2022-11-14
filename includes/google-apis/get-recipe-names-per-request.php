@@ -6,7 +6,7 @@ defined('ABSPATH') or die('Direct script access disallowed.');
 // and access <<MONTH>>  Working Document
 require_once __DIR__ . '/vendor/autoload.php';
 
-function import_recipe_requests_and_names($working_month, $month_info) {
+function import_recipe_requests_and_names($working_month, $month_info, &$next_virgin_client_id) {
 
 	$test_month = strtolower(date("F", strtotime($working_month)));
 	echo "<h2>Request / Recipes Month: ", $test_month, "</h2>";
@@ -57,12 +57,6 @@ function import_recipe_requests_and_names($working_month, $month_info) {
 		}
 		return $list;
 	}, []);
-
-	// echo '<pre>';
-	// print_r($virgin_tier_row);
-	// print_r($virgin_tier_recipes);
-	// echo '</pre>';
-	// die;
 	
 	$comp_working_list = array_map(function($name) {
 		return strtolower(trim($name));
@@ -118,7 +112,7 @@ function import_recipe_requests_and_names($working_month, $month_info) {
 	load_recipe_request_table($brief_recipe_w_virgins, $working_month);
 
 	if (count($virgin_tier_row)) {
-		$virgin_recipe_cnt = load_recipe_request_tier_data($virgin_tier_row, $virgin_tier_recipes, $working_month);
+		$virgin_recipe_cnt = load_recipe_request_tier_data($virgin_tier_row, $virgin_tier_recipes, $working_month, $next_virgin_client_id);
 		if ($virgin_recipe_cnt) {
 			echo '<h3>Virgin Tier Recipes Listed: ' . count($virgin_tier_recipes) . '</h3>';
 			echo "<h3>Virgin Tier Rows Updated: $virgin_recipe_cnt</h3>";
@@ -366,7 +360,7 @@ function insert_recipe_rows($recipes, $request_id, $recipes_table) {
 	return true;
 }
 
-function load_recipe_request_tier_data($virgin_tier_row, $virgin_tier_recipes, $working_month) {
+function load_recipe_request_tier_data($virgin_tier_row, $virgin_tier_recipes, $working_month, &$next_virgin_client_id) {
 	global $wpdb;
 
 	$current_vals = reset_current_vals();
@@ -382,19 +376,24 @@ function load_recipe_request_tier_data($virgin_tier_row, $virgin_tier_recipes, $
 	$wpdb->insert('tc_recipe_requests', $current_vals, $formats);
 	$request_id = $wpdb->insert_id;
 
-	$placeholders = array_fill(0, count($virgin_tier_recipes), '%s');
-	$placeholders = implode(', ', $placeholders);
+	sort($virgin_tier_recipes);
+
+	foreach ($virgin_tier_recipes as $worksheet_id) {
+		$client_id = 'RGWV00' . $next_virgin_client_id++;
+		
+		$update_result = $wpdb->update('tc_recipes', 
+			['request_id' => $request_id, 'client_id' => $client_id, 'recipe_type' => 'Virgin'], 
+			['worksheet_id' => $worksheet_id], 
+			['%d', '%s', '%s'], 
+			['%s']);
+
+			if (!$update_result) {
+				echo "<h2>Could not update recipe worksheet id $worksheet_id";
+				echo "<h2>$wpdb->error</h2>";
+				die;
+			}
+	}
 	
-
-	$sql = "
-		UPDATE tc_recipes
-		SET request_id = $request_id
-		WHERE worksheet_id in ($placeholders)
-	";
-
-	$sql = $wpdb->prepare($sql, $virgin_tier_recipes);
-	$db_result = $wpdb->query($sql);
-
-	return $db_result;
+	return count($virgin_tier_recipes);
 
 }

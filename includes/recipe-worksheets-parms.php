@@ -79,7 +79,8 @@ define('BRIEF_ID', '189HnWpTZDUaYRdsBwc-62sYpLu5cKv7u8Ujq9XiJ19E');
 define('RECIPE_CATALOGUE_ID', '1Mc97WIj8HnXDwuUjUookzjnqEJt5Gq2Of9G4kp_JoXs');
 
 define('IMAGE_FOLDER_ID', '1n7qWQExvik_hoXsnMIBpjaEbnV-IAIsc');
-define('VIRGIN_FOLDER_ID', '16JSXrgQCLyUIyD-k6tY3Cj9HR6y2vtmz' );
+// define('VIRGIN_FOLDER_ID', '16JSXrgQCLyUIyD-k6tY3Cj9HR6y2vtmz' );
+define('VIRGIN_FOLDER_ID', '1sOM6KIS2bbBd2PaQLmt2ILyLAl6FGfu3' );
 
 define('JUNE_VIRGIN_IMAGES_REPORT_ID', '1nqbWsHr9U03sU9eQyQtB8S8Je9zy_K1LZP50wYbRKWs' );
 // define('RECIPE_ENTRY_IMPORT_REPORT_ID', '1gscTgNkA9Rb835Lljid_Mtf9EsyQSucv-S4aDGIK4vc' );

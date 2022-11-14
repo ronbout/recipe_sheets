@@ -151,7 +151,7 @@ function recipe_add_recipes_table() {
 		`client_id` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`author_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT '1',
 		`request_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
-		`recipe_type` ENUM('WO','Catalog') NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`recipe_type` ENUM('WO','Catalog','Virgin') NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`recipe_status` ENUM('proposed','accepted','entered','printed','image','submitted') NOT NULL DEFAULT 'accepted' COLLATE 'utf8mb4_0900_ai_ci',
 		`parent_recipe_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
 		`source` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
@@ -303,7 +303,8 @@ function recipe_insert_types() {
 		(id, description)
 		VALUES 
 			('WO', 'Wholly Owned'),
-			('Catalog', 'Catalog')
+			('Catalog', 'Catalog'),
+			('Virgin', 'Virgin')
 	";
 
 	$wpdb->query($sql);

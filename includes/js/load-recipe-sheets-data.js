@@ -8,6 +8,7 @@ const tcRunImportSheetsData = () => {
   const spinnerMsg =
     routine < 6 ? "Importing recipe data.." : "Deleting data..";
   jQuery("#results").html(spinnerMsg);
+  jQuery("#run-import-recipe-sheets").attr("disabled", true);
   jQuery.ajax({
     url: recipeSheets.ajaxurl,
     type: "POST",
@@ -21,12 +22,14 @@ const tcRunImportSheetsData = () => {
       console.log(responseText);
       //const parseResponse = JSON.parse(responseText);
       jQuery("#results").html(responseText);
+      jQuery("#run-import-recipe-sheets").attr("disabled", false);
     },
     error: function (xhr, status, errorThrown) {
       console.log(errorThrown);
       alert(
         "Error importing sheets data. Your login may have timed out. Please refresh the page and try again."
       );
+      jQuery("#run-import-recipe-sheets").attr("disabled", false);
     },
   });
 };

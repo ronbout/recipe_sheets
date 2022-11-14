@@ -58,10 +58,12 @@ function clear_report($sheets=null, $sheet_id, $sheet_name) {
 		$sheets = initializeSheets();
 	}
 	$current_rows = read_cells_from_sheet($sheets, $sheet_id, $sheet_name, 'A2:Z');
-	$report_rows_cnt = count($current_rows);
-	if ($report_rows_cnt) {
-		$range = 'A2:Z' . ($report_rows_cnt + 1);
-		clear_cells_in_sheet($sheets, $sheet_id, $sheet_name, $range);
+	if (is_array($current_rows)) {
+		$report_rows_cnt = count($current_rows);
+		if ($report_rows_cnt) {
+			$range = 'A2:Z' . ($report_rows_cnt + 1);
+			clear_cells_in_sheet($sheets, $sheet_id, $sheet_name, $range);
+		}
 	}
 
 }

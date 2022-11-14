@@ -316,9 +316,10 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 		} elseif ('description' === $fieldname) {
 			$recipe_desc = convert_recipe_desc($fielddesc);
 			$recipe_info['description'] = $recipe_desc;
-		} elseif (in_array($fieldname, array('prep_time', 'cook_time')))	{
+		} elseif (in_array($fieldname, array('prep time', 'cook time')))	{
 			$time_desc = convert_recipe_times($fielddesc);
-			$recipe_name[$fieldname] = $time_desc;
+			$db_name = str_replace(' ', '_', $fieldname);
+			$recipe_info[$db_name] = $time_desc;
 		}
 		else {
 			if ('type' === $fieldname) {

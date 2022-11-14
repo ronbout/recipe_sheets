@@ -83,8 +83,7 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 		SELECT rec.*
 		FROM tc_recipes rec
 		JOIN tc_recipe_requests req ON req.id = rec.request_id
-		WHERE rec.recipe_type = 'Catalog'
-			AND req.tier = 'Virgin'
+		WHERE req.tier = 'Virgin'
 			AND req.month_year = '2022-06-01'
 			";
 		// 	AND rec.submission_batch IS null
@@ -142,11 +141,6 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 				);
 				return $tmp;
 			}, $dup_arr);
-
-			echo '<pre>';
-			print_r($dup_arr);
-			echo '</pre>';
-
 
 			return array_merge($rpt,  $dup_arr);
 		}, array());

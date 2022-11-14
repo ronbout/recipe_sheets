@@ -55,13 +55,14 @@ function import_recipe_sheets_data_all($routine) {
 
 function import_all_recipe_requests_and_names($recipe_worksheets_parms) {
 	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-names-per-request.php';
-	// Load requests and recipes for each month
-
+	// get the next available Virgin Client Id, must be passed by reference to 
+	// the routine for each month.  these are for tier = 'virgin' recipes
+	$next_virgin_client_id = get_next_virgin_client_id();
 	foreach($recipe_worksheets_parms as $month => $month_data) {
 		// if ('2022-06-01' == $month) {
-		// 	import_recipe_requests_and_names($month, $month_data);
+		// 	import_recipe_requests_and_names($month, $month_data, $next_virgin_client_id);
 		// }
-		import_recipe_requests_and_names($month, $month_data);
+		import_recipe_requests_and_names($month, $month_data, $next_virgin_client_id);
 	}
 }
 
@@ -151,4 +152,21 @@ function clear_measure_units_table() {
 	$db_results = $wpdb->query($sql);
 	echo "<h2>$db_results measure units deleted</h2>";
 
+}
+
+function get_next_virgin_client_id() {
+	global $wpdb;
+
+	$sql = "
+		SELECT next_recipe_id 	
+		FROM tc_recipe_types
+		WHERE id = 'Virgin'
+	";
+
+	$next_virgin_client_id = $wpdb->get_var($sql);
+	if (!$next_virgin_client_id) {
+		$next_virgin_client_id = 5404;
+	}
+
+	return $next_virgin_client_id;
 }
