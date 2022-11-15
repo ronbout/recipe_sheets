@@ -40,6 +40,7 @@ function recipes_add_recipe_template ($templates) {
 	$templates['recipe-build-worksheet.php'] = 'Build Worksheet Data';
 	$templates['recipe-build-submission.php'] = 'Build Submission Sheet';
 	$templates['recipe-update-master-list.php'] = 'Update Recipe Master List';
+	$templates['recipe-compare-sheets-entry.php'] = 'Compare Google Sheets';
 	return $templates;
 	}
 add_filter ('theme_page_templates', 'recipes_add_recipe_template');
@@ -56,6 +57,9 @@ function recipes_redirect_page_template ($template) {
 	}
 	if (is_page_template('recipe-update-master-list.php')) {
 		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-update-master-list.php';
+	}
+	if (is_page_template('recipe-compare-sheets-entry.php')) {
+		$template = plugin_dir_path( __FILE__ ).'includes/page-templates/recipe-compare-sheets-entry.php';
 	}
 	return $template;
 }

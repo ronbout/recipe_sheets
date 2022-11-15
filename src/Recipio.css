@@ -1,0 +1,400 @@
+/* CSS Document */
+@charset url("https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700");
+:root {
+height: 100%;
+font-family: sans-serif;
+background-color: #e5e5e5;
+flex-basis: 100%;
+overflow-y: auto;
+mediumseagreen: #27ae60; 
+gogreen: #36bd6f; 
+illuminatingemerald: #428b6b; 
+illuminatingemerald1: #428b6b; 
+cyberyellow: #ffd634; 
+maizecrayola: #fec848; 
+orangredcrayola: #ff5e57; 
+tartorange: #ff3d33; 
+white: #ffffff; 
+cultered: #f9f9f9; 
+greyx11grey: #bebebe; 
+rhythm: #707181; 
+blackcharcoal: #616272; 
+black: #000000; 
+h1headingdesktop: 700 4.5rem/6rem 'Inter'; 
+h2headingdesktop: 700 3.5rem/4.5rem 'Inter'; 
+h3headingdesktop: 700 3rem/4rem 'Inter'; 
+h4headingdesktop: 700 2rem/2.5rem 'Inter'; 
+h5headingdesktop: 700 1.5rem/2rem 'Inter'; 
+h6headingdesktop: 700 1.125rem/1.125rem 'Inter'; 
+h7headingdesktop: 700 0.875rem/1.125rem 'Inter'; 
+bodylargedesktopbold: 700 1.125rem/1.75rem 'Open Sans'; 
+bodylargedesktop: 400 1.125rem/1.75rem 'Open Sans'; 
+bodystandarddesktop: 400 1rem/1.5rem 'Open Sans'; 
+bodystandardsemibolddesktop: 600 1rem/1.5rem 'Open Sans'; 
+bodysmalldesktop: 400 0.875rem/1.375rem 'Open Sans'; 
+bodysmallsemibolddesktop: 600 0.875rem/1.375rem 'Open Sans'; 
+body12pxsemibolddesktop: 600 0.75rem/1.375rem 'Open Sans'; 
+body12pxdesktop: 400 0.75rem/1.375rem 'Open Sans'; 
+body11pxsemibolddesktop: 600 0.6875rem/1.375rem 'Open Sans'; 
+body10pxsemibolddesktop: 600 0.625rem/1.375rem 'Open Sans'; 
+body10pxdesktop: 400 0.625rem/1.375rem 'Open Sans'; 
+h1headingtablet: 700 3.5rem/4.5rem 'Inter'; 
+h2headingtablet: 700 3rem/4rem 'Inter'; 
+h3headingtablet: 700 2.5rem/3.5rem 'Inter'; 
+h4headingtablet: 700 1.75rem/2rem 'Inter'; 
+h5headingtablet: 700 1.125rem/1.5rem 'Inter'; 
+h6headingtablet: 700 0.875rem/1.125rem 'Inter'; 
+bodylargeboldtablet: 700 1.125rem/1.75rem 'Open Sans'; 
+bodystandardtablet: 400 1rem/1.5rem 'Open Sans'; 
+bodysmalltablet: 400 0.875rem/1.375rem 'Open Sans'; 
+h1headingmobile: 700 2.25rem/3.5rem 'Inter'; 
+h2headingmobile: 700 2rem/3rem 'Inter'; 
+h3headingmobile: 700 1.5rem/2.5rem 'Inter'; 
+h4headingmobile: 700 1.25rem/1.75rem 'Inter'; 
+h5headingmobile: 700 1rem/1.5rem 'Inter'; 
+h6headingmobile: 700 0.875rem/1.125rem 'Inter'; 
+bodylargemobile: 700 1rem/1.75rem 'Open Sans'; 
+bodystandardmobile: 400 0.875rem/1.5rem 'Open Sans'; 
+bodysmallmobile: 400 0.75rem/1.375rem 'Open Sans'; 
+bodyssmallmobile: 400 0.6875rem/1.375rem 'Open Sans';
+}
+
+
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  display: flex;
+  flex-basis: 100%;
+  width: 100%;
+}
+
+#root {
+  position: relative;
+}
+
+body button:not(:disabled) {
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body label {
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Logo */
+.recipio
+{
+color:#616272;
+text-align:center;
+vertical-align:text-middle;
+font-size:72px;
+font-family:Pacifico;
+line-height:22px;
+width:220px;
+}
+
+/* Button Title */
+/* Dark Title */
+position: absolute;
+left: 0px;
+right: 0px;
+top: 0px;
+bottom: 0px;
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+color: #616272;
+
+
+
+
+/* Primary Buttons */
+/* Property 1=Large, State=Default */
+position: absolute;
+width: 120px;
+height: 40px;
+left: 20px;
+top: 20px;
+
+/* Property 1=Hover, State=Default */
+position: absolute;
+width: 120px;
+height: 40px;
+left: 20px;
+top: 80px;
+
+/* Property 1=Large, State=Login */
+position: absolute;
+width: 81px;
+height: 40px;
+left: 20px;
+top: 140px;
+
+/* Filter Buttons */
+
+/* Property 1=Secondary */
+box-sizing: border-box;
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 5px 10px;
+gap: 10px;
+position: absolute;
+width: 92px;
+height: 42px;
+right: 20px;
+top: 82px;
+border: 1px solid #616272;
+border-radius: 2px;
+
+/* Property 1=Default */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 5px 10px;
+gap: 10px;
+position: absolute;
+width: 92px;
+height: 42px;
+right: 20px;
+top: 20px;
+background: #616272;
+border-radius: 2px;
+
+
+/* Seconday Buttons */
+/* Property 1=Submit Mobile */
+box-sizing: border-box;
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 1px 10px;
+gap: 10px;
+position: absolute;
+width: 59px;
+height: 24px;
+left: 20px;
+top: 258px;
+background: #616272;
+border: 1px solid #616272;
+border-radius: 2px;
+
+/* Property 1=Selected */
+box-sizing: border-box;
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 5px 10px;
+gap: 10px;
+position: absolute;
+width: 66px;
+height: 32px;
+left: 20px;
+top: 127px;
+background: #616272;
+border: 1px solid #616272;
+border-radius: 2px;
+
+/* Property 1=Submit Sec Mobile */
+box-sizing: border-box;
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 1px 10px;
+gap: 10px;
+position: absolute;
+width: 59px;
+height: 24px;
+left: 20px;
+top: 204px;
+border: 1px solid #616272;
+border-radius: 2px;
+
+/* Property 1=Submit */
+box-sizing: border-box;
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 5px 10px;
+gap: 10px;
+position: absolute;
+width: 66px;
+height: 32px;
+left: 20px;
+top: 82px;
+border: 1px solid #616272;
+border-radius: 2px;
+
+/* Property 1=Default */
+position: absolute;
+width: 120px;
+height: 40px;
+left: 20px;
+top: 20px;
+
+/* Data Entry Cards */
+
+/* Property 1=Large Card */
+
+/* Section Headings = h5 & Entry Headings = Body Small Semibold Desktop & Example Text = Body Small Desktop & Button = Large, Default */
+
+box-sizing: border-box;
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 40px;
+gap: 20px;
+position: absolute;
+width: 982.5px;
+height: 728px;
+left: 20px;
+top: 320px;
+border: 1px solid #BEBEBE;
+filter: drop-shadow(0px 4px 10px rgba(112, 113, 129, 0.5));
+border-radius: 5px;
+
+/* Input */
+box-sizing: border-box;
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 9px 10px;
+gap: 10px;
+position: absolute;
+width: 431.25px;
+height: 42px;
+left: 511px;
+top: 114px;
+border: 1px solid #BEBEBE;
+border-radius: 2px;
+
+/* Property 1=Password */
+box-sizing: border-box;
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 20px 45px 20px 40px;
+gap: 10px;
+width: 500px;
+height: 68px;
+background: rgba(66, 139, 107, 0.07);
+border: 1px solid #707181;
+border-radius: 10px;
+flex: none;
+order: 1;
+flex-grow: 0;
+
+/* Property 1=Email */
+box-sizing: border-box;
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 20px 45px 20px 40px;
+gap: 10px;
+width: 500px;
+height: 68px;
+background: rgba(66, 139, 107, 0.07);
+border: 1px solid #707181;
+border-radius: 10px;
+flex: none;
+order: 1;
+flex-grow: 0;
+
+/* Dashboard Cards */
+/* Within Dashboard Card: Month Text = Body Large Desktop Bold & Description Text = Body Large Desktop Bold & Number = Body Large Desktop Bold & Progress Bar (See below) & Status Alert (see below) */
+
+/* Property 1=Default */
+box-sizing: border-box;
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: flex-start;
+padding: 20px 40px;
+gap: 20px;
+position: absolute;
+width: 982.5px;
+height: 68px;
+left: 20px;
+top: 20px;
+border: 1px solid #BEBEBE;
+filter: drop-shadow(0px 4px 10px rgba(112, 113, 129, 0.5));
+border-radius: 5px;
+
+/* Property 1=Expanded */
+box-sizing: border-box;
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 20px 40px;
+gap: 10px;
+position: absolute;
+width: 984px;
+height: 361px;
+left: 20px;
+top: 108px;
+border: 1px solid #BEBEBE;
+filter: drop-shadow(0px 4px 10px rgba(112, 113, 129, 0.5));
+border-radius: 5px;
+
+/* Menu Status Alerts */
+
+/* Property 1=Rejected */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 2px 10px;
+gap: 10px;
+position: absolute;
+width: 95px;
+height: 28px;
+left: 20px;
+top: 116px;
+background: #FF5E57;
+border-radius: 4px;
+
+/* Property 1=Pending */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 2px 10px;
+gap: 10px;
+position: absolute;
+width: 95px;
+height: 28px;
+left: 20px;
+top: 68px;
+background: #FFD634;
+border-radius: 4px;
+
+/* Property 1=Rejected */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 2px 10px;
+gap: 10px;
+position: absolute;
+width: 95px;
+height: 28px;
+left: 20px;
+top: 116px;
+background: #FF5E57;
+border-radius: 4px;
+
+/* Progress Bar */
+/* Property 1=90% */
+position: absolute;
+width: 200px;
+height: 28px;
+left: 20px;
+top: 500px;
+
+
