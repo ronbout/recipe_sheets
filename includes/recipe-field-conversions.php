@@ -19,12 +19,13 @@ function convert_recipe_desc($desc) {
 		return '';
 	}
 	$new_desc = ucfirst(trim($desc));
-	$new_desc = str_ends_with($new_desc, '.') ? $new_desc : $new_desc . '.';
+	$new_desc = str_ends_with($new_desc, '.') || str_ends_with($new_desc, '!') ? $new_desc : $new_desc . '.';
 	return $new_desc;
 }
 
 function convert_recipe_times($time_desc) {
 	$new_time_desc = trim(str_ireplace('minutes', '', $time_desc));
+	$new_time_desc = intval($new_time_desc);
 	return $new_time_desc;
 }
 
@@ -33,7 +34,7 @@ function convert_recipe_ingred_notes($notes) {
 }
 
 function convert_recipe_instructions($instructs) {
-	$new_instructs = convert_recipe_desc($instructs);
+	$instructs = convert_recipe_desc($instructs);
 
 	$status = 0; // no degree conversion
 

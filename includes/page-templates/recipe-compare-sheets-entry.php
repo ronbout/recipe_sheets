@@ -39,7 +39,7 @@ if ('administrator' != strtolower($user->roles[0])) {
 		.entry {
 			width: 900px;
 			margin: auto;
-			height: 400px;
+			height: 700px;
 			border: 2px solid black;
 			display: flex;
 			flex-direction: column;
@@ -47,6 +47,10 @@ if ('administrator' != strtolower($user->roles[0])) {
 		.sheet-container input {
 			width: 100%;
 			padding: 12px;
+		}
+		.report-sheet-container {
+			width: 500px;
+			margin: 0 auto;
 		}
 		.button-container {
 			text-align: center;
@@ -82,7 +86,7 @@ if ('administrator' != strtolower($user->roles[0])) {
 					</div>
 					<div>
 						<label for="sheet1-name">Sheet Name:</label>
-						<input type="text" class="sheet-input" id="sheet1-name">
+						<input type="text" class="sheet-input" id="sheet1-name" value="Recipe">
 					</div>
 				</div>
 				<div class="sheet-container">
@@ -93,11 +97,25 @@ if ('administrator' != strtolower($user->roles[0])) {
 					</div>
 					<div>
 						<label for="sheet2-name">Sheet Name:</label>
-						<input type="text" class="sheet-input" id="sheet2-name">
+						<input type="text" class="sheet-input" id="sheet2-name" value="Recipe">
 					</div>
 				</div>
 			</div>
-			<div class="button-container"><button id="run-compare-google-sheets" type="button" disabled>Compare</button>	</div>
+			<div>
+				
+			<div class="report-sheet-container sheet-container">
+					<h3>Report Sheet Information</h3>
+					<div>
+						<label for="sheet2-google-id">Report Sheet ID:</label>
+						<input type="text" class="sheet-input" id="report-google-id" value="1uXifJ-4RqCK05eZuqRBiJIjhmYftVn93S1TlfETpjr8">
+					</div>
+					<div>
+						<label for="sheet2-name">Sheet Name:</label>
+						<input type="text" class="sheet-input" id="report-name" value="Recipe">
+					</div>
+				</div>
+			</div>
+			<div class="button-container"><button id="run-compare-google-sheets" type="button">Compare</button>	</div>
 		</div>
 		<div id="results">Results here</div>
 	</main>

@@ -103,6 +103,7 @@ function get_recipe_submit_rows($recipe_rows) {
 			'',
 			'',
 			$row['servings'],
+			'',
 			'People',
 		);
 	}, $recipe_rows);
@@ -129,7 +130,8 @@ function get_recipe_ingreds($recipe_ids) {
 	$placeholders = implode(', ', $placeholders);
 
 	$sql = "
-		SELECT ingred.name, ingred.pluralized, ingreds.*, rec.worksheet_id, rec.client_id, rec.recipe_type, units.name AS unit_name
+		SELECT ingred.name, ingred.pluralized, ingred.normalized, ingreds.*, rec.worksheet_id, rec.client_id, rec.recipe_type, 
+			units.normalized AS unit_name, units.pluralized AS unit_plural_name
 		FROM tc_recipe_ingredients ingreds
 			JOIN tc_ingredients ingred ON ingred.id = ingreds.ingred_id
 			JOIN tc_recipes rec ON rec.id = ingreds.recipe_id
@@ -154,16 +156,18 @@ function get_recipe_ingreds_submit_rows($ingred_rows) {
 		$recipe_id = get_submission_sheet_recipe_id($row);
 		$ingred_id = $recipe_id . '-' . $row['ingred_cnt'];
 		$ingred_group = $row['plural'] == '1' ? ucfirst(strtolower($row['pluralized'])) : ucfirst(strtolower($row['name']));
-		$ingred = strtolower($ingred_group);
+		$ingred = $row['plural'] == '1' ? ucfirst(strtolower($row['pluralized'])) : strtolower($row['normalized']);
+		$unit_name = $row['unit_plural'] == '1' ? $row['unit_plural_name'] : $row['unit_name'];
 		return array( 
 			$recipe_id,
 			$ingred_id,
 			$ingred_group,
 			$row['measure'],
 			'',
-			$row['unit_name'] ? $row['unit_name'] : '',
+			$unit_name ? ('n/a' == $unit_name) ? '' : $unit_name : '',
 			$ingred,
 			$row['notes'],
+			$row['recipe_group']
 		);
 	}, $ingred_rows);
 
@@ -286,7 +290,7 @@ function get_recipe_tags_submit_rows($recipe_rows) {
 
 function process_submission_tips_sheet($sheets, $recipe_rows) {
 	$recipe_tips_submit_rows = get_recipe_tips_submit_rows($recipe_rows);
-	
+
 	create_submission_sheet('Tips', $sheets, $recipe_tips_submit_rows);
 
 	echo "<h2>Tips Sheet Completed</h2>";
@@ -297,6 +301,9 @@ function get_recipe_tips_submit_rows($recipe_rows) {
 	$recipe_submit_tips_rows = array();
 	foreach ($recipe_rows as $row) {
 		$recipe_id = get_submission_sheet_recipe_id($row);
+		$db_recipe_id = $row['id'];
+		$ingred_tips = get_ingred_tips($db_recipe_id);
+
 		if (trim($row['recipe_tip'])) {
 			$recipe_submit_tips_rows[] = array( 
 				$recipe_id,
@@ -309,21 +316,42 @@ function get_recipe_tips_submit_rows($recipe_rows) {
 				'Recipe tip',
 			);
 		}
-		if (trim($row['ingredient_tip'])) {
-			$recipe_submit_tips_rows[] = array( 
-				$recipe_id,
-				'',
-				'',
-				'',
-				$row['ingredient_tip'],
-				'',
-				'',
-				'Ingredient tip',
-			);
+		if (is_array($ingred_tips) && count($ingred_tips)) {
+			foreach($ingred_tips as $tip_info) {
+				$tip = $tip_info['ingred_tip'];
+				if (trim($tip)) {
+					$ingred_cnt = $recipe_id . '-' . $tip_info['ingred_cnt'];
+					$recipe_submit_tips_rows[] = array( 
+						$recipe_id,
+						$ingred_cnt,
+						'',
+						'',
+						$tip,
+						'',
+						'',
+						'Ingredient tip',
+					);
+				}
+			}
 		}
 	}
 	
 	return $recipe_submit_tips_rows;
+}
+
+function get_ingred_tips($id) {
+	global $wpdb;
+
+	$sql = "
+		SELECT ingred_cnt, ingred_tip
+		FROM tc_recipe_ingredients
+		WHERE recipe_id = %d
+			AND ingred_tip IS NOT NULL 
+			AND ingred_tip <> ''
+	";
+
+	$sql = $wpdb->prepare($sql, $id);
+	return $wpdb->get_results($sql, ARRAY_A);
 }
 
 function create_submission_sheet($sheet_name, $sheets, $submit_rows) {

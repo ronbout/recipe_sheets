@@ -10,7 +10,9 @@ const tcRunCompareSheets = () => {
   const id2 = jQuery("#sheet2-google-id").val();
   const name1 = jQuery("#sheet1-name").val();
   const name2 = jQuery("#sheet2-name").val();
-  const sheetInfo = { id1, id2, name1, name2 };
+  const reportId = jQuery("#report-google-id").val();
+  const reportName = jQuery("#report-name").val();
+  const sheetInfo = { id1, id2, name1, name2, reportId, reportName };
 
   jQuery.ajax({
     url: recipeSheets.ajaxurl,
@@ -46,6 +48,13 @@ const tcLoadRunCompareSheetsButton = () => {
     });
 
   jQuery(".sheet-input").change(checkRunButtonDisable);
+
+  $sheet1Name = jQuery("#sheet1-name");
+  $sheet1Name.change(function () {
+    const name = $sheet1Name.val();
+    jQuery("#sheet2-name").val(name);
+    jQuery("#report-name").val(name);
+  });
 };
 
 const checkRunButtonDisable = () => {

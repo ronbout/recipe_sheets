@@ -49,7 +49,7 @@ function create_report($sheets=null, $sheet_id, $sheet_name, $data, $overwrite=t
 	}
 
 	// append the data to the end of the rows
-	return append_cells_to_sheet($sheets, $sheet_id, $sheet_name, 'A1:Z', $data);
+	return append_cells_to_sheet($sheets, $sheet_id, $sheet_name, 'A2:Z', $data);
 
 }
 

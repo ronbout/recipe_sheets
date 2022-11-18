@@ -145,7 +145,6 @@ function recipe_add_recipes_table() {
 		`cuisine` CHAR(60) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`diet` CHAR(60) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`recipe_tip` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
-		`ingredient_tip` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`worksheet_id` CHAR(50) NOT NULL DEFAULT '0' COLLATE 'utf8mb4_0900_ai_ci',
 		`root_id` CHAR(12) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`client_id` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
@@ -194,6 +193,7 @@ function recipe_add_recipe_ingredients_table() {
 		`notes` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`plural` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
 		`recipe_group` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`ingred_tip` VARCHAR(500) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		PRIMARY KEY (`recipe_id`, `ingred_cnt`) USING BTREE,
 		INDEX `ingred_id` (`ingred_id`) USING BTREE
 	)
@@ -213,7 +213,7 @@ function recipe_add_recipe_instructions_table() {
 	CREATE TABLE IF NOT EXISTS  `tc_recipe_instructions` (
 		`recipe_id` BIGINT(20) UNSIGNED NOT NULL,
 		`instruction_cnt` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
-		`instruction` VARCHAR(500) NOT NULL DEFAULT '' COLLATE 'utf8mb4_0900_ai_ci',
+		`instruction` VARCHAR(800) NOT NULL DEFAULT '' COLLATE 'utf8mb4_0900_ai_ci',
 		`recipe_group` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		PRIMARY KEY (`recipe_id`, `instruction_cnt`) USING BTREE
 	)

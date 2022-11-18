@@ -303,8 +303,10 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 			}
 			$ingred_notes = convert_recipe_ingred_notes($row[RECIPE_NOTES_COL]);
 			$group = convert_recipe_group($row[RECIPE_GROUP_COL]);
-			$recipe_info['ingredients'][] = array( 
-				'ingred_cnt' => $row[RECIPE_FIELD_CNT_COL],
+			
+			$ingred_cnt = $row[RECIPE_FIELD_STEP_COL];
+			$recipe_info['ingredients'][$ingred_cnt] = array( 
+				'ingred_cnt' => $ingred_cnt,
 				'ingred_id' => $ingred_id,
 				'measure' => $row[RECIPE_MEASURE_COL],
 				'unit' => $unit_id,
@@ -312,16 +314,22 @@ function update_recipe_table_entry($recipe_rows, $ingreds, $units, $sheets, $rep
 				'notes' => $ingred_notes,
 				'plural' => $plural,
 				'recipe_group' => $group,
+				'ingred_tip' => '',
 			);
 		} elseif ('description' === $fieldname) {
 			$recipe_desc = convert_recipe_desc($fielddesc);
 			$recipe_info['description'] = $recipe_desc;
+		} elseif ('ingredient tip' === $fieldname) {
+			if ('' == trim($fielddesc)) {
+				continue;
+			}
+			$ingred_cnt = $row[RECIPE_FIELD_STEP_COL];
+			$recipe_info['ingredients'][$ingred_cnt]['ingred_tip'] = convert_recipe_desc($fielddesc);
 		} elseif (in_array($fieldname, array('prep time', 'cook time')))	{
 			$time_desc = convert_recipe_times($fielddesc);
 			$db_name = str_replace(' ', '_', $fieldname);
 			$recipe_info[$db_name] = $time_desc;
-		}
-		else {
+		}	else {
 			if ('type' === $fieldname) {
 				$db_name = 'meal_type';
 			} else {
@@ -380,7 +388,6 @@ function new_recipe_info()  {
 		'diet' => null,
 		'recipe_tip' => null,
 		'recipe_status' => 'entered',
-		'ingredient_tip' => null,
 		'source' => null,
 		'photo_date' => null,
 		'recipe_status' => null,
@@ -462,15 +469,7 @@ function insert_new_ingredient($ingred_name, $ingreds, $ingred_db_names, $ingred
 function update_recipe_table_info($recipe_info, $worksheet_id) {
 	global $wpdb;
 
-	// if ('339986' == $worksheet_id) {
-	// 	echo "<pre>";
-	// 	print_r($recipe_info);
-	// 	echo "</pre>";
-	// 	die;
-	// }
-
-
-	$ingredients = $recipe_info['ingredients'];
+	$ingredients = array_values($recipe_info['ingredients']);
 	$methods = $recipe_info['methods'];
 
 	unset($recipe_info['ingredients']);
@@ -507,9 +506,9 @@ function update_recipe_ingredients_table($ingredients, $recipe_id) {
 
 	foreach($ingredients as $cnt => $ingredient) {
 
-		$insert_values .= '(%d, %d, %d, %s, %d, %d, %s, %d, %s),';
+		$insert_values .= '(%d, %d, %d, %s, %d, %d, %s, %d, %s, %s),';
 		$insert_parms[] = $recipe_id;
-		$insert_parms[] = $cnt+1;
+		$insert_parms[] = $ingredient['ingred_cnt'];
 		$insert_parms[] = $ingredient['ingred_id'];
 		$insert_parms[] = $ingredient['measure'];
 		$insert_parms[] = $ingredient['unit'];
@@ -517,13 +516,14 @@ function update_recipe_ingredients_table($ingredients, $recipe_id) {
 		$insert_parms[] = $ingredient['notes'];
 		$insert_parms[] = $ingredient['plural'];
 		$insert_parms[] = $ingredient['recipe_group'];
+		$insert_parms[] = $ingredient['ingred_tip'];
 
 	}
 
 	$insert_values = rtrim($insert_values, ',');
 
 	$sql = "INSERT into tc_recipe_ingredients
-		(recipe_id, ingred_cnt, ingred_id, measure, unit, unit_plural, notes, plural, recipe_group)
+		(recipe_id, ingred_cnt, ingred_id, measure, unit, unit_plural, notes, plural, recipe_group, ingred_tip)
 	VALUES $insert_values";
 
 	$prepared_sql = $wpdb->prepare($sql, $insert_parms);
