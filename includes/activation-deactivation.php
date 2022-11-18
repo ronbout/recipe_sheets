@@ -155,6 +155,7 @@ function recipe_add_recipes_table() {
 		`parent_recipe_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
 		`source` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`image_url` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+		`support_data_cnt` SMALLINT(5) UNSIGNED NULL DEFAULT NULL,
 		`photo_date` DATE NULL DEFAULT NULL,
 		`camera_id` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`submission_batch` TINYINT(3) UNSIGNED NULL DEFAULT NULL,

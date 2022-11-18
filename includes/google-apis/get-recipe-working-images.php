@@ -7,8 +7,48 @@ require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/load-working-images-di
 function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	global $wpdb;
 
-	$report_id = JUNE_VIRGIN_IMAGES_REPORT_ID;
-	$image_files = get_working_images_dir_info($recipe_type);
+	$image_sub_folder = array( 
+		'id' => JUNE_IMAGE_SUB_FOLDER_ID,
+		'name' => 'Images-2022-June-Sub,'
+	);
+
+	$image_all_folder = array( 
+		'id' => JUNE_IMAGE_ALL_FOLDER_ID,
+		'name' => 'Images-2022-June-All,'
+	);
+
+	// $report_id = JUNE_VIRGIN_IMAGES_REPORT_ID;
+	// $image_files = get_working_images_dir_info($recipe_type);
+
+	$images_sub = get_working_images_dir_info('WO', $image_sub_folder['id']);
+	$images_all = get_working_images_dir_info('WO', $image_all_folder['id']);
+	
+	$image_sub_by_name = array_column($images_sub, null, 'name');
+	$image_all_by_name = array_column($images_all, null, 'name');
+
+	$sub_names = array_keys($image_sub_by_name);
+	$all_names = array_keys($image_all_by_name);
+
+	$both_names = array_intersect($sub_names, $all_names);
+	$sub_only = array_diff($sub_names, $all_names);
+
+	$image_sub_by_id = array_column($images_sub, null, 'worksheet_id');
+	$image_all_by_id = array_column($images_all, null, 'worksheet_id');
+
+	$sub_ids = array_keys($image_sub_by_id);
+	$all_ids = array_keys($image_all_by_id);
+
+	$both_ids = array_intersect($sub_ids, $all_ids);
+
+
+	echo '<pre>';
+	print_r($both_names);
+	print_r($sub_only);
+	print_r($both_ids);
+	print_r($images_sub);
+	print_r($images_all);
+	echo '</pre>';
+	die;
 
 	if (!count($image_files)) {
 		echo "<h2>No image files found</h2>";

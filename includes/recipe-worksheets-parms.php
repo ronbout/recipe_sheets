@@ -82,6 +82,8 @@ define('IMAGE_FOLDER_ID', '1n7qWQExvik_hoXsnMIBpjaEbnV-IAIsc');
 // define('VIRGIN_FOLDER_ID', '16JSXrgQCLyUIyD-k6tY3Cj9HR6y2vtmz' );
 // define('VIRGIN_FOLDER_ID', '1sOM6KIS2bbBd2PaQLmt2ILyLAl6FGfu3' );
 define('VIRGIN_FOLDER_ID', '1SG7FXcopp9UHxmU__fJfeGelhWo67EOo' );
+define('JUNE_IMAGE_ALL_FOLDER_ID', '1JqkrIMVBltuGp8rBD_KEkOwqdBPGCM_e' );
+define('JUNE_IMAGE_SUB_FOLDER_ID', '1d52zsgu-Ge6Ycg0ptOml7vrgQgYa6G6N' );
 
 define('JUNE_VIRGIN_IMAGES_REPORT_ID', '1nqbWsHr9U03sU9eQyQtB8S8Je9zy_K1LZP50wYbRKWs' );
 // define('RECIPE_ENTRY_IMPORT_REPORT_ID', '1gscTgNkA9Rb835Lljid_Mtf9EsyQSucv-S4aDGIK4vc' );

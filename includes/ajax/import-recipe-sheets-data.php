@@ -26,19 +26,23 @@ function import_recipe_sheets_data_all($routine) {
 			import_all_recipe_requests_and_names($recipe_worksheets_parms);
 			break;
 		case 3:
-			echo "<h2>Import Data</h2>";
+			echo "<h2>Import Recipe Entry Data</h2>";
 			import_all_recipe_entry_status($recipe_worksheets_parms);
 			break;
 		case 4: 
-			import_all_recipe_image_data($recipe_worksheets_parms, 'WO');
+			echo "<h2>Import Recipe Support Data</h2>";
+			import_all_support_data($recipe_worksheets_parms);
 			break;
 		case 5: 
+			import_all_recipe_image_data($recipe_worksheets_parms, 'WO');
+			break;
+		case 6: 
 			import_all_recipe_image_data($recipe_worksheets_parms, 'Catalog');
 			break;
-		case 6:
+		case 7:
 			clear_recipe_tables();
 			break;
-		case 7:
+		case 8:
 			clear_ingredients_table();	
 			clear_measure_units_table();	
 			break;
@@ -80,6 +84,16 @@ function import_all_recipe_entry_status($recipe_worksheets_parms) {
 		// 	import_recipe_entry_status($month, $month_data);
 		// }
 		import_recipe_entry_status($month, $month_data);
+	}
+}
+
+function import_all_support_data($recipe_worksheets_parms) {
+	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-support-data.php';
+	foreach($recipe_worksheets_parms as $month => $month_data) {
+		if ('2022-06-01' == $month) {
+			import_recipe_support_data($month, $month_data);
+		}
+		// import_recipe_support_data($month, $month_data);
 	}
 }
 	
