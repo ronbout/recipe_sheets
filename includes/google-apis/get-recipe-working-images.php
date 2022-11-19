@@ -7,53 +7,14 @@ require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/load-working-images-di
 function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	global $wpdb;
 
-	$image_sub_folder = array( 
-		'id' => JUNE_IMAGE_SUB_FOLDER_ID,
-		'name' => 'Images-2022-June-Sub,'
-	);
-
-	$image_all_folder = array( 
-		'id' => JUNE_IMAGE_ALL_FOLDER_ID,
-		'name' => 'Images-2022-June-All,'
-	);
-
-	// $report_id = JUNE_VIRGIN_IMAGES_REPORT_ID;
-	// $image_files = get_working_images_dir_info($recipe_type);
-
-	$images_sub = get_working_images_dir_info('WO', $image_sub_folder['id']);
-	$images_all = get_working_images_dir_info('WO', $image_all_folder['id']);
-	
-	$image_sub_by_name = array_column($images_sub, null, 'name');
-	$image_all_by_name = array_column($images_all, null, 'name');
-
-	$sub_names = array_keys($image_sub_by_name);
-	$all_names = array_keys($image_all_by_name);
-
-	$both_names = array_intersect($sub_names, $all_names);
-	$sub_only = array_diff($sub_names, $all_names);
-
-	$image_sub_by_id = array_column($images_sub, null, 'worksheet_id');
-	$image_all_by_id = array_column($images_all, null, 'worksheet_id');
-
-	$sub_ids = array_keys($image_sub_by_id);
-	$all_ids = array_keys($image_all_by_id);
-
-	$both_ids = array_intersect($sub_ids, $all_ids);
-
-
-	echo '<pre>';
-	print_r($both_names);
-	print_r($sub_only);
-	print_r($both_ids);
-	print_r($images_sub);
-	print_r($images_all);
-	echo '</pre>';
-	die;
+	$report_id = JUNE_VIRGIN_IMAGES_REPORT_ID;
+	$image_files = get_working_images_dir_info('WO', JUNE_IMAGE_ALL_FOLDER_ID, $working_month);
 
 	if (!count($image_files)) {
 		echo "<h2>No image files found</h2>";
 		die;
 	}
+	echo '<h2>'. count($image_files). ' images found</h2>';
 	
 	$sheets = initializeSheets();
 
@@ -65,7 +26,7 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	$process_images_flg = true;
 
 	$missing_worksheet_id_images = array_filter($image_files, function($image_info) {
-		return !isset($image_info['worksheet_id']) || !trim($image_info['worksheet_id']);
+		return !isset($image_info['worksheet_id']) || !trim($image_info['worksheet_id']) || 'N/A' == $image_info['worksheet_id'] ;
 	});
 
 	if (count($missing_worksheet_id_images)) {
@@ -80,7 +41,7 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	}
 
 	$image_files = array_filter($image_files, function($image_info) {
-		return isset($image_info['worksheet_id']) && trim($image_info['worksheet_id']);
+		return isset($image_info['worksheet_id']) && trim($image_info['worksheet_id']) && 'N/A' != $image_info['worksheet_id'];
 	});
 	
 	$image_files_by_worksheet_id = array_column($image_files, null, 'worksheet_id');
@@ -114,7 +75,7 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 			JOIN tc_recipe_requests req ON req.id = rec.request_id
 			WHERE req.month_year = %s
 			AND rec.recipe_type = 'WO'
-			AND rec.submission_batch IS NULL
+			AND (rec.submission_batch IS NULL OR rec.submission_batch = 0)
 		";
 	
 		$sql = $wpdb->prepare($sql, $working_month);
@@ -177,6 +138,7 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 				$tmp = array( 
 					$arr['name'],
 					$arr['worksheet_id'],
+					$arr['support_cnt'],
 					$dup_names[$worksheet_id],
 					$arr['image_url'],
 				);
@@ -247,15 +209,16 @@ function check_missing_info($images, $recipes) {
 	sort($image_id_list);
 	sort($recipe_id_list);
 
-	// echo "<pre>";
-	// print_r($image_id_list);
-	// print_r($recipe_id_list);
-	// echo "</pre>";
-	// die;
-
 	$missing_recipe_list = array_values(array_diff($image_id_list, $recipe_id_list));
 	$missing_image_list = array_values(array_diff($recipe_id_list, $image_id_list));
 	$matching_image_list = array_values(array_intersect($image_id_list, $recipe_id_list));
+	
+	// 	echo "<pre>";
+	// print_r($images);
+	// print_r($recipe_id_list);
+	// print_r($matching_image_list);
+	// echo "</pre>";
+	// die;
 
 
 	if (count($missing_recipe_list)) {	
@@ -292,6 +255,9 @@ function check_missing_info($images, $recipes) {
 		return $lst;
 	}, array());
 	
+	$matching_image_list = array_map(function($item) {
+		return (string) $item;
+	}, $matching_image_list);
 	$matching_recipe_images = array_reduce($images, function($lst, $img) use ($matching_image_list, $recipes) {
 		$worksheet_id = $img['worksheet_id'];
 		// if (in_array($worksheet_id, $fnd_missing_recipe_ids) ) {
@@ -299,6 +265,7 @@ function check_missing_info($images, $recipes) {
 			$tmp = array( 
 				'name' => $img['name'],
 				'worksheet_id' => $img['worksheet_id'],
+				'support_cnt' => $img['support_cnt'],
 				'title' => $recipes[$worksheet_id]['recipe_title'],
 				'image_url' => $img['image_url'],
 			);
@@ -317,8 +284,12 @@ function check_missing_info($images, $recipes) {
 
 	$missing_images_recipe_info = array_reduce($recipes, function($lst, $recipe) use ($missing_image_list) {
 		$worksheet_id = $recipe['worksheet_id'];
+		$support_cnt = $recipe['support_data_cnt'] ? $recipe['support_data_cnt'] : 'N/A';
 		if (in_array($worksheet_id, $missing_image_list) ) {
-			$lst[] = array('worksheet_id' => $worksheet_id, 'recipe_title' => $recipe['recipe_title']);
+			$lst[] = array(
+				'worksheet_id' => $worksheet_id,
+				'support_data' => $support_cnt,
+				'recipe_title' => $recipe['recipe_title']);
 		}
 		return $lst;
 	}, array());
@@ -373,6 +344,46 @@ function update_recipe_row($recipe_id, $image_url, $camera_id, $photo_date) {
 	return 1;
 }
 
-function get_recipe_titles($worksheet_ids) {
+	/**
+	 * Temporary test code for checking two folders for common images
+	 */
 
-}
+	// $image_sub_folder = array( 
+	// 	'id' => JUNE_IMAGE_SUB_FOLDER_ID,
+	// 	'name' => 'Images-2022-June-Sub,'
+	// );
+
+	// $image_all_folder = array( 
+	// 	'id' => JUNE_IMAGE_ALL_FOLDER_ID,
+	// 	'name' => 'Images-2022-June-All,'
+	// );
+
+	// $images_sub = get_working_images_dir_info('WO', $image_sub_folder['id']);
+	// $images_all = get_working_images_dir_info('WO', $image_all_folder['id']);
+	
+	// $image_sub_by_name = array_column($images_sub, null, 'name');
+	// $image_all_by_name = array_column($images_all, null, 'name');
+
+	// $sub_names = array_keys($image_sub_by_name);
+	// $all_names = array_keys($image_all_by_name);
+
+	// $both_names = array_intersect($sub_names, $all_names);
+	// $sub_only = array_diff($sub_names, $all_names);
+
+	// $image_sub_by_id = array_column($images_sub, null, 'worksheet_id');
+	// $image_all_by_id = array_column($images_all, null, 'worksheet_id');
+
+	// $sub_ids = array_keys($image_sub_by_id);
+	// $all_ids = array_keys($image_all_by_id);
+
+	// $both_ids = array_intersect($sub_ids, $all_ids);
+
+
+	// echo '<pre>';
+	// print_r($both_names);
+	// print_r($sub_only);
+	// print_r($both_ids);
+	// print_r($images_sub);
+	// print_r($images_all);
+	// echo '</pre>';
+	// die;

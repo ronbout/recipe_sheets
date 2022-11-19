@@ -5,15 +5,13 @@ defined('ABSPATH') or die('Direct script access disallowed.');
 // Load the Google API PHP Client Library.
 require_once __DIR__ . '/vendor/autoload.php';
 
-function get_working_images_dir_info($recipe_type='WO', $folder_id=null) {
+function get_working_images_dir_info($recipe_type='WO', $folder_id=null, $month=null) {
 	$drive = initializeImageDrive();
 	if (!$folder_id) {
 		$folder_id = 'WO' === $recipe_type ? IMAGE_FOLDER_ID : VIRGIN_FOLDER_ID;
 	}
-	return get_image_dir_files($drive, $folder_id);
+	return get_image_dir_files($drive, $folder_id, $month);
 }
-
-
 
 /**
  * Initializes an Analytics Reporting API V4 service object.
@@ -40,9 +38,9 @@ function initializeImageDrive()
 }
 
 
-function get_image_dir_files($drive, $folder_id) {
+function get_image_dir_files($drive, $folder_id, $month) {
 
-	try{
+	try {
 		$files = array();
 
 		do {
@@ -60,9 +58,14 @@ function get_image_dir_files($drive, $folder_id) {
 						// printf("Found file: %s (%s)\n", $file->name, $file->id);
 						// echo "<p>name: $file->name - id: $file->id => $file->description</p>";
 						$image_url = "https://drive.google.com/file/d/$file->id/view?usp=drivesdk";
+						$recipe_identifier = $file->description;
+						$recipe_info = get_image_recipe_info($recipe_identifier, $month);
+
 						$files[] = array( 
 							'name' => $file->name,
-							'worksheet_id' => $file->description,
+						//	'recipe_id' => $recipe_info['recipe_id'],
+							'worksheet_id' => $recipe_info['worksheet_id'],
+							'support_cnt' => $recipe_info['support_cnt'],
 							'image_url' => $image_url,
 						);
 				}
@@ -71,10 +74,59 @@ function get_image_dir_files($drive, $folder_id) {
 				$pageToken = $response->nextPageToken;
 		} while ($pageToken != null);
 
-	return $files;
+		return $files;
+	}
+	catch(Exception $e) {
+			// TODO(developer) - handle error appropriately
+			echo '<pre>';
+			echo 'Message: ' .$e->getMessage();
+			echo '</pre>';
+	}
 }
-catch(Exception $e) {
-    // TODO(developer) - handle error appropriately
-    echo 'Message: ' .$e->getMessage();
+
+function get_image_recipe_info($recipe_identifier, $month) {
+	global $wpdb;
+
+	if (id_is_worksheet_id($recipe_identifier)) {
+		$sql = "
+			SELECT id, worksheet_id, support_data_cnt
+			FROM tc_recipes
+			WHERE worksheet_id = %s
+		";
+	} else {
+		/****
+		 * 
+		 * right now, the only support data cnt records are for June,
+		 * which is what we are processing.  Support data is only unqiue per month.
+		 * 
+		 * *** TODO:  use the parent id or request id to get the worksheet month
+		 * which will need to be passed into here
+		 */
+		$sql = "
+			SELECT id, worksheet_id, support_data_cnt
+			FROM tc_recipes
+			WHERE support_data_cnt = %d LIMIT 1
+		";
+	}
+
+	$sql = $wpdb->prepare($sql, $recipe_identifier);
+	$recipe_row = $wpdb->get_row($sql, ARRAY_A);
+
+	if (!$recipe_row) {
+		return array( 
+			'recipe_id' => 'N/A',
+			'worksheet_id' => 'N/A',
+			'support_cnt' => 'N/A'
+		);
+	} else {
+		return array( 
+			'recipe_id' => $recipe_row['id'],
+			'worksheet_id' => $recipe_row['worksheet_id'],
+			'support_cnt' => $recipe_row['support_data_cnt'] ? $recipe_row['support_data_cnt'] : 'N/A',
+		);
+	}
 }
+
+function id_is_worksheet_id($id) {
+	return intval($id) > 300000;
 }

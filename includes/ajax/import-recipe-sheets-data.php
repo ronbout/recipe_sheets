@@ -115,7 +115,7 @@ function import_all_recipe_image_data($recipe_worksheets_parms, $recipe_type) {
 	// load recipe printed status for each month
 	if ('WO' === $recipe_type) {
 		foreach($recipe_worksheets_parms as $month => $month_data) {
-			if ('2022-05-01' == $month) {
+			if ('2022-06-01' == $month) {
 				import_recipe_image_data($month, $month_data, $recipe_type);
 			}
 		}
