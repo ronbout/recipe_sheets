@@ -6,12 +6,13 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'recipe-worksheets-parms.php';
 
-define('MAY_SUBMISSION_SHEET_ID', '1wSlr8NssLNV05X5hzpIvg2B_4z8iUdIKHiUb0P-X3ns');
+define('JUNE_SUBMISSION_SHEET_ID', '1LlHh9mUoqVtR0ieF29K9Q3CxaErA6msz0fasXpcdS3o');
+// define('MAY_SUBMISSION_SHEET_ID', '1wSlr8NssLNV05X5hzpIvg2B_4z8iUdIKHiUb0P-X3ns');
 // define('JUNE_VIRGIN_SUBMISSION_SHEET_ID', '1L7WMOZ2_idMfqnb-O5xXFReUJoRVPiaqxI67Viu7Hzk');
 
-define('SUBMISSION_SHEET_ID', MAY_SUBMISSION_SHEET_ID);
+define('SUBMISSION_SHEET_ID', JUNE_SUBMISSION_SHEET_ID);
 
-$working_month = '2022-05-01';
+$working_month = '2022-06-01';
 $month_name = date("F", strtotime($working_month));
 
 $sheets = initializeSheets();
@@ -33,7 +34,7 @@ function get_recipes_to_submit($month, $recipe_type='WO') {
 		$sql = "
 		SELECT rec.* FROM tc_recipes rec
 		JOIN tc_recipe_requests req ON req.id = rec.request_id
-		WHERE rec.submission_batch = 2 
+		WHERE (rec.submission_batch IS NULL OR rec.submission_batch = 0)
 		AND rec.image_url IS NOT NULL 
 		AND req.month_year = '%s'
 		AND rec.recipe_type = 'WO'
