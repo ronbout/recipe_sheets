@@ -7,8 +7,11 @@ require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/load-working-images-di
 function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	global $wpdb;
 
-	$report_id = JUNE_VIRGIN_IMAGES_REPORT_ID;
-	$image_files = get_working_images_dir_info('WO', JUNE_IMAGE_ALL_FOLDER_ID, $working_month);
+	// $report_id = JUNE_VIRGIN_IMAGES_REPORT_ID;
+	// $image_files = get_working_images_dir_info('WO', JUNE_IMAGE_ALL_FOLDER_ID, $working_month);
+	
+	$report_id = MAY_IMAGES_REPORT_ID;
+	$image_files = get_working_images_dir_info('WO', MAY_IMAGE_FOLDER_ID, $working_month);
 
 	if (!count($image_files)) {
 		echo "<h2>No image files found</h2>";
@@ -75,8 +78,10 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 			JOIN tc_recipe_requests req ON req.id = rec.request_id
 			WHERE req.month_year = %s
 			AND rec.recipe_type = 'WO'
-			AND (rec.submission_batch IS NULL OR rec.submission_batch = 0)
+			AND (rec.submission_batch = 2)
 		";
+		
+		// AND (rec.submission_batch IS NULL OR rec.submission_batch = 0)
 	
 		$sql = $wpdb->prepare($sql, $working_month);
 		$recipe_rows = $wpdb->get_results($sql, ARRAY_A);

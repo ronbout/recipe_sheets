@@ -9,6 +9,16 @@ Template Name: Compare Google Sheets
  */
 defined('ABSPATH') or die('Direct script access disallowed.');
 
+// define('SHEET_1_ID', '1gygJeDkW3VG4Q2K6MdICHxYcMreSESQklsgzYwr66oQ');
+define('SHEET_1_ID', '1PpFPs69IK0Fe4n5uzrhGAn15AA0wukEb-AXzCL-QjIc');
+define('SHEET_1_NAME', 'Recipe');
+// define('SHEET_2_ID', '1L7WMOZ2_idMfqnb-O5xXFReUJoRVPiaqxI67Viu7Hzk');
+define('SHEET_2_ID', '1wSlr8NssLNV05X5hzpIvg2B_4z8iUdIKHiUb0P-X3ns');
+define('SHEET_2_NAME', 'Recipe');
+// define('REPORT_ID', '1uXifJ-4RqCK05eZuqRBiJIjhmYftVn93S1TlfETpjr8');
+define('REPORT_ID', '1FrrqQtH6p_7SRMN4ZG4KuZIALVDz9Jqx3sEjizQ5Q0M');
+define('REPORT_SHEET_NAME', 'Recipe');
+
 if (!is_user_logged_in(  )) {
 	die("Must be logged in as admin to use this page");
 }
@@ -82,22 +92,22 @@ if ('administrator' != strtolower($user->roles[0])) {
 					<h3>Sheet 1 Information</h3>
 					<div>
 						<label for="sheet1-google-id">Google Sheet ID:</label>
-						<input type="text" class="sheet-input" id="sheet1-google-id" value="1gygJeDkW3VG4Q2K6MdICHxYcMreSESQklsgzYwr66oQ">
+						<input type="text" class="sheet-input" id="sheet1-google-id" value="<?php echo SHEET_1_ID ?>">
 					</div>
 					<div>
 						<label for="sheet1-name">Sheet Name:</label>
-						<input type="text" class="sheet-input" id="sheet1-name" value="Recipe">
+						<input type="text" class="sheet-input" id="sheet1-name" value="<?php echo SHEET_1_NAME ?>">
 					</div>
 				</div>
 				<div class="sheet-container">
 					<h3>Sheet 2 Information</h3>
 					<div>
 						<label for="sheet2-google-id">Google Sheet ID:</label>
-						<input type="text" class="sheet-input" id="sheet2-google-id" value="1L7WMOZ2_idMfqnb-O5xXFReUJoRVPiaqxI67Viu7Hzk">
+						<input type="text" class="sheet-input" id="sheet2-google-id" value="<?php echo SHEET_2_ID ?>">
 					</div>
 					<div>
 						<label for="sheet2-name">Sheet Name:</label>
-						<input type="text" class="sheet-input" id="sheet2-name" value="Recipe">
+						<input type="text" class="sheet-input" id="sheet2-name" value="<?php echo SHEET_2_NAME ?>">
 					</div>
 				</div>
 			</div>
@@ -107,11 +117,11 @@ if ('administrator' != strtolower($user->roles[0])) {
 					<h3>Report Sheet Information</h3>
 					<div>
 						<label for="sheet2-google-id">Report Sheet ID:</label>
-						<input type="text" class="sheet-input" id="report-google-id" value="1uXifJ-4RqCK05eZuqRBiJIjhmYftVn93S1TlfETpjr8">
+						<input type="text" class="sheet-input" id="report-google-id" value="<?php echo REPORT_ID ?>">
 					</div>
 					<div>
 						<label for="sheet2-name">Sheet Name:</label>
-						<input type="text" class="sheet-input" id="report-name" value="Recipe">
+						<input type="text" class="sheet-input" id="report-name" value="<?php echo REPORT_SHEET_NAME ?>">
 					</div>
 				</div>
 			</div>

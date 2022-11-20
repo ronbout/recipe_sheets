@@ -19,7 +19,10 @@ function convert_recipe_desc($desc) {
 		return '';
 	}
 	$new_desc = ucfirst(trim($desc));
-	$new_desc = str_ends_with($new_desc, '.') || str_ends_with($new_desc, '!') ? $new_desc : $new_desc . '.';
+	if (str_ends_test($new_desc, ',')) {
+		$new_desc = substr_replace($new_desc, '.', -1, 1);
+	}
+	$new_desc = str_ends_test($new_desc, '.') || str_ends_test($new_desc, '!') || str_ends_test($new_desc, '?') ? $new_desc : $new_desc . '.';
 	return $new_desc;
 }
 
@@ -39,7 +42,7 @@ function convert_recipe_instructions($instructs) {
 	$status = 0; // no degree conversion
 
 	// check for oven degrees to add fan-forced
-	while (false !== strpos(strtolower($instructs), "oven") && false !== strpos(strtolower($instructs), "degree") && $status >= 0 ) {
+	while ((false !== strpos(strtolower($instructs), "oven") || false !== strpos(strtolower($instructs), "bake")) && false !== strpos(strtolower($instructs), "degree") && $status >= 0 ) {
 		$instruct_data = convert_degree($instructs);
 		$instructs = $instruct_data['new_instructs'];
 		$status = $instruct_data['status'];

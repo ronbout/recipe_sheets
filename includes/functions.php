@@ -52,3 +52,8 @@ function binary_search($needle, $haystack, $start=0, $end=0) {
 		return binary_search($needle, $haystack, $comp_ndx + 1, $end);
 	}
 }
+
+// useful little pre_PHP 8.0 test of end of string.
+function str_ends_test($haystack, $needle) {
+	return !substr_compare($haystack, $needle, -1);
+}

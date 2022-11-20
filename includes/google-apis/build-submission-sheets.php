@@ -6,18 +6,18 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'recipe-worksheets-parms.php';
 
-define('MAY_SUBMISSION_SHEET_ID', '1BJ5fMNXsv6Le8AofW9ylpRkT_L6hzo8fE8egL7h2reQ');
-define('JUNE_VIRGIN_SUBMISSION_SHEET_ID', '1L7WMOZ2_idMfqnb-O5xXFReUJoRVPiaqxI67Viu7Hzk');
+define('MAY_SUBMISSION_SHEET_ID', '1wSlr8NssLNV05X5hzpIvg2B_4z8iUdIKHiUb0P-X3ns');
+// define('JUNE_VIRGIN_SUBMISSION_SHEET_ID', '1L7WMOZ2_idMfqnb-O5xXFReUJoRVPiaqxI67Viu7Hzk');
 
-define('SUBMISSION_SHEET_ID', JUNE_VIRGIN_SUBMISSION_SHEET_ID);
+define('SUBMISSION_SHEET_ID', MAY_SUBMISSION_SHEET_ID);
 
-$working_month = '2022-06-01';
+$working_month = '2022-05-01';
 $month_name = date("F", strtotime($working_month));
 
 $sheets = initializeSheets();
 clear_submission_sheet($sheets, SUBMISSION_SHEET_ID);
 
-$recipe_rows = get_recipes_to_submit($working_month, 'Virgin');
+$recipe_rows = get_recipes_to_submit($working_month, 'WO');
 
 process_submission_recipe_sheet($sheets, $working_month, $recipe_rows);
 process_submission_ingreds_sheet($sheets, $recipe_rows);
@@ -33,7 +33,7 @@ function get_recipes_to_submit($month, $recipe_type='WO') {
 		$sql = "
 		SELECT rec.* FROM tc_recipes rec
 		JOIN tc_recipe_requests req ON req.id = rec.request_id
-		WHERE rec.submission_batch IS NULL 
+		WHERE rec.submission_batch = 2 
 		AND rec.image_url IS NOT NULL 
 		AND req.month_year = '%s'
 		AND rec.recipe_type = 'WO'
