@@ -168,7 +168,12 @@ function get_recipe_ingreds_submit_rows($ingred_rows) {
 			$unit_name ? ('n/a' == $unit_name) ? '' : $unit_name : '',
 			$ingred,
 			$row['notes'],
-			$row['recipe_group']
+			'', 
+			/**
+			 * *** TEMP ***
+			 * turn off recipe groups for June Submission due to data issue
+			 */
+			// $row['recipe_group']
 		);
 	}, $ingred_rows);
 
@@ -243,7 +248,12 @@ function get_recipe_instructs_submit_rows($instruct_rows) {
 			$row['instruction'],
 			'',
 			'',
-			$row['recipe_group'],
+			'', 
+			/**
+			 * *** TEMP ***
+			 * turn off recipe groups for June Submission due to data issue
+			 */
+			// $row['recipe_group'],
 		);
 	}, $instruct_rows);
 
