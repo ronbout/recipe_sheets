@@ -43,6 +43,8 @@ function load_ingredients_table($ingred_data){
 	$wpdb->query($sql);
 	$sql = "ALTER TABLE tc_ingredients AUTO_INCREMENT = 1";
 	$wpdb->query($sql);
+	$sql = "ALTER TABLE tc_ingredient_names AUTO_INCREMENT = 1";
+	$wpdb->query($sql);
 
 
 	$insert_sql = "

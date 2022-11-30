@@ -157,6 +157,10 @@ function clear_ingredients_table() {
 	$db_results = $wpdb->query($sql);
 	echo "<h2>$db_results ingredients deleted</h2>";
 
+	$sql = "DELETE FROM tc_ingredient_names WHERE 1";
+	$db_results = $wpdb->query($sql);
+	echo "<h2>$db_results ingredient names deleted</h2>";
+
 }
 
 function clear_measure_units_table() {
