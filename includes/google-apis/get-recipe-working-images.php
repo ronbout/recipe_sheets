@@ -7,8 +7,15 @@ require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/load-working-images-di
 function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	global $wpdb;
 
-	$report_id = JUNE_VIRGIN_IMAGES_REPORT_ID;
-	$image_files = get_working_images_dir_info('WO', JUNE_IMAGE_ALL_FOLDER_ID, $working_month);
+	if ('2022-06-01' == $working_month) {
+		$report_id = JUNE_IMAGES_REPORT_ID;
+		$image_files = get_working_images_dir_info('WO', JUNE_IMAGE_ALL_FOLDER_ID, $working_month);
+	}
+	
+	if ('2022-10-01' == $working_month) {
+		$report_id = OCTOBER_IMAGES_REPORT_ID;
+		$image_files = get_working_images_dir_info('WO', OCTOBER_IMAGE_FOLDER_ID, $working_month);
+	}
 	
 	// $report_id = MAY_IMAGES_REPORT_ID;
 	// $image_files = get_working_images_dir_info('WO', MAY_IMAGE_FOLDER_ID, $working_month);
@@ -21,9 +28,9 @@ function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	
 	$sheets = initializeSheets();
 
-	// echo '<pre>';
-	// print_r($image_files);
-	// echo '</pre>';
+	echo '<pre>';
+	print_r($image_files);
+	echo '</pre>';
 	// die;
 
 	$process_images_flg = true;

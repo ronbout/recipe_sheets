@@ -59,11 +59,18 @@ function get_image_dir_files($drive, $folder_id, $month) {
 						// echo "<p>name: $file->name - id: $file->id => $file->description</p>";
 						$image_url = "https://drive.google.com/file/d/$file->id/view?usp=drivesdk";
 						$recipe_identifier = $file->description;
+						if (!trim($recipe_identifier)) {
+							$files[] = array( 
+								'name' => $file->name,
+								'worksheet_id' => '',
+								'support_cnt' => '',
+								'image_url' => $image_url,
+							);
+						}
 						$recipe_info = get_image_recipe_info($recipe_identifier, $month);
 
 						$files[] = array( 
 							'name' => $file->name,
-						//	'recipe_id' => $recipe_info['recipe_id'],
 							'worksheet_id' => $recipe_info['worksheet_id'],
 							'support_cnt' => $recipe_info['support_cnt'],
 							'image_url' => $image_url,
@@ -87,29 +94,34 @@ function get_image_dir_files($drive, $folder_id, $month) {
 function get_image_recipe_info($recipe_identifier, $month) {
 	global $wpdb;
 
+	$parms = array($recipe_identifier);
+
 	if (id_is_worksheet_id($recipe_identifier)) {
 		$sql = "
 			SELECT id, worksheet_id, support_data_cnt
 			FROM tc_recipes
-			WHERE worksheet_id = %s
+			WHERE worksheet_id = %s OR orig_child_id = %s
 		";
+		$parms[] = $recipe_identifier;
 	} else {
-		/****
-		 * 
-		 * right now, the only support data cnt records are for June,
-		 * which is what we are processing.  Support data is only unqiue per month.
-		 * 
-		 * *** TODO:  use the parent id or request id to get the worksheet month
-		 * which will need to be passed into here
-		 */
+		if ($recipe_identifier < 138) {
+			$srch_month = $month;
+		} else {
+			$srch_month = '2022-06-01';
+		}
 		$sql = "
-			SELECT id, worksheet_id, support_data_cnt
-			FROM tc_recipes
-			WHERE support_data_cnt = %d LIMIT 1
+			SELECT rec.id, rec.worksheet_id, rec.support_data_cnt
+			FROM tc_recipes rec
+			LEFT JOIN tc_recipe_requests req1 ON req1.id = rec.request_id
+			LEFT JOIN tc_recipes parent ON parent.worksheet_id = rec.parent_recipe_id
+			LEFT JOIN tc_recipe_requests req2 ON req2.id = parent.request_id
+			WHERE rec.support_data_cnt = %d 
+			AND COALESCE(req2.month_year, req1.month_year) = %s
 		";
+		$parms[] = $srch_month;
 	}
 
-	$sql = $wpdb->prepare($sql, $recipe_identifier);
+	$sql = $wpdb->prepare($sql, $parms);
 	$recipe_row = $wpdb->get_row($sql, ARRAY_A);
 
 	if (!$recipe_row) {

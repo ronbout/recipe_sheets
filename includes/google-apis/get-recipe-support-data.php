@@ -14,7 +14,7 @@ function import_recipe_support_data($working_month, $month_info) {
 	$support = get_support_data($sheets, $month_info['worksheet_doc_id']);
 
 	$support = array_filter($support, function($row) {
-		return is_int(intval($row[0]));
+		return is_int(intval($row[0])) && intval($row[0]);
 	});
 
 	// echo '<pre>';
@@ -51,7 +51,23 @@ function update_recipe_support_cnt($support_rows) {
 	foreach($support_rows as $row) {
 		$support_cnt = $row[0];
 		$worksheet_id = $row[1];
-		$db->result = $wpdb->update('tc_recipes', array( 'support_data_cnt' => $support_cnt), array( 'worksheet_id' => $worksheet_id),
+
+		$sql = "
+			SELECT id, worksheet_id, orig_child_id 
+			FROM tc_recipes
+			WHERE worksheet_id = %s OR orig_child_id = %s
+		";
+
+		$sql = $wpdb->prepare($sql, array($worksheet_id, $worksheet_id));
+		$db_recipe = $wpdb->get_row($sql, ARRAY_A);
+
+		if ($db_recipe['worksheet_id'] == $worksheet_id && $db_recipe['orig_child_id']) {
+			continue;
+		}
+		$db_id = $db_recipe['id'];
+
+
+		$db->result = $wpdb->update('tc_recipes', array( 'support_data_cnt' => $support_cnt), array( 'id' => $db_id),
 										array('%d')); 
 	}
 

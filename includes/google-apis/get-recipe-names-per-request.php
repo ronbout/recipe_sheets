@@ -198,6 +198,7 @@ function load_recipe_request_table($data, $dt) {
 				'recipe_title' => sanitize_text_field($recipe_row[BRIEF_RECIPE_TITLE_COL]),
 				'recipe_type' => $recipe_type,
 				'parent_recipe_id' => sanitize_text_field($recipe_row[BRIEF_PARENT_RECIPE_ID_COL]),
+				'orig_child_id' => sanitize_text_field($recipe_row[BRIEF_ORIG_CHILD_ID_COL]),
 			);}
 	
 	}
@@ -319,6 +320,10 @@ function insert_recipe_rows($recipes, $request_id, $recipes_table) {
 	$insert_parms = [];
 	
 	foreach ($recipes as $recipe_info) {
+		if ($recipe_info['orig_child_id'] ) {
+			update_catalog_recipe($recipe_info, $request_id, $recipes_table);
+			continue;
+		}
 		$recipe_id = $recipe_info['recipe_id'];
 		$root_id = $recipe_info['root_id'];
 		$client_id = $recipe_info['client_id'];
@@ -329,7 +334,7 @@ function insert_recipe_rows($recipes, $request_id, $recipes_table) {
 		$db_request_id = "WO" === $recipe_type ? $request_id : null;
 		$db_client_id = $client_id ? $client_id : 'makenull';
 
-		$insert_values .= '(%s, %s, %s, %s, %d, %s, %d),';
+		$insert_values .= '(%s, %s, %s, %s, %d, %s, %s),';
 		$insert_parms[] = $recipe_id;
 		$insert_parms[] = $root_id;
 		$insert_parms[] = $db_client_id;
@@ -358,6 +363,27 @@ function insert_recipe_rows($recipes, $request_id, $recipes_table) {
 
 	$rows_affected = $wpdb->query($prepared_sql);
 	return true;
+}
+
+function update_catalog_recipe($recipe_info, $request_id, $recipes_table) {
+	global $wpdb;
+
+	$upd_data = array ( 
+		'worksheet_id' => $recipe_info['recipe_id'],
+		'root_id' => $recipe_info['root_id'],
+		'client_id' => $recipe_info['client_id'],
+		'request_id' => $request_id,
+		'recipe_type' => 'WO',
+		'orig_child_id' => $recipe_info['orig_child_id'],
+	);
+	$upd_formats = array('%s', '%s', '%s', '%d', '%s', '%s');
+	$where_clause = array('worksheet_id' => $recipe_info['orig_child_id']);
+
+	$update_result = $wpdb->update($recipes_table, $upd_data, $where_clause, $upd_formats, '%s');
+	if (false === $update_result) {
+		echo "<h1>Could not update {$recipe_info['recipe_id']}</h1>";
+		die;
+	}
 }
 
 function load_recipe_request_tier_data($virgin_tier_row, $virgin_tier_recipes, $working_month, &$next_virgin_client_id) {

@@ -475,7 +475,21 @@ function update_recipe_table_info($recipe_info, $worksheet_id) {
 	unset($recipe_info['ingredients']);
 	unset($recipe_info['methods']);
 
-	$update_result = $wpdb->update('tc_recipes', $recipe_info, ['worksheet_id' => $worksheet_id], null, ['%s']);
+	$sql = "
+		SELECT id, worksheet_id, orig_child_id 
+		FROM tc_recipes
+		WHERE worksheet_id = %s OR orig_child_id = %s
+	";
+
+	$sql = $wpdb->prepare($sql, array($worksheet_id, $worksheet_id));
+	$db_recipe = $wpdb->get_row($sql, ARRAY_A);
+
+	if ($db_recipe['worksheet_id'] == $worksheet_id && $db_recipe['orig_child_id']) {
+		return;
+	}
+	$db_id = $db_recipe['id'];
+
+	$update_result = $wpdb->update('tc_recipes', $recipe_info, ['id' => $db_id], null, ['%s']);
 
 	if (false === $update_result) {
 		echo "<h1>Could not update $worksheet_id</h1>";

@@ -90,37 +90,25 @@ function import_all_recipe_entry_status($recipe_worksheets_parms) {
 function import_all_support_data($recipe_worksheets_parms) {
 	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-support-data.php';
 	foreach($recipe_worksheets_parms as $month => $month_data) {
-		if ('2022-06-01' == $month) {
+		// if ('2022-06-01' == $month) {
+		if (in_array($month, array('2022-06-01','2022-07-01', '2022-10-01' )) ) {
 			import_recipe_support_data($month, $month_data);
 		}
 		// import_recipe_support_data($month, $month_data);
 	}
 }
 	
-/*
-function import_all_recipe_printed_status($recipe_worksheets_parms) {
-	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-printed-status.php';
-	// load recipe printed status for each month
-	foreach($recipe_worksheets_parms as $month => $month_data) {
-		// if ('2022-04-01' == $month) {
-		// 	import_recipe_printed_status($month, $month_data);
-		// }
-		import_recipe_printed_status($month, $month_data);
-	}
-}
-*/
-
 function import_all_recipe_image_data($recipe_worksheets_parms, $recipe_type) {
 	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-working-images.php';
 	// load recipe printed status for each month
 	if ('WO' === $recipe_type) {
 		foreach($recipe_worksheets_parms as $month => $month_data) {
-			if ('2022-06-01' == $month) {
+			if ('2022-10-01' == $month) {
 				import_recipe_image_data($month, $month_data, $recipe_type);
 			}
 		}
 	} else {
-		import_recipe_image_data($month, $month_data, $recipe_type);
+		// import_recipe_image_data($month, $month_data, $recipe_type);
 	}
 }
 
