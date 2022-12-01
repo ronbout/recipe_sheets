@@ -6,13 +6,14 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'recipe-worksheets-parms.php';
 
-define('JUNE_SUBMISSION_SHEET_ID', '1LlHh9mUoqVtR0ieF29K9Q3CxaErA6msz0fasXpcdS3o');
+define('OCTOBER_SUBMISSION_SHEET_ID', '1x9uuTyjF09tdFoB76Mqz-mhliqRHQY54aLJPjMIGHt4');
+// define('JUNE_SUBMISSION_SHEET_ID', '1LlHh9mUoqVtR0ieF29K9Q3CxaErA6msz0fasXpcdS3o');
 // define('MAY_SUBMISSION_SHEET_ID', '1wSlr8NssLNV05X5hzpIvg2B_4z8iUdIKHiUb0P-X3ns');
 // define('JUNE_VIRGIN_SUBMISSION_SHEET_ID', '1L7WMOZ2_idMfqnb-O5xXFReUJoRVPiaqxI67Viu7Hzk');
 
-define('SUBMISSION_SHEET_ID', JUNE_SUBMISSION_SHEET_ID);
+define('SUBMISSION_SHEET_ID', OCTOBER_SUBMISSION_SHEET_ID);
 
-$working_month = '2022-06-01';
+$working_month = '2022-10-01';
 $month_name = date("F", strtotime($working_month));
 
 $sheets = initializeSheets();
