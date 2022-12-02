@@ -496,16 +496,16 @@ function update_recipe_table_info($recipe_info, $worksheet_id) {
 		die;
 	}
 
-	$sql = "SELECT id FROM tc_recipes WHERE worksheet_id = %s";
+	// $sql = "SELECT id FROM tc_recipes WHERE worksheet_id = %s";
 
-	$recipe_id = $wpdb->get_var($wpdb->prepare($sql, $worksheet_id));
+	// $recipe_id = $wpdb->get_var($wpdb->prepare($sql, $worksheet_id));
 
 	if (count($ingredients)) {
-		update_recipe_ingredients_table($ingredients, $recipe_id);
+		update_recipe_ingredients_table($ingredients, $db_id);
 	}
 
 	if (count($methods)) {
-		update_recipe_instructions_table($methods, $recipe_id);
+		update_recipe_instructions_table($methods, $db_id);
 	}
 	
 }

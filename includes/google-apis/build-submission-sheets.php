@@ -39,6 +39,7 @@ function get_recipes_to_submit($month, $recipe_type='WO') {
 		AND rec.image_url IS NOT NULL 
 		AND req.month_year = '%s'
 		AND rec.recipe_type = 'WO'
+		ORDER BY rec.client_id ASC  
 		";
 	} else {
 		/*****
@@ -53,7 +54,7 @@ function get_recipes_to_submit($month, $recipe_type='WO') {
 			WHERE req.month_year = '%s'
 			AND (rec.image_url IS NOT NULL OR rec.image_url IS NULL)
 			AND req.tier = 'Virgin'
-			ORDER BY rec.request_id ASC 
+			ORDER BY rec.client_id ASC 
 		";
 
 	}
@@ -140,7 +141,7 @@ function get_recipe_ingreds($recipe_ids) {
 			JOIN tc_recipe_requests req ON req.id = rec.request_id
 			LEFT JOIN tc_measure_units units ON units.id = ingreds.unit
 		WHERE rec.id in ($placeholders)
-		ORDER BY ingreds.recipe_id, ingreds.ingred_cnt ASC 
+		ORDER BY rec.client_id, ingreds.ingred_cnt ASC 
 	";
 
 	$sql = $wpdb->prepare($sql, $recipe_ids);
@@ -226,7 +227,7 @@ function get_recipe_instructs($recipe_ids) {
 		FROM tc_recipe_instructions instructs
 			JOIN tc_recipes rec ON rec.id = instructs.recipe_id
 		WHERE rec.id in ($placeholders)
-		ORDER BY instructs.recipe_id, instructs.instruction_cnt ASC 
+		ORDER BY rec.client_id, instructs.instruction_cnt ASC 
 	";
 
 	$sql = $wpdb->prepare($sql, $recipe_ids);
