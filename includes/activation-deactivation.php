@@ -138,7 +138,7 @@ function recipe_add_recipes_table() {
 		`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 		`recipe_title` VARCHAR(80) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`description` VARCHAR(500) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
-		`servings` TINYINT(3) UNSIGNED NULL DEFAULT NULL,
+		`servings` TINYTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`prep_time` CHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`cook_time` CHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
 		`meal_type` CHAR(60) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
