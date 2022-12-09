@@ -7,8 +7,8 @@ require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/load-working-images-di
 function import_recipe_image_data($working_month, $month_info, $recipe_type) {
 	global $wpdb;
 
-	$report_id = JUNE_VIRGIN_IMAGES_REPORT_ID;
-	$image_files = get_working_images_dir_info('WO', JUNE_IMAGE_ALL_FOLDER_ID, $working_month);
+	$report_id = JUNE_IMAGES_REPORT_ID;
+	$image_files = get_working_images_dir_info('WO', JUNE_IMAGE_FOLDER_ID, $working_month);
 	
 	// $report_id = MAY_IMAGES_REPORT_ID;
 	// $image_files = get_working_images_dir_info('WO', MAY_IMAGE_FOLDER_ID, $working_month);
