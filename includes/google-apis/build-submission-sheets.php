@@ -6,7 +6,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 require_once RECIPE_SHEETS_PLUGIN_INCLUDES . 'recipe-worksheets-parms.php';
 
-define('JUNE_SUBMISSION_SHEET_ID', '1LlHh9mUoqVtR0ieF29K9Q3CxaErA6msz0fasXpcdS3o');
+define('JUNE_SUBMISSION_SHEET_ID', '1L7WMOZ2_idMfqnb-O5xXFReUJoRVPiaqxI67Viu7Hzk');
 // define('MAY_SUBMISSION_SHEET_ID', '1wSlr8NssLNV05X5hzpIvg2B_4z8iUdIKHiUb0P-X3ns');
 // define('JUNE_VIRGIN_SUBMISSION_SHEET_ID', '1L7WMOZ2_idMfqnb-O5xXFReUJoRVPiaqxI67Viu7Hzk');
 
@@ -103,7 +103,7 @@ function get_recipe_submit_rows($recipe_rows) {
 			'',
 			'',
 			'',
-			$row['servings'],
+			$row['servings'] ? $row['servings'] : '',
 			'',
 			'People',
 		);
