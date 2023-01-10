@@ -90,10 +90,10 @@ function import_all_recipe_entry_status($recipe_worksheets_parms) {
 function import_all_support_data($recipe_worksheets_parms) {
 	require RECIPE_SHEETS_PLUGIN_INCLUDES . 'google-apis/get-recipe-support-data.php';
 	foreach($recipe_worksheets_parms as $month => $month_data) {
-		if ('2022-06-01' == $month) {
-			import_recipe_support_data($month, $month_data);
-		}
-		// import_recipe_support_data($month, $month_data);
+		// if ('2022-06-01' == $month) {
+		// 	import_recipe_support_data($month, $month_data);
+		// }
+		import_recipe_support_data($month, $month_data);
 	}
 }
 	
